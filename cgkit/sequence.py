@@ -127,7 +127,7 @@ class SeqString:
         if other is None:
             return 1
         if not isinstance(other, SeqString):
-            if not isinstance(other, basestring):
+            if type(other) is not str:
                 return 1
         
         # Convert both strings into pristine SeqStrings (because some numbers
@@ -1444,7 +1444,7 @@ class OutputNameGenerator:
         for seq in srcSequences:
             if not isinstance(seq, Sequence):
                 raise TypeError("The source sequences must be Sequence objects")
-        if not isinstance(dstName, basestring):
+        if type(dstName) is not str:
             raise TypeError("The output sequence pattern must be a string")
         for sr in srcRanges:
             if sr is not None and not isinstance(sr, Range):
