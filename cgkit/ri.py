@@ -72,7 +72,7 @@ For more details on using the module see the cgkit manual at
 http://cgkit.sourceforge.net/
 """
 
-import sys, types, time, os, os.path, string, getpass, inspect, gzip
+import sys, time, os, os.path, string, getpass, inspect, gzip
 try:
     from ._core import vec3 as _vec3
 except:
@@ -793,12 +793,12 @@ def RiBasis(ubasis, ustep, vbasis, vstep):
                      RiHermiteBasis, RI_HERMITESTEP)
     """
 
-    if type(ubasis)==types.StringType:
+    if type(ubasis) is str:
         ubasis = '"'+ubasis+'"'
     else:
         ubasis = _seq2list(ubasis, 16)
         
-    if type(vbasis)==types.StringType:
+    if type(vbasis) is str:
         vbasis = '"'+vbasis+'"'
     else:
         vbasis = _seq2list(vbasis, 16)
@@ -1254,7 +1254,7 @@ def RiPixelFilter(function, xwidth, ywidth):
 
     Example: RiPixelFilter(RiGaussianFilter, 2.0, 1.0)"""
     
-    if callable(function):
+    if hasattr(function, "__call__"):
         _error(RIE_INCAPABLE, RIE_WARNING, "Only the standard filters can be stored in a RIB stream.")
         return
 
@@ -1711,7 +1711,7 @@ def RiProcedural(data, bound, subdividefunc, freefunc=None):
                           RiProcDynamicLoad, RI_NULL)
     """
     if subdividefunc in [RiProcDelayedReadArchive, RiProcRunProgram, RiProcDynamicLoad]:
-        if type(data)==types.StringType:
+        if type(data) is str:
             data=[data]
         _ribout.write('Procedural "'+subdividefunc()+'" '+_seq2list(data)+ \
                      ' '+_seq2list(bound,6)+"\n")
@@ -1845,7 +1845,7 @@ def RiMakeTexture(picname, texname, swrap, twrap, filterfunc, swidth, twidth, *p
                            RiGaussianFilter, 2,2)
     """
     
-    if callable(filterfunc):
+    if hasattr(filterfunc, "__call__"):
         _error(RIE_INCAPABLE, RIE_WARNING, "Only the standard filters can be stored in a RIB stream.")
         return
 
@@ -1866,7 +1866,7 @@ def RiMakeLatLongEnvironment(picname, texname, filterfunc, swidth, twidth, *para
                                       RiGaussianFilter, 2,2)
     """
     
-    if callable(filterfunc):
+    if hasattr(filterfunc, "__call__"):
         _error(RIE_INCAPABLE, RIE_WARNING, "Only the standard filters can be stored in a RIB stream.")
         return
 
@@ -1890,7 +1890,7 @@ def RiMakeCubeFaceEnvironment(px,nx,py,ny,pz,nz, texname, fov, filterfunc, swidt
                                         RiGaussianFilter, 2,2)
     """
     
-    if callable(filterfunc):
+    if hasattr(filterfunc, "__call__"):
         _error(RIE_INCAPABLE, RIE_WARNING, "Only the standard filters can be stored in a RIB stream.")
         return
 
@@ -2233,7 +2233,7 @@ def _flatten(seq):
              _flatten( ("str1","str2") )    -> ['"str1"','"str2"']
     """
     res = []
-    ScalarTypes = [types.IntType, types.LongType, types.FloatType]
+    ScalarTypes = [int, float]
     for v in seq:
         vtype = type(v)
         # v=scalar?
@@ -2243,7 +2243,7 @@ def _flatten(seq):
         elif isinstance(v, _vec3):
             res.extend([str(v.x), str(v.y), str(v.z)])
         # v=string?
-        elif isinstance(v, basestring):
+        elif type(v) is str:
             res.append('"%s"'%v)
         # no scalar or string. Then it might be a sequence...
         else:
@@ -2280,7 +2280,7 @@ def _paramlist2dict(paramlist, keyparams):
     The dictionary keyparams will be modified and returned.
     """
 
-    if len(paramlist)==1 and type(paramlist[0])==types.DictType:
+    if len(paramlist)==1 and type(paramlist[0]) is dict:
         keyparams = paramlist[0]
         paramlist = ()
     
@@ -2316,7 +2316,7 @@ def _paramlist2lut(paramlist, keyparams):
 def _merge_paramlist(paramlist, keyparams):
     """Merge a paramlist tuple and keyparams dict into one single list.
     """
-    if len(paramlist)==1 and type(paramlist[0])==types.DictType:
+    if len(paramlist)==1 and type(paramlist[0]) is dict:
         keyparams = paramlist[0]
         paramlist = ()
 
@@ -2372,7 +2372,7 @@ def _paramlist2string(paramlist, keyparams={}):
         except:
             pass
         # Convert value into the appropriate string representation
-        if isinstance(value, basestring):
+        if type(value) is str:
             value='["'+value+'"]'
 #        elif type(value)==types.ListType or type(value)==types.TupleType:
         elif isseq:
