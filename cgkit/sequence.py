@@ -1557,12 +1557,12 @@ class OutputNameGenerator:
             # should just be kept.
             if srcIter is not None:
                 try:
-                    srcName = srcIter.next()
+                    srcName = next(srcIter)
                 except StopIteration:
                     if enforceDstRange:
                         if repeatSrc:
                             srcIter = iter(srcSequence)
-                            srcName = srcIter.next()
+                            srcName = next(srcIter)
                         else:
                             srcIter = None
                     else:
@@ -1584,7 +1584,7 @@ class OutputNameGenerator:
                 # the number from the input file is used
                 if dstRangeIter is not None and len(nums)>0:
                     try:
-                        nums[seqNumIdx] = dstRangeIter.next()
+                        nums[seqNumIdx] = next(dstRangeIter)
                     except StopIteration:
                         break
                 # Create the file names
