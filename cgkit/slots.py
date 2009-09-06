@@ -39,10 +39,10 @@
 
 #from _core import ISlot, DoubleSlot, IntSlot, BoolSlot, PySlot
 #from _core import Vec3Slot, Vec4Slot, Mat3Slot, Mat4Slot
-from cgtypes import vec3, vec4, mat3, mat4, quat
-import _core
-from _core import Dependent, UserSizeConstraint, LinearSizeConstraint
-from _core import ISlot, IArraySlot
+from .cgtypes import vec3, vec4, mat3, mat4, quat
+from . import _core
+from ._core import Dependent, UserSizeConstraint, LinearSizeConstraint
+from ._core import ISlot, IArraySlot
 
 # Factory functions for the individual slots:
 

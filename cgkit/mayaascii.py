@@ -34,7 +34,8 @@
 # ***** END LICENSE BLOCK *****
 # $Id: mayaascii.py,v 1.10 2005/06/15 19:18:46 mbaas Exp $
 
-import sys, types, simplecpp
+import sys, types
+from . import simplecpp
 
 # The keywords that may be used for the value True
 _true_keywords = ["true", "on", "yes"]

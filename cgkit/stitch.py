@@ -41,7 +41,7 @@ This file can also be used as a command line tool.
 """
 
 import sys, os, os.path, glob, optparse
-import _Image as Image
+from . import _Image as Image
 
 # isTile
 def isTile(name):

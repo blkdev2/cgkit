@@ -43,17 +43,17 @@
 """
 
 import sys, os, os.path, types, string
-import pluginmanager
-import eventmanager
-import events
-from scene import getScene
-import worldobject
-import draw, drawtextgeom
-import trimeshgeom
-import polyhedrongeom
-import group as group_module
-import _core
-from cgtypes import *
+from . import pluginmanager
+from . import eventmanager
+from . import events
+from .scene import getScene
+from . import worldobject
+from . import draw, drawtextgeom
+from . import trimeshgeom
+from . import polyhedrongeom
+from . import group as group_module
+from . import _core
+from .cgtypes import *
 
 class NoImporter(Exception): pass
 class NoExporter(Exception): pass

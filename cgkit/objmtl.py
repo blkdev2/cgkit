@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: objmtl.py,v 1.3 2006/03/20 19:32:12 mbaas Exp $
 
-from cgtypes import *
+from .cgtypes import *
 
 # WavefrontReaderBase
 class WavefrontReaderBase:

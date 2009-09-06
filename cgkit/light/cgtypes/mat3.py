@@ -36,7 +36,7 @@
 # $Id: mat3.py,v 1.2 2005/08/17 19:38:29 mbaas Exp $
 
 import types, math, copy
-from vec3 import vec3 as _vec3
+from .vec3 import vec3 as _vec3
 
 # [  0   1   2 ]
 # [  3   4   5 ]

@@ -36,9 +36,9 @@
 
 import os.path
 import ctypes
-import cgtypes
-import rmanlibutil
-import _pointcloud
+from . import cgtypes
+from . import rmanlibutil
+from . import _pointcloud
 try:
     import numpy
     _numpy_available = True

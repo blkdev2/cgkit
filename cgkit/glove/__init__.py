@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: __init__.py,v 1.1 2005/01/17 21:52:55 mbaas Exp $
 
-from constants import *
+from .constants import *
 
 try:
     # The glove wrapper is in the root cgkit directory so that the

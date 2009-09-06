@@ -35,9 +35,9 @@
 # $Id: mat4.py,v 1.2 2005/08/17 19:52:41 mbaas Exp $
 
 import types, math, copy
-from vec3 import vec3 as _vec3
-from vec4 import vec4 as _vec4
-from mat3 import mat3 as _mat3
+from .vec3 import vec3 as _vec3
+from .vec4 import vec4 as _vec4
+from .mat3 import mat3 as _mat3
 
 
 # [  0   1   2   3 ]

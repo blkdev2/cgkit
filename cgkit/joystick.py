@@ -37,8 +37,8 @@
 ## \file joystick.py
 ## Contains the Joystick class.
 
-from eventmanager import eventManager
-from events import *
+from .eventmanager import eventManager
+from .events import *
 
 # Joystick
 class Joystick:

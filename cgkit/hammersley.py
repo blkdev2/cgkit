@@ -77,7 +77,7 @@
 """
 
 from math import pi, sqrt, cos, sin
-from cgtypes import *
+from .cgtypes import *
 
 # planeHammersley
 def planeHammersley(n):

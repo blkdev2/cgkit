@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: __init__.py,v 1.1 2005/01/09 20:13:06 mbaas Exp $
 
-from constants import *
+from .constants import *
 
 try:
     # The wintab wrapper is in the root cgkit directory so that the

@@ -57,8 +57,8 @@ is part of the name).
 
 import math, random, string, re
 from math import acos, asin, ceil, cos, exp, floor, pow, sin, sqrt, tan
-import noise
-from cgtypes import vec3 as _vec3
+from . import noise
+from .cgtypes import vec3 as _vec3
 
 # Builtin functions
 abs = abs

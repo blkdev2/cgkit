@@ -45,8 +45,8 @@
 """
 
 import sys, types, re
-import ri
-from cgtypes import vec3
+from . import ri
+from .cgtypes import vec3
 try:
     import ctypes
     _has_ctypes = True
@@ -57,8 +57,8 @@ except ImportError:
     _has_ctypes = False
     
 if _has_ctypes:
-    import _cri
-    from _cri import importRINames
+    from . import _cri
+    from ._cri import importRINames
 
 try:
     import numpy

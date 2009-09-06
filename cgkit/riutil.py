@@ -35,8 +35,8 @@
 # $Id: riutil.py,v 1.1.1.1 2004/12/12 14:31:21 mbaas Exp $
 
 import types, sys
-from cgtypes import vec3
-from ri import *
+from .cgtypes import vec3
+from .ri import *
 try:
     import Image
     _PIL_installed = 1

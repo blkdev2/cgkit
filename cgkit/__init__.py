@@ -61,7 +61,8 @@ using OpenGL and for offline rendering using a RenderMan renderer.
 See the manual and tutorials at: http://cgkit.sourceforge.net/
 """
 
-import os.path, cgkitinfo
+import os.path
+from . import cgkitinfo
 
 # Is this cgkit light? Then modify the subpackage searchpath so that the
 # special 'light' modules are found instead of the normal ones.

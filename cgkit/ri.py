@@ -74,9 +74,9 @@ http://cgkit.sourceforge.net/
 
 import sys, types, time, os, os.path, string, getpass, inspect, gzip
 try:
-    from _core import vec3 as _vec3
+    from ._core import vec3 as _vec3
 except:
-    from cgtypes import vec3 as _vec3
+    from .cgtypes import vec3 as _vec3
 
 ########################### Constants #############################
 

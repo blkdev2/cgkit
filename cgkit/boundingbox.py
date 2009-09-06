@@ -37,5 +37,5 @@
 ## \file boundingbox.py
 ## Contains the wrapped BoundingBox class.
 
-from _core import BoundingBox
+from ._core import BoundingBox
 

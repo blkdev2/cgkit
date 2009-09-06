@@ -39,8 +39,8 @@
 
 """This module contains the Globals class."""
 
-from scene import getScene
-from cgtypes import *
+from .scene import getScene
+from .cgtypes import *
 
 # Globals
 class Globals:

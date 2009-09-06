@@ -39,10 +39,10 @@
 
 import sys, copy
 import StringIO
-import cgkit.glslangtokenize as glslangtokenize
-import cgkit.simplecpp as simplecpp
-import cgkit.slparams as slparams
-from cgkit.glslangtokenize import WHITESPACE, NAME, NUMBER, STRING, NEWLINE, OPERATOR, CHARACTER, TYPE, QUALIFIER
+from . import glslangtokenize
+from . import simplecpp
+from . import slparams
+from .glslangtokenize import WHITESPACE, NAME, NUMBER, STRING, NEWLINE, OPERATOR, CHARACTER, TYPE, QUALIFIER
 
 class GLSLangParseError(Exception):
     pass

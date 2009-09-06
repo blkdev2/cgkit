@@ -39,8 +39,8 @@
 import sys, os, os.path
 import ctypes
 import ctypes.util
-from _slreturntypes import _ShaderInfo, _ShaderParam
-import rmanlibutil
+from ._slreturntypes import _ShaderInfo, _ShaderParam
+from . import rmanlibutil
 
 # This is the name of the C library that gets loaded by the PRMan SloArgs
 # implementation to obtain a function pointer to the free() function

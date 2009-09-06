@@ -35,9 +35,9 @@
 # $Id: quat.py,v 1.1 2005/08/15 15:39:48 mbaas Exp $
 
 import types, math
-from vec3 import vec3 as _vec3
-from mat3 import mat3 as _mat3
-from mat4 import mat4 as _mat4
+from .vec3 import vec3 as _vec3
+from .mat3 import mat3 as _mat3
+from .mat4 import mat4 as _mat4
 
 # Comparison threshold
 _epsilon = 1E-12

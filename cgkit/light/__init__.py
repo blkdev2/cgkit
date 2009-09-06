@@ -38,5 +38,5 @@
 'light' version of cgkit.
 """
 
-from cgtypes import *
+from .cgtypes import *
 

@@ -35,7 +35,7 @@
 # $Id: lwob.py,v 1.1 2006/03/12 22:41:42 mbaas Exp $
 
 import struct
-from cgtypes import vec3
+from .cgtypes import vec3
 
 class LWOBError(Exception):
     pass

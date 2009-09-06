@@ -38,7 +38,7 @@
 ## Contains the standard event names and some predefined event classes.
 
 import string
-import keydefs
+from . import keydefs
 
 # STEP_FRAME is called whenever the timer is stepped forward one frame
 # using timer.step().

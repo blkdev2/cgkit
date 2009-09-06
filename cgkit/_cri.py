@@ -56,7 +56,7 @@ layer that allows the library to be used just like the pure Python ri module.
 
 import os.path
 from ctypes import *
-import rmanlibutil
+from . import rmanlibutil
 
 def loadRI(libName):
     """Load a RenderMan library and return a module-like handle to it.

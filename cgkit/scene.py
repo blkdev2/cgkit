@@ -37,13 +37,13 @@
 ## \file scene.py
 ## Contains the Scene class.
 
-from cgtypes import vec3
-from Interfaces import ISceneItem
-import timer
+from .cgtypes import vec3
+from .Interfaces import ISceneItem
+from . import timer
 import protocols
-from boundingbox import BoundingBox
-import joystick
-import _core
+from .boundingbox import BoundingBox
+from . import joystick
+from . import _core
 
 # Scene
 class Scene(object):

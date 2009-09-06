@@ -49,12 +49,12 @@ Functions:
 - convertdefault()
 """
 
-import os, os.path, sys, string, StringIO, sltokenize, types
-import cgtypes, math, sl, simplecpp
-import _slparser
-from _slreturntypes import _ShaderInfo, _ShaderParam
+import os, os.path, sys, string, StringIO, sltokenize, types, math
+from . import cgtypes, sl, simplecpp
+from . import _slparser
+from ._slreturntypes import _ShaderInfo, _ShaderParam
 try:
-    import sloargs
+    from . import sloargs
     _has_sloargs = True
 except ImportError, exc:
     _has_sloargs = False
