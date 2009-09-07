@@ -35,7 +35,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: mat3.py,v 1.2 2005/08/17 19:38:29 mbaas Exp $
 
-import types, math, copy
+import math, copy
 from .vec3 import vec3 as _vec3
 
 # [  0   1   2 ]
@@ -80,7 +80,7 @@ class mat3:
         elif len(args)==1:
             T = type(args[0])
             # Scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 f = float(args[0])
                 self.mlist = [f,0.0,0.0,
                               0.0,f,0.0,
@@ -89,9 +89,9 @@ class mat3:
             elif isinstance(args[0], mat3):
                 self.mlist = copy.copy(args[0].mlist)
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
-                self.mlist=map(lambda x: float(x), s)
+                self.mlist=list(map(lambda x: float(x), s))
             else:
                 self.mlist = mat3(*args[0]).mlist
 
@@ -101,11 +101,11 @@ class mat3:
             self.mlist = [a[0], b[0], c[0],
                           a[1], b[1], c[1],
                           a[2], b[2], c[2]]
-            self.mlist = map(lambda x: float(x), self.mlist)
+            self.mlist = list(map(lambda x: float(x), self.mlist))
 
         # 9 arguments
         elif len(args)==9:
-            self.mlist = map(lambda x: float(x), args)
+            self.mlist = list(map(lambda x: float(x), args))
 
         else:
             raise TypeError("mat3() arg can't be converted to mat3")
@@ -130,7 +130,7 @@ class mat3:
         global _epsilon
         if isinstance(other, mat3):
 #            return self.mlist==other.mlist
-            lst = filter(lambda a: abs(a[0]-a[1])>_epsilon, zip(self.mlist, other.mlist))
+            lst = list(filter(lambda a: abs(a[0]-a[1])>_epsilon, zip(self.mlist, other.mlist)))
             return len(lst)==0
         else:
             return False
@@ -155,7 +155,7 @@ class mat3:
     def __mul__(self, other):
         T = type(other)
         # mat3*scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat3(map(lambda x,other=other: x*other, self.mlist))
         # mat3*vec3
         if isinstance(other, _vec3):
@@ -185,7 +185,7 @@ class mat3:
     def __rmul__(self, other):
         T = type(other)
         # scalar*mat3
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat3(map(lambda x,other=other: other*x, self.mlist))
         # vec3*mat3
         if isinstance(other, _vec3):
@@ -201,10 +201,10 @@ class mat3:
             raise TypeError("unsupported operand type for *")
 
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         T = type(other)
         # mat3/scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat3(map(lambda x,other=other: x/other, self.mlist))
         # unsupported
         else:
@@ -213,7 +213,7 @@ class mat3:
     def __mod__(self, other):
         T = type(other)
         # mat3%scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat3(map(lambda x,other=other: x%other, self.mlist))
         # mat3%mat3
         if isinstance(other, mat3):
@@ -244,7 +244,7 @@ class mat3:
                 return _vec3(self.mlist[2],self.mlist[5],self.mlist[8])
             else:
                 raise IndexError("index out of range")
-        elif type(key)==types.TupleType:
+        elif type(key) is tuple:
             i,j=key
             if i<0 or i>2 or j<0 or j>2:
                 raise IndexError("index out of range")
@@ -261,7 +261,7 @@ class mat3:
             elif key==2: self.mlist[2],self.mlist[5],self.mlist[8] = value
             else:
                 raise IndexError("index out of range")
-        elif type(key)==types.TupleType:
+        elif type(key) is tuple:
             i,j=key
             if i<0 or i>2 or j<0 or j>2:
                 raise IndexError("index out of range")

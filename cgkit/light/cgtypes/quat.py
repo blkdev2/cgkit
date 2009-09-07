@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: quat.py,v 1.1 2005/08/15 15:39:48 mbaas Exp $
 
-import types, math
+import math
 from .vec3 import vec3 as _vec3
 from .mat3 import mat3 as _mat3
 from .mat4 import mat4 as _mat4
@@ -71,7 +71,7 @@ class quat:
         elif len(args)==1:
             T = type(args[0])
             # Scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 self.w = float(args[0])
                 self.x, self.y, self.z = (0.0, 0.0, 0.0)
             # quat
@@ -85,18 +85,18 @@ class quat:
             elif isinstance(args[0], _mat3) or isinstance(args[0], _mat4):
                 self.fromMat(args[0])
             # List or Tuple
-            elif T==types.ListType or T==types.TupleType:
+            elif T in [list, tuple]:
                 dummy = quat(*args[0])
                 self.w = dummy.w
                 self.x = dummy.x
                 self.y = dummy.y
                 self.z = dummy.z                
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f=map(lambda x: float(x), s)
+                f=list(map(lambda x: float(x), s))
                 dummy = quat(f)
                 self.w = dummy.w
                 self.x = dummy.x
@@ -204,7 +204,7 @@ class quat:
         """
         T = type(other)
         # quat*scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return quat(self.w*other, self.x*other, self.y*other, self.z*other)
         # quat*quat
         if isinstance(other, quat):
@@ -224,7 +224,7 @@ class quat:
 
     __rmul__ = __mul__
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """Division.
 
         >>> q=quat(0.9689, 0.2160, 0.1080, 0.0540)
@@ -233,7 +233,7 @@ class quat:
         """
         T = type(other)
         # quat/scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return quat(self.w/other, self.x/other, self.y/other, self.z/other)
         # unsupported
         else:

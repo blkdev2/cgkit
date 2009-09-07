@@ -421,12 +421,12 @@ class TestVec4(unittest.TestCase):
     def testPickle(self):
         fname = "delme_pickle.dat"
         
-        f = file(fname, "wb")
+        f = open(fname, "wb")
         v = vec4(1, 2.5, -3.7, 12)
         pickle.dump(v, f)
         f.close()
 
-        f = file(fname, "rb")
+        f = open(fname, "rb")
         w = pickle.load(f)
         f.close()
 

@@ -527,11 +527,14 @@ class TestMat3(unittest.TestCase):
                 # have to be applied just in the opposite order than mentioned
                 # in the fromEuler*() method name.
                 C = R1*R2*R3
-                exec ('E = mat3.fromEuler%s(angle["X"], angle["Y"], angle["Z"])'%order)
+                ns = {"mat3":mat3, "angle":angle}
+                exec ('E = mat3.fromEuler%s(angle["X"], angle["Y"], angle["Z"])'%order, ns)
+                E = ns["E"]
                 self.assertEqual(E, C)
-    
-                exec ('x,y,z = E.toEuler%s()'%order)
-                exec ('E2 = mat3.fromEuler%s(x, y, z)'%order)
+
+                exec ('x,y,z = E.toEuler%s()'%order, ns)
+                exec ('E2 = mat3.fromEuler%s(x, y, z)'%order, ns)
+                E2 = ns["E2"]
                 if E2!=E:
 #                    print E
 #                    print E2
@@ -552,13 +555,13 @@ class TestMat3(unittest.TestCase):
         a = vec3(1,1,0).normalize()
         b = vec3(-1,0.5,2).normalize()
         R = mat3.fromToRotation(a, b)
-        self.assertAlmostEqual(R.determinant(), 1.0, 8)
+        self.assertAlmostEqual(R.determinant(), 1.0, places=8)
         self.assertEqual(R*a, b)
 
         a = vec3(1,1,0).normalize()
         b = vec3(1,1,0.000001).normalize()
         R = mat3.fromToRotation(a, b)
-        self.assertAlmostEqual(R.determinant(), 1.0, 8)
+        self.assertAlmostEqual(R.determinant(), 1.0, places=8)
         self.assertEqual(R*a, b)
 
     ######################################################################

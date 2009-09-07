@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: vec4.py,v 1.1 2005/08/15 15:39:48 mbaas Exp $
 
-import types, math
+import math
 
 # Comparison threshold
 _epsilon = 1E-12
@@ -74,14 +74,14 @@ class vec4(object):
         elif len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 f = float(args[0])
                 self.x, self.y, self.z, self.w = (f, f, f, f)
             # vec4
             elif isinstance(args[0], vec4):
                 self.x, self.y, self.z, self.w = args[0]
             # Tuple/List
-            elif T==types.TupleType or T==types.ListType:
+            elif T in [tuple, list]:
                 if len(args[0])==0:
                     self.x = self.y = self.z = self.w = 0.0
                 elif len(args[0])==1:
@@ -106,11 +106,11 @@ class vec4(object):
                 else:
                     raise TypeError("vec4() takes at most 4 arguments")
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f=map(lambda x: float(x), s)
+                f=list(map(lambda x: float(x), s))
                 dummy = vec4(f)
                 self.x, self.y, self.z, self.w = dummy
             # error
@@ -265,7 +265,7 @@ class vec4(object):
 
         T = type(other)
         # vec4*scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return vec4(self.x*other, self.y*other, self.z*other, self.w*other)
         # vec4*vec4
         if isinstance(other, vec4):
@@ -280,7 +280,7 @@ class vec4(object):
 
     __rmul__ = __mul__
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """Division by scalar
 
         >>> a=vec4(1.0, 0.5, -1.8, 0.2)
@@ -289,7 +289,7 @@ class vec4(object):
         """
         T = type(other)
         # vec4/scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return vec4(self.x/other, self.y/other, self.z/other, self.w/other)
         # unsupported
         else:
@@ -304,7 +304,7 @@ class vec4(object):
         """
         T = type(other)
         # vec4%scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return vec4(self.x%other, self.y%other, self.z%other, self.w%other)
         # vec4%vec4
         if isinstance(other, vec4):
@@ -359,7 +359,7 @@ class vec4(object):
         """
         T = type(other)
         # vec4*=scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             self.x*=other
             self.y*=other
             self.z*=other
@@ -368,7 +368,7 @@ class vec4(object):
         else:
             raise TypeError("unsupported operand type for *=")
 
-    def __idiv__(self, other):
+    def __itruediv__(self, other):
         """Inline division with scalar
 
         >>> a=vec4(1.0, 0.5, -1.8, 0.2)
@@ -378,7 +378,7 @@ class vec4(object):
         """
         T = type(other)
         # vec4/=scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             self.x/=other
             self.y/=other
             self.z/=other
@@ -397,7 +397,7 @@ class vec4(object):
         """
         T = type(other)
         # vec4%=scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             self.x%=other
             self.y%=other
             self.z%=other
@@ -460,7 +460,7 @@ class vec4(object):
         0.2
         """
         T=type(key)
-        if T!=types.IntType and T!=types.LongType:
+        if T is not int:
             raise TypeError("index must be integer")
 
         if   key==0: return self.x
@@ -479,7 +479,7 @@ class vec4(object):
         (1.5000, 0.7000, -0.3000, 0.2000)
         """
         T=type(key)
-        if T!=types.IntType and T!=types.LongType:
+        if T is not int:
             raise TypeError("index must be integer")
 
         if   key==0: self.x = value

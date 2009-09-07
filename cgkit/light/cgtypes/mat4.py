@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: mat4.py,v 1.2 2005/08/17 19:52:41 mbaas Exp $
 
-import types, math, copy
+import math, copy
 from .vec3 import vec3 as _vec3
 from .vec4 import vec4 as _vec4
 from .mat3 import mat3 as _mat3
@@ -67,7 +67,7 @@ class mat4:
         # 1 argument (list, scalar or mat4)
         elif len(args)==1:
             T = type(args[0])
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 f = float(args[0])
                 self.mlist = [f,0.0,0.0,0.0,
                               0.0,f,0.0,0.0,
@@ -77,9 +77,9 @@ class mat4:
             elif isinstance(args[0], mat4):
                 self.mlist = copy.copy(args[0].mlist)
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
-                self.mlist=map(lambda x: float(x), s)
+                self.mlist = list(map(lambda x: float(x), s))
             else:
                 self.mlist = mat4(*args[0]).mlist
 
@@ -90,11 +90,11 @@ class mat4:
                           a[1], b[1], c[1], d[1],
                           a[2], b[2], c[2], d[2],
                           a[3], b[3], c[3], d[3]]
-            self.mlist = map(lambda x: float(x), self.mlist)
+            self.mlist = list(map(lambda x: float(x), self.mlist))
 
         # 16 arguments
         elif len(args)==16:
-            self.mlist = map(lambda x: float(x), args)
+            self.mlist = list(map(lambda x: float(x), args))
 
         else:
             raise TypeError("mat4() arg can't be converted to mat4")
@@ -119,7 +119,7 @@ class mat4:
         global _epsilon
         if isinstance(other, mat4):
 #            return self.mlist==other.mlist
-            lst = filter(lambda a: abs(a[0]-a[1])>_epsilon, zip(self.mlist, other.mlist))
+            lst = list(filter(lambda a: abs(a[0]-a[1])>_epsilon, zip(self.mlist, other.mlist)))
             return len(lst)==0
         else:
             return False
@@ -184,7 +184,7 @@ class mat4:
         """
         T = type(other)
         # mat4*scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat4(map(lambda x,other=other: x*other, self.mlist))
         # mat4*vec3
         if isinstance(other, _vec3):
@@ -230,7 +230,7 @@ class mat4:
     def __rmul__(self, other):
         T = type(other)
         # scalar*mat4
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat4(map(lambda x,other=other: other*x, self.mlist))
         # vec4*mat4
         if isinstance(other, _vec4):
@@ -253,7 +253,7 @@ class mat4:
         else:
             raise TypeError("unsupported operand type for *")
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """Division
         
         >>> M=mat4(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
@@ -265,7 +265,7 @@ class mat4:
         """
         T = type(other)
         # mat4/scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat4(map(lambda x,other=other: x/other, self.mlist))
         # unsupported
         else:
@@ -283,7 +283,7 @@ class mat4:
         """
         T = type(other)
         # mat4%scalar
-        if T==types.FloatType or T==types.IntType or T==types.LongType:
+        if T in [float, int]:
             return mat4(map(lambda x,other=other: x%other, self.mlist))
         # mat4%mat4
         if isinstance(other, mat4):
@@ -320,7 +320,7 @@ class mat4:
         return 4
 
     def __getitem__(self, key):
-        if type(key)==types.IntType:
+        if type(key) is int:
             if key<0 or key>3:
                 raise IndexError("index out of range")
             m=self.mlist
@@ -328,7 +328,7 @@ class mat4:
             elif key==1: return _vec4(m[1],m[5],m[9],m[13])
             elif key==2: return _vec4(m[2],m[6],m[10],m[14])
             elif key==3: return _vec4(m[3],m[7],m[11],m[15])
-        elif type(key)==types.TupleType:
+        elif type(key) is tuple:
             i,j=key
             if i<0 or i>3 or j<0 or j>3:
                 raise IndexError("index out of range")
@@ -337,7 +337,7 @@ class mat4:
             raise TypeError("index must be integer or 2-tuple")
 
     def __setitem__(self, key, value):
-        if type(key)==types.IntType:
+        if type(key) is int:
             if key<0 or key>3:
                 raise IndexError("index out of range")
             m=self.mlist
@@ -346,7 +346,7 @@ class mat4:
             elif key==1: m[1],m[5],m[9],m[13]=value
             elif key==2: m[2],m[6],m[10],m[14]=value
             elif key==3: m[3],m[7],m[11],m[15]=value
-        elif type(key)==types.TupleType:
+        elif type(key) is tuple:
             i,j=key
             if i<0 or i>3 or j<0 or j>3:
                 raise IndexError("index out of range")
