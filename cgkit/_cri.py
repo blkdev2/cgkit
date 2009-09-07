@@ -124,7 +124,7 @@ def _createRiTypes(ri):
                      RtVoid = None,
                      RtPointer = c_void_p)
     
-    for name,ctype in baseTypes.iteritems():
+    for name,ctype in baseTypes.items():
         setattr(ri, name, ctype)
         
     ri.RtColor = 3*ri.RtFloat
@@ -291,13 +291,13 @@ def _createRiTokens(ri):
               ]
     
     for tokSpec in tokens:
-        if isinstance(tokSpec, basestring):
+        if type(tokSpec) is str:
             name = tokSpec
             default = None
         else:
             try:
                 name,default = tokSpec
-                if not isinstance(name, basestring):
+                if type(name) is not str:
                     raise ValueError()
             except:
                 raise ValueError("Invalid token spec: %s"%(tokSpec,))
@@ -317,10 +317,20 @@ def _createRiFunctions(ri):
     
     This is a helper function for loadRI().
     """
-    # "Import" the types (so that we can write RtInt instead of ri.RtInt)...
-    for name in dir(ri):
-        if name.startswith("Rt"):
-            exec("%s = ri.%s"%(name, name))
+    RtToken = ri.RtToken
+    RtBoolean = ri.RtBoolean
+    RtInt = ri.RtInt
+    RtFloat = ri.RtFloat
+    RtString = ri.RtString
+    RtMatrix = ri.RtMatrix
+    RtPoint = ri.RtPoint
+    RtColor = ri.RtColor
+    RtBasis = ri.RtBasis
+    RtBound = ri.RtBound
+    RtContextHandle = ri.RtContextHandle
+    RtLightHandle = ri.RtLightHandle
+    RtObjectHandle = ri.RtObjectHandle
+    RtPointer = ri.RtPointer
     
     ri.RiArchiveRecord.argtypes = [RtToken, c_char_p]
     ri.RiAreaLightSource.argtypes = [RtToken]

@@ -49,14 +49,15 @@ Functions:
 - convertdefault()
 """
 
-import os, os.path, sys, string, StringIO, sltokenize, types, math
+import os, os.path, sys, string, io, types, math
+from . import sltokenize
 from . import cgtypes, sl, simplecpp
 from . import _slparser
 from ._slreturntypes import _ShaderInfo, _ShaderParam
 try:
     from . import sloargs
     _has_sloargs = True
-except ImportError, exc:
+except ImportError as exc:
     _has_sloargs = False
     _sloargs_importerror = exc
 
@@ -330,7 +331,7 @@ def slparams(slfile=None, cpp=None, cpperrstream=sys.stderr, slname=None, includ
     # Run the preprocessor on the input file...
     
     slsrc = preprocess(cpp, slfile, cpperrstream=cpperrstream, defines=defines, includedirs=includedirs)
-    f = StringIO.StringIO(slsrc)
+    f = io.StringIO(slsrc)
     
     # ...and filter it, so that only the shader and function
     # definitions remain...
@@ -350,9 +351,9 @@ def slparams(slfile=None, cpp=None, cpperrstream=sys.stderr, slname=None, includ
         lst = getattr(parser, "definitions")()
         # Turn the 3-tuples into _ShaderInfo objects
         return map(lambda tup: _ShaderInfo(*tup), lst)
-    except _slparser.NoMoreTokens, err:
-        raise NoMoreTokens, "No more tokens"
-    except _slparser.SyntaxError, err:
+    except _slparser.NoMoreTokens as err:
+        raise NoMoreTokens("No more tokens")
+    except _slparser.SyntaxError as err:
         scanner = parser._scanner
         input = scanner.input
         cpplineno = scanner.get_line_number()
@@ -428,7 +429,7 @@ def preprocess(cpp, file, cpperrstream=sys.stderr, defines=None, includedirs=Non
             cmdtoks.extend(map(lambda dir: "-I%s"%dir, includedirs))
         cmdtoks.append(file)
         cmd = " ".join(cmdtoks)
-        print cmd
+        print (cmd)
         slsrc = None
         # Check if the file exists and can be accessed (by trying to open it)
         # If the file doesn't exist, an exception is thrown.
@@ -458,7 +459,7 @@ def preprocess(cpp, file, cpperrstream=sys.stderr, defines=None, includedirs=Non
 
 # Setup local namespace for convertdefault()
 _local_namespace = {}
-exec "from cgkit.sl import *" in _local_namespace
+exec ("from cgkit.sl import *", _local_namespace)
    
 def convertdefault(paramtuple):
     """Converts the default value of a shader parameter into a Python type.

@@ -1547,7 +1547,7 @@ def RiIlluminate(light, onoff):
     Example: RiIlluminate(lgt, RI_TRUE)
     """
 
-    if type(light)==str or type(light)==unicode:
+    if type(light) is str:
         _ribout.write('Illuminate "%s" %d\n'%(light, onoff))
     else:
         _ribout.write('Illuminate %d %d\n'%(light, onoff))
@@ -1814,7 +1814,7 @@ def RiObjectInstance(handle):
     Example: RiObjectInstance(obj1)
     """
 
-    if type(handle)==str or type(handle)==unicode:
+    if type(handle) is str:
         _ribout.write('ObjectInstance "%s"\n'%handle)
     else:
         _ribout.write('ObjectInstance %d\n'%handle)
@@ -2285,7 +2285,7 @@ def _paramlist2dict(paramlist, keyparams):
         paramlist = ()
     
     # Add the paramlist tuple to the keyword argument dict
-    for i in range(len(paramlist)/2):
+    for i in range(int(len(paramlist)/2)):
         token = paramlist[i*2]
         value = paramlist[i*2+1]
         keyparams[token]=value
@@ -2330,7 +2330,7 @@ def _merge_paramlist(paramlist, keyparams):
            raise ValueError("The parameter list must contain an even number of values")
 
     # Append the params from the keyparams dict to the parameter list
-    map(lambda param: res.extend(param), keyparams.items())
+    list(map(lambda param: res.extend(param), keyparams.items()))
     return res
     
 

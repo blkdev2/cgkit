@@ -44,7 +44,7 @@
 """High level cri module that can be used pretty much like the cgkit.ri module.
 """
 
-import sys, types, re
+import sys, re
 from . import ri
 from .cgtypes import vec3
 try:
@@ -402,7 +402,7 @@ class _RenderManAPI:
             raise ValueError("The conversion matrices must have the same number of elements.")
         if len(nRGB)%3!=0:
             raise ValueError("Invalid number of elements in the conversion matrices.")
-        n = len(nRGB)/3
+        n = len(nRGB)//3
         self._ri.RiColorSamples(n, nRGB, RGBn)
 
     def RiConcatTransform(self, transform):
@@ -1020,11 +1020,11 @@ class _RenderManAPI:
         """
         params = self._createCParamList(paramlist, keyparams)
         for i in range(0, len(params), 2):
-            if params[i]=="P":
+            if params[i]==b"P":
                 n = len(params[i+1])
                 if n%3!=0:
                     raise ValueError('Invalid number of floats in the "P" parameter.')
-                n /= 3  
+                n //= 3
                 break
         else:
             raise ValueError('Parameter "P" is missing.')
@@ -1082,11 +1082,11 @@ class _RenderManAPI:
         """
         params = self._createCParamList(paramlist, keyparams)
         for i in range(0, len(params), 2):
-            if params[i]=="P":
+            if params[i]==b"P":
                 n = len(params[i+1])
                 if n%3!=0:
                     raise ValueError('Invalid number of floats in the "P" parameter.')
-                n /= 3  
+                n //= 3  
                 break
         else:
             raise ValueError('Parameter "P" is missing.')
@@ -1170,7 +1170,7 @@ class _RenderManAPI:
     
         RiExample: RiReadArchive("teapot.rib")
         """
-        if callable(callback):
+        if hasattr(callback, "__call__"):
             callback = self._ri.RtArchiveCallback(callback)
         self._ri.RiReadArchive(filename, callback, *self._createCParamList(paramlist, keyparams))
 
@@ -1414,7 +1414,7 @@ class _RenderManAPI:
         if res==0:
             return None
         
-        return map(lambda p: vec3(p), points)
+        return list(map(lambda p: vec3(*p), points))
     
     def RiTranslate(self, *translate):
         """Concatenate a translation onto the current transformation.
@@ -1505,7 +1505,7 @@ class _RenderManAPI:
         """Return a list of the individual items in a (possibly nested) sequence.
         """
         res = []
-        ScalarTypes = [types.IntType, types.LongType, types.FloatType, types.StringType, types.UnicodeType]
+        ScalarTypes = [int, float, str]
         for v in seq:
             vtype = type(v)
             # v=scalar?
@@ -1527,6 +1527,7 @@ class _RenderManAPI:
         Combine the keyparams with the paramlist into one paramlist
         and convert sequence values.
         Appends None (RI_NULL) to the parameter list.
+        The tokens are converted to bytes objects.
         """
         # Combine the paramlist and keyparams values...
         res = ri._merge_paramlist(paramlist, keyparams)
@@ -1534,6 +1535,7 @@ class _RenderManAPI:
         # Check if the values need conversion...
         for i in range(0, len(res), 2):
             token = res[i].strip()
+            res[i] = bytes(token, "ascii")
             
             ##### Determine the type of the variable #####
             
@@ -1553,19 +1555,19 @@ class _RenderManAPI:
             else:
                 decl = m.groups()[:3]
                 
-            cls,type,n = decl
+            cls,vtype,n = decl
             
             # The actual size is not checked here, so we only determine
             # the "base" type...
-            if type=="integer":
+            if vtype=="integer":
                 ctype = self._ri.RtInt
-            elif type=="string":
+            elif vtype=="string":
                 ctype = self._ri.RtString
             else:
                 ctype = self._ri.RtFloat 
 
             # Check if the value is a sequence. If not, turn it into a list...
-            if isinstance(res[i+1], basestring):
+            if type(res[i+1]) is str:
                 res[i+1] = [res[i+1]]
             try:
                 n = len(res[i+1])
@@ -1631,7 +1633,7 @@ class _RenderManAPI:
                 }
         
         # Fill the declarations dict...
-        for name,decl in decls.iteritems():
+        for name,decl in decls.items():
             m = self._declRe.match("%s %s"%(decl, name))
             grps = m.groups()
             self._declarations[grps[3]] = grps[:3]

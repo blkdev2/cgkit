@@ -26,12 +26,12 @@ class TestRi(unittest.TestCase):
 
         ritest.main(cgkit.ri, "tmp/riout.rib", archiveName="tmp/include.rib")
         
-        f = file("tmp/riout_norm.rib", "wt")
-        ritest.normalizeRIB(file("tmp/riout.rib", "rt"), f)
+        f = open("tmp/riout_norm.rib", "wt")
+        ritest.normalizeRIB(open("tmp/riout.rib", "rt"), f)
         f.close()
 
-        f = file("tmp/include_norm.rib", "wt")
-        ritest.normalizeRIB(file("tmp/include.rib", "rt"), f)
+        f = open("tmp/include_norm.rib", "wt")
+        ritest.normalizeRIB(open("tmp/include.rib", "rt"), f)
         f.close()
         
         self.assertFiles("tmp/riout_norm.rib", "data/riout_ref.rib")
@@ -39,8 +39,8 @@ class TestRi(unittest.TestCase):
         
     def testCRiModule(self):
         """Check the cri module."""
-        print ("cri test is disabled")
-        return
+#        print ("cri test is disabled")
+#        return
 
         if os.path.exists("tmp/criout.rib"):
             os.remove("tmp/criout.rib")
@@ -57,12 +57,12 @@ class TestRi(unittest.TestCase):
 
         ritest.main(ri, "tmp/criout.rib", archiveName="tmp/cinclude.rib")
         
-        f = file("tmp/criout_norm.rib", "wt")
-        ritest.normalizeRIB(file("tmp/criout.rib", "rt"), f)
+        f = open("tmp/criout_norm.rib", "wt")
+        ritest.normalizeRIB(open("tmp/criout.rib", "rt"), f)
         f.close()
 
-        f = file("tmp/cinclude_norm.rib", "wt")
-        ritest.normalizeRIB(file("tmp/cinclude.rib", "rt"), f)
+        f = open("tmp/cinclude_norm.rib", "wt")
+        ritest.normalizeRIB(open("tmp/cinclude.rib", "rt"), f)
         f.close()
         
         self.assertFiles("tmp/criout_norm.rib", "data/riout_ref.rib")
@@ -70,8 +70,8 @@ class TestRi(unittest.TestCase):
         
         
     def assertFiles(self, fileName, refFileName):
-        lines = file(fileName, "rt").readlines()
-        reflines = file(refFileName, "rt").readlines()
+        lines = open(fileName, "rt").readlines()
+        reflines = open(refFileName, "rt").readlines()
         linenr = 0
         for line,refline in zip(lines, reflines):
             line = line.rstrip()

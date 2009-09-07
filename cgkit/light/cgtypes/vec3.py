@@ -75,7 +75,7 @@ class vec3:
         elif len(args)==1:
             T = type(args[0])
             # scalar
-            if T in [int, float, long]:
+            if T in [int, float]:
                 f = float(args[0])
                 self.x, self.y, self.z = (f, f, f)
             # vec3  
@@ -99,7 +99,7 @@ class vec3:
                 else:
                     raise TypeError("vec3() takes at most 3 arguments")
             # String
-            elif T in [str, unicode]:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
@@ -244,7 +244,7 @@ class vec3:
         
         T = type(other)
         # vec3*scalar
-        if T in [int, float, long]:
+        if T in [int, float]:
             return vec3(self.x*other, self.y*other, self.z*other)
         # vec3*vec3
         if isinstance(other, vec3):
@@ -268,7 +268,7 @@ class vec3:
         """
         T = type(other)
         # vec3/scalar
-        if T in [int, float, long]:
+        if T in [int, float]:
             return vec3(self.x/other, self.y/other, self.z/other)
         # unsupported
         else:
@@ -286,7 +286,7 @@ class vec3:
         """
         T = type(other)
         # vec3%scalar
-        if T in [int, float, long]:
+        if T in [int, float]:
             return vec3(self.x%other, self.y%other, self.z%other)
         # vec3%vec3
         if isinstance(other, vec3):
@@ -370,7 +370,7 @@ class vec3:
         """
         T = type(other)
         # vec3%=scalar
-        if T in [int, float, long]:
+        if T in [int, float]:
             self.x%=other
             self.y%=other
             self.z%=other
@@ -430,7 +430,7 @@ class vec3:
         """
         
         T=type(key)
-        if T not in [int, long]:
+        if T is not int:
             raise TypeError("index must be integer")
 
         if   key==0: return self.x
@@ -449,7 +449,7 @@ class vec3:
         """
         
         T=type(key)
-        if T not in [int, long]:
+        if T is not int:
             raise TypeError("index must be integer")
 
         if   key==0: self.x = value

@@ -520,9 +520,9 @@ if __name__=="__main__":
     opts, args = op.parse_args()
     p = PreProcessor(includedirs=opts.includedir, defines=map(lambda x: (x,None), opts.define))
     if len(args)==0:
-        print p(sys.stdin)
+        print (p(sys.stdin))
     else:
         try:
-            print p(file(args[0]))
-        except IOError, e:
-            print e
+            print (p(file(args[0])))
+        except IOError as e:
+            print (e)
