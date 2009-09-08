@@ -981,7 +981,7 @@ def RiColorSamples(nRGB, RGBn):
         _error(RIE_CONSISTENCY, RIE_ERROR,
                "The number of values in the transformation matrices must be a multiple of 3.")
         
-    _colorsamples = int(len(_flatten(nRGB))/3)
+    _colorsamples = len(_flatten(nRGB))//3
     _ribout.write('ColorSamples '+_seq2list(nRGB)+' '+_seq2list(RGBn)+'\n')
 
 # RiColor
@@ -2285,7 +2285,7 @@ def _paramlist2dict(paramlist, keyparams):
         paramlist = ()
     
     # Add the paramlist tuple to the keyword argument dict
-    for i in range(int(len(paramlist)/2)):
+    for i in range(len(paramlist)//2):
         token = paramlist[i*2]
         value = paramlist[i*2+1]
         keyparams[token]=value
