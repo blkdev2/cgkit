@@ -304,6 +304,8 @@ def _createRiTokens(ri):
             
         try:
             value = c_char_p.in_dll(ri, name).value
+            # Turn into a unicode string
+            value = value.decode("ascii")
         except ValueError:
             value = default
             
