@@ -736,7 +736,7 @@ class Node:
         """
         if not isinstance(node, Node):
             raise ValueError, "Argument 'node' must be a Node instance."
-        if self.out_connections.has_key(localattr):
+        if localattr in self.out_connections:
             self.out_connections[localattr].append((node, nodename, attrname))
         else:
             self.out_connections[localattr] = [(node, nodename, attrname)]
@@ -1459,7 +1459,7 @@ class MAReader:
         n = s.find(";")
         # Was a semicolon before the first string? Then the string belongs
         # to a subsequent command, so ignore it for now
-        if n!=-1 and n<b:
+        if n!=-1 and (b is None or n<b):
             b = e = None
         # No string found?
         if b==None:
