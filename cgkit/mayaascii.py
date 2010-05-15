@@ -60,7 +60,7 @@ def splitDAGPath(path):
     foo|bar  ->  (None, ['foo', 'bar'])
     """
     if not isinstance(path, types.StringTypes):
-        raise ValueError, "string type expected as path argument, got %s"%type(path)
+        raise ValueError("string type expected as path argument, got %s"%type(path))
         
     namespace = None
     n = path.find(":")
@@ -283,11 +283,11 @@ class Attribute:
 
         # No type information given?
         if valtype==None:
-            raise ValueError, "No type information available for attribute '%s'"%self.getBaseName()
+            raise ValueError("No type information available for attribute '%s'"%self.getBaseName())
 
         # Check if the type matches the required type...
         if valtype!=type:
-            raise ValueError, "Attribute of type %s expected, got %s"%(type, valtype)
+            raise ValueError("Attribute of type %s expected, got %s"%(type, valtype))
 
         # Convert the values..
         convertername = "convert"+type[0].upper()+type[1:]
@@ -304,7 +304,7 @@ class Attribute:
         if n==None:
             return vs
         if len(vs)!=n:
-            raise ValueError, "%s: %d values expected, got %d"%(self._attr, n, len(vs))
+            raise ValueError("%s: %d values expected, got %d"%(self._attr, n, len(vs)))
         if n==1:
             return vs[0]
         else:
@@ -390,7 +390,7 @@ class Attribute:
             c = vs[i]
             i+=1
             if c not in ["f", "h", "mf", "mh", "mu", "fc"]:
-                raise ValueError, "Unknown polyFace data: %s"%c
+                raise ValueError("Unknown polyFace data: %s"%c)
             
             if c=="mu":
                 uvset = int(vs[i])
@@ -544,7 +544,7 @@ class MultiAttrStorage:
 
     def __getattr__(self, name):
         if name[:2]=="__":
-            raise AttributeError, name
+            raise AttributeError(name)
         ma = MultiAttrStorage()
         setattr(self, name, ma)
         return ma
@@ -563,7 +563,7 @@ class MultiAttrStorage:
             if key.stop>=al:
                 self._array += (key.stop-al+1)*[None]
             if len(value)!=(key.stop-key.start+1):
-                raise ValueError, "%d values expected, got %d"%(key.stop-key.start+1, len(value))
+                raise ValueError("%d values expected, got %d"%(key.stop-key.start+1, len(value)))
             self._array[key.start:key.stop+1] = value
 #            print key.start,key.stop
         else:
@@ -595,11 +595,11 @@ class Node:
 
         # Do some type checking...
         if not isinstance(nodetype, types.StringTypes):
-            raise ValueError, "Argument 'nodetype' must be a string, got %s."%(type(nodetype))
+            raise ValueError("Argument 'nodetype' must be a string, got %s."%(type(nodetype)))
         if type(opts)!=dict:
-            raise ValueError, "Argument 'opts' must be a dict, got %s."%(type(opts))
+            raise ValueError("Argument 'opts' must be a dict, got %s."%(type(opts)))
         if parent!=None and not isinstance(parent, Node):
-            raise ValueError, "Argument 'parent' must be a Node object or None, got %s."%(type(parent))
+            raise ValueError("Argument 'parent' must be a Node object or None, got %s."%(type(parent)))
 
         # A string containing the node type
         self.nodetype = nodetype
@@ -636,7 +636,7 @@ class Node:
             ma = MultiAttrStorage()
             setattr(self, name, ma)
             return ma
-        raise AttributeError, name
+        raise AttributeError(name)
 
     # getName
     def getName(self):
@@ -735,7 +735,7 @@ class Node:
         the full attribute name.
         """
         if not isinstance(node, Node):
-            raise ValueError, "Argument 'node' must be a Node instance."
+            raise ValueError("Argument 'node' must be a Node instance.")
         if localattr in self.out_connections:
             self.out_connections[localattr].append((node, nodename, attrname))
         else:
@@ -1386,7 +1386,7 @@ class MAReader:
                 optname = name_dict.get(a[1:], a[1:])
                 # Check if the option is known
                 if optname not in opt_def:
-                    raise SyntaxError, "Unknown option in line %d: %s"%(self.cmd_start_linenr, optname)
+                    raise SyntaxError("Unknown option in line %d: %s"%(self.cmd_start_linenr, optname))
                 # Get the number of arguments
                 numargs, filter = opt_def[optname]
                 optvals = [stripQuotes(x) for x in arglist[i:i+numargs]]
@@ -1555,12 +1555,12 @@ class DefaultMAReader(MAReader):
         objects = map(lambda x: stripQuotes(x), objects)
         
         if opts!={"noExpand":[]}:
-            raise ValueError, "%s, %d: The select command contains unsupported options."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains unsupported options."%(self.filename, self.linenr))
 
         if len(objects)==0:
-            raise ValueError, "%s, %d: The select command contains no object name."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains no object name."%(self.filename, self.linenr))
         if len(objects)!=1:
-            raise ValueError, "%s, %d: The select command contains more than one object."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains more than one object."%(self.filename, self.linenr))
 
         self.currentnode = self.findNode(objects[0], create=True)
 
@@ -1650,7 +1650,7 @@ class DefaultMAReader(MAReader):
                         if create:
                             node = self.createNode("<unknown>", {"name":[name]})
                         else:
-                            raise KeyError, "Node %s not found (%s is missing)"%(path, name)
+                            raise KeyError("Node %s not found (%s is missing)"%(path, name))
                 else:
                     for cn in node.iterChildren():
                         if name==cn.getName():
@@ -1660,7 +1660,7 @@ class DefaultMAReader(MAReader):
                         if create:
                             node = self.createNode("<unknown>", {"name":[name], "parent":[node.getFullName()]})
                         else:
-                            raise KeyError, "Node %s not found (%s is missing)"%(path, name)
+                            raise KeyError("Node %s not found (%s is missing)"%(path, name))
         return node
 
     # createNode

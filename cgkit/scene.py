@@ -82,7 +82,7 @@ class Scene(object):
         return iter(self.items)
 
     def hasGlobal(self, name):
-        return self._globals.has_key(name)
+        return name in self._globals
             
     def getGlobal(self, name, default=None):
         return self._globals.get(name, default)
@@ -240,7 +240,7 @@ class Scene(object):
         """
         h = h.lower()
         if h!="l" and h!="r":
-            raise ValueError, "Handedness must be either 'l' or 'r'."
+            raise ValueError("Handedness must be either 'l' or 'r'.")
         self._handedness = h
 
     handedness = property(_getHandedness, _setHandedness, None, "Handedness")

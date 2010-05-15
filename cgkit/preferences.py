@@ -148,13 +148,13 @@ def configPath(appname="gaia"):
     
     # Windows? (XP)
     if sys.platform=="win32":
-        if os.environ.has_key("APPDATA"):
+        if "APPDATA" in os.environ:
             return os.path.abspath(os.path.join(os.environ["APPDATA"], appname.capitalize()))
         else:
             return None
     # Other
     else:
-        if os.environ.has_key("HOME"):
+        if "HOME" in os.environ:
             return os.path.abspath(os.environ["HOME"])
         else:
             return None
@@ -164,7 +164,7 @@ def configPath(appname="gaia"):
 
 if __name__=="__main__":
 
-    print configPath()
+    print(configPath())
             
             
 
