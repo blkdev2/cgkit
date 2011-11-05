@@ -37,13 +37,13 @@
 """This module contains various noise functions.
 """
 
-from _core import noise, snoise, cellnoise, scellnoise, fBm, turbulence
-from _core import pnoise as _pnoise
-from _core import spnoise as _spnoise
-from _core import vnoise, vsnoise, vcellnoise, vscellnoise, vfBm, vturbulence
-from _core import vpnoise as _vpnoise
-from _core import vspnoise as _vspnoise
-from cgtypes import vec3
+from ._core import noise, snoise, cellnoise, scellnoise, fBm, turbulence
+from ._core import pnoise as _pnoise
+from ._core import spnoise as _spnoise
+from ._core import vnoise, vsnoise, vcellnoise, vscellnoise, vfBm, vturbulence
+from ._core import vpnoise as _vpnoise
+from ._core import vspnoise as _vspnoise
+from .cgtypes import vec3
 
 # pnoise
 def pnoise(*args):

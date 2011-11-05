@@ -55,9 +55,8 @@ Functions:
 - setEpsilon(): Set a new threshold used for float comparisons
 """
 
-import types
-import _core
-from _core import slerp, squad
+from . import _core
+from ._core import slerp, squad
 
 # vec3
 class vec3(_core.vec3):
@@ -72,13 +71,13 @@ class vec3(_core.vec3):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.vec3.__init__(self, float(args[0]))
             # vec3  
             elif isinstance(args[0], vec3) or isinstance(args[0], _core.vec3):
                 _core.vec3.__init__(self, *args)
             # Tuple/List
-#            elif T==types.TupleType or T==types.ListType:
+#            elif T in [tuple, list]:
 #                _core.vec3.__init__(self, *args[0])
 #                if len(args[0])==0:
 #                    self.x = self.y = self.z = 0.0
@@ -92,11 +91,11 @@ class vec3(_core.vec3):
 #                else:
 #                    raise TypeError("vec3() takes at most 3 arguments")
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.vec3.__init__(self, *f)
             # error
             else:
@@ -124,17 +123,17 @@ class vec4(_core.vec4):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.vec4.__init__(self, float(args[0]))
             # vec4
             elif isinstance(args[0], vec4) or isinstance(args[0], _core.vec4):
                 _core.vec4.__init__(self, *args)
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.vec4.__init__(self, *f)
             # error
             else:
@@ -162,20 +161,20 @@ class mat3(_core.mat3):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.mat3.__init__(self, float(args[0]))
             # mat3
             elif isinstance(args[0], mat3) or isinstance(args[0], _core.mat3):
                 _core.mat3.__init__(self, *args)
             # Tuple/List
-            elif T==types.TupleType or T==types.ListType:
+            elif T in [tuple, list]:
                 _core.mat3.__init__(self, mat3(*args[0]))
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.mat3.__init__(self, *f)
             # error
             else:
@@ -198,9 +197,9 @@ class mat3(_core.mat3):
     def __getitem__(self, key):
         
         T = type(key)
-        if T==int or T==long:
+        if T is int:
             return _core.mat3.__getitem__(self, key)
-        elif T==tuple:
+        elif T is tuple:
             if len(key)!=2:
                 raise ValueError("index tuple must be a 2-tuple")
             i,j = key
@@ -223,20 +222,20 @@ class mat4(_core.mat4):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.mat4.__init__(self, float(args[0]))
             # mat4
             elif isinstance(args[0], mat4) or isinstance(args[0], _core.mat4):
                 _core.mat4.__init__(self, *args)
             # Tuple/List
-            elif T==types.TupleType or T==types.ListType:
+            elif T in [tuple, list]:
                 _core.mat4.__init__(self, mat4(*args[0]))
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.mat4.__init__(self, mat4(*f))
             # error
             else:
@@ -265,9 +264,9 @@ class mat4(_core.mat4):
     def __getitem__(self, key):
         
         T = type(key)
-        if T==int or T==long:
+        if T is int:
             return _core.mat4.__getitem__(self, key)
-        elif T==tuple:
+        elif T is tuple:
             if len(key)!=2:
                 raise ValueError("index tuple must be a 2-tuple")
             i,j = key
@@ -290,7 +289,7 @@ class quat(_core.quat):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.quat.__init__(self, float(args[0]))
             # quat
             elif isinstance(args[0], quat) or isinstance(args[0], _core.quat):
@@ -300,11 +299,11 @@ class quat(_core.quat):
                 _core.quat.__init__(self)
                 self.fromMat(args[0])
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.quat.__init__(self, *f)
             # error
             else:
