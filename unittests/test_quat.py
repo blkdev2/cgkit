@@ -7,6 +7,9 @@ import math, os, pickle
 
 class TestQuat(unittest.TestCase):
 
+    def setUp(self):
+        setEpsilon(0.000001)
+
     def testConstructor(self):
         q = quat(1.5,-2,3,2)
         self.failUnless(q.w==1.5 and q.x==-2.0 and q.y==3 and q.z==2,
@@ -243,6 +246,99 @@ class TestQuat(unittest.TestCase):
         self.failUnless(m==n, "fromMat/toMat invalid")
 
     ######################################################################
+    def testFromMat(self):
+        q = quat().fromMat(mat3(0,-1,0,0,0,1,-1,0,0))
+        self.assertEqual(quat(0.5,-0.5,0.5,0.5), q)
+
+        q = quat().fromMat(mat3(-1,0,0,0,0,1,0,1,0))
+        self.assertEqual(quat(0,0,1,1).normalize(), q)
+
+        q = quat().fromMat(mat3(1,0,0,0,0,1,0,-1,0))
+        self.assertEqual(quat(1,-1,0,0).normalize(), q)
+
+        q = quat().fromMat(mat3(0,1,0,0,0,1,1,0,0))
+        self.assertEqual(quat(0.5,-0.5,-0.5,-0.5), q)
+
+        q = quat().fromMat(mat3(0,1,0,1,0,0,0,0,-1))
+        self.assertEqual(quat(0,1,1,0).normalize(), q)
+
+        q = quat().fromMat(mat3(0,-1,0, -1,0,0, 0,0,-1))
+        self.assertEqual(quat(0,1,-1,0).normalize(), q)
+
+        q = quat().fromMat(mat3(-1,0,0,0,1,0,0,0,-1))
+        self.assertEqual(quat(0,0,1,0), q)
+
+        q = quat().fromMat(mat3(1,0,0,0,-1,0,0,0,-1))
+        self.assertEqual(quat(0,1,0,0), q)
+
+        q = quat().fromMat(mat3(0,1,0,0,0,-1,-1,0,0))
+        self.assertEqual(quat(0.5,0.5,0.5,-0.5), q)
+
+        q = quat().fromMat(mat3(-1,0,0, 0,0,-1, 0,-1,0))
+        self.assertEqual(quat(0,0,1,-1).normalize(), q)
+
+        q = quat().fromMat(mat3(1,0,0,0,0,-1,0,1,0))
+        self.assertEqual(quat(1,1,0,0).normalize(), q)
+
+        q = quat().fromMat(mat3(0,-1,0,0,0,-1,1,0,0))
+        self.assertEqual(quat(0.5,0.5,-0.5,0.5), q)
+
+        q = quat().fromMat(mat3(0,0,-1,1,0,0,0,-1,0))
+        self.assertEqual(quat(0.5,-0.5,-0.5,0.5), q)
+
+        q = quat().fromMat(mat3(0,0,-1, 0,-1,0, -1,0,0))
+        self.assertEqual(quat(0,1,0,-1).normalize(), q)
+
+        q = quat().fromMat(mat3(0,0,-1,-1,0,0,0,1,0))
+        self.assertEqual(quat(0.5,0.5,-0.5,-0.5), q)
+
+        q = quat().fromMat(mat3(0,0,-1,0,1,0,1,0,0))
+        self.assertEqual(quat(1,0,-1,0).normalize(), q)
+
+        q = quat().fromMat(mat3(0,0,1,1,0,0,0,1,0))
+        self.assertEqual(quat(0.5,0.5,0.5,0.5), q)
+
+        q = quat().fromMat(mat3(0,0,1,0,1,0,-1,0,0))
+        self.assertEqual(quat(1,0,1,0).normalize(), q)
+
+        q = quat().fromMat(mat3(0,0,1,-1,0,0,0,-1,0))
+        self.assertEqual(quat(0.5,-0.5,0.5,-0.5), q)
+
+        q = quat().fromMat(mat3(0,0,1,0,-1,0,1,0,0))
+        self.assertEqual(quat(0,1,0,1).normalize(), q)
+
+        q = quat().fromMat(mat3(0,-1,0,1,0,0,0,0,1))
+        self.assertEqual(quat(1,0,0,1).normalize(), q)
+
+        q = quat().fromMat(mat3(0,1,0,-1,0,0,0,0,1))
+        self.assertEqual(quat(1,0,0,-1).normalize(), q)
+
+        q = quat().fromMat(mat3(-1,0,0,0,-1,0,0,0,1))
+        self.assertEqual(quat(0,0,0,1), q)
+
+        q = quat().fromMat(mat3(1,0,0,0,1,0,0,0,1))
+        self.assertEqual(quat(1,0,0,0), q)
+
+    ######################################################################
+    def testToMat3(self):
+        
+        values = [quat(1,0,0,0),        # identity
+                  quat(0,1,0,0),        # 180deg rotation around X
+                  quat(0,0,1,0),        # 180deg rotation around Y
+                  quat(0,0,0,1),        # 180deg rotation around Z
+                  quat(0.3*math.pi, (2,-1,1)),
+                  quat(-0.3*math.pi, (1,2,3)),
+                  quat(-0.5*math.pi, (-1,0,1))
+                  ]
+        
+        for q in values:
+            qm = q.toMat3()
+            qn = q.normalize()
+            self.assertEqual(qn.rotateVec((1,0,0)), qm*vec3(1,0,0))
+            self.assertEqual(qn.rotateVec((0,1,0)), qm*vec3(0,1,0))
+            self.assertEqual(qn.rotateVec((0,0,1)), qm*vec3(0,0,1))
+        
+    ######################################################################
     def testDot(self):
         a = quat(1,-2,3,2)
         b = quat(3,0.5,-2,1)
@@ -261,6 +357,27 @@ class TestQuat(unittest.TestCase):
 
         c = quat(-0.37269829371452667, -0.4025936484158687, 0.8246578256709034, 0.13767282475934825)
         self.assertEqual(slerp(0.5,a,b,shortest=False), c)
+
+    ######################################################################
+    def testSlerpAcos(self):
+        """Check numerical robustness of the slerp() function.
+        
+        This is the example from bug #3377718. Strictly speaking, it's not
+        valid because the input quats are not normalized (they are close though).
+        Due to numerical inaccuracies a situation like this could arise though
+        which is why the example is still ok to test the numerical robustness
+        of slerp(). The problem was that the acos() inside slerp() could
+        be called with a value that's slightly larger than 1 in which case
+        it would produce NaNs.
+        """
+
+        weight = 0.14285714285714285
+        a = quat(1, -6.93889e-018, -8.67362e-019, -5e-007)
+        b = quat(1, 2.08167e-017, -3.98986e-017, -5e-007)
+ 
+        c = slerp(weight, a, b)
+        
+        self.assertEqual(quat(1, -6.93889e-18, -8.67362e-19, -5e-07), c)
 
     ######################################################################
     def testSquad(self):

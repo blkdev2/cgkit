@@ -16,6 +16,12 @@ New features:
 
 Bug fixes/enhancements:
 
+- mayaascii: Added support for the "relationship" MEL command that can appear
+  in .ma files.
+- cgtypes: Bugfix: slerp() could produce NaNs when the magnitude of the input
+  quats were slightly larger than 1 (bug #3377718).
+- cgtypes: In the light version of cgkit, the quat.fromMat() method was
+  broken. The regular version was not affected by this.
 - ODEDynamics: Objects can now be removed from the simulation. An object that
   is part of a simulation automatically receives a new attribute "manip" which
   is its body manipulator. The manipulator has a new attribute "odegeoms" to
