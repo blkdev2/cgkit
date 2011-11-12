@@ -29,19 +29,19 @@ class blender(cgkit.jobqueue.JobProc):
         label: The GUI label string
         """
         # Check the parameter types...
-        if not isinstance(blendFile, basestring):
+        if not isinstance(blendFile, str):
             raise TypeError("blendFile argument must be a string, got a %s instead"%getattr(type(blendFile), "__name__", "?"))
-        if not (output is None or isinstance(output, basestring)):
+        if not (output is None or isinstance(output, str)):
             raise TypeError("output argument must be a string or None, got a %s instead"%getattr(type(output), "__name__", "?"))
-        if not (format is None or isinstance(format, basestring)):
+        if not (format is None or isinstance(format, str)):
             raise TypeError("format argument must be a string or None, got a %s instead"%getattr(type(format), "__name__", "?"))
         if not (addExtension is None or type(addExtension) is bool):
             raise TypeError("format argument must be a string or None, got a %s instead"%getattr(type(addExtension), "__name__", "?"))
-        if not (sceneName is None or isinstance(sceneName, basestring)):
+        if not (sceneName is None or isinstance(sceneName, str)):
             raise TypeError("sceneName argument must be a string or None, got a %s instead"%getattr(type(sceneName), "__name__", "?"))
         if not (threads is None or type(threads) is int):
             raise TypeError("threads argument must be an int or None, got a %s instead"%getattr(type(threads), "__name__", "?"))
-        if not isinstance(blenderCmd, basestring):
+        if not isinstance(blenderCmd, str):
             raise TypeError("blenderCmd argument must be a string, got a %s instead"%getattr(type(blenderCmd), "__name__", "?"))
         if frames is None:
             startFrame = None
@@ -87,10 +87,10 @@ class blender(cgkit.jobqueue.JobProc):
         """Run Blender.
         """
         cmd = self.createCommandLine()
-        print >>self.stdout, cmd
+        print(cmd, file=self.stdout)
         ret = self.execCmd(cmd)
         if ret!=0:
-            print >>self.stderr, "\nReturn code:",ret
+            print("\nReturn code:",ret, file=self.stderr)
             self._hasError = True
             self._errorLine = "Return code: %s"%ret
         
@@ -106,8 +106,8 @@ class blender(cgkit.jobqueue.JobProc):
         """
         self.setStatusLine(line.strip())
         if line.startswith("ERROR:") and not self._hasError:
-            print >>self.stderr, "stdout, line %s:\n%s"%(lineNr+1, line)
-            print >>self.stderr, "(see stdout for more details)"
+            print("stdout, line %s:\n%s"%(lineNr+1, line), file=self.stderr)
+            print("(see stdout for more details)", file=self.stderr)
             self._hasError = True
             self._errorLine = line
         elif line.startswith("Fra:"):

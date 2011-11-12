@@ -519,7 +519,7 @@ def setcomp(c, index, value):
 
 def concat(*args):
     """Returns a concatenated string."""
-    return string.join(args,"")
+    return "".join(args)
     
 def match(pattern, subject):
     """String pattern matching."""

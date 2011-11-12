@@ -124,8 +124,8 @@ class PreProcessor:
         
         self.errstream = errstream
         
-        if isinstance(source, types.StringTypes):
-            fhandle = file(source, "rt")
+        if isinstance(source, str):
+            fhandle = open(source, "rt")
         else:
             fhandle = source
 
@@ -233,7 +233,7 @@ class PreProcessor:
         fullfilename = self.findFile(filename)
         if fullfilename==None:
             ctx = self.context
-            print >>self.errstream, "%s:%d: %s: No such file or directory"%(ctx.filename, ctx.linenr, filename)
+            print("%s:%d: %s: No such file or directory"%(ctx.filename, ctx.linenr, filename), file=self.errstream)
             return
 
         f = file(fullfilename, "rt")
@@ -246,7 +246,7 @@ class PreProcessor:
         a = arg.split()
         if len(a)==0:
             ctx = self.context
-            print >>self.errstream, "%s:%d: Invalid macro definition"%(ctx.filename, ctx.linenr)
+            print("%s:%d: Invalid macro definition"%(ctx.filename, ctx.linenr), file=self.errstream)
             return
         name = a[0]
         value = " ".join(a[1:])
@@ -259,7 +259,7 @@ class PreProcessor:
         """
         if arg=="":
             ctx = self.context
-            print >>self.errstream, "%s:%d: Invalid macro name"%(ctx.filename, ctx.linenr)
+            print("%s:%d: Invalid macro name"%(ctx.filename, ctx.linenr), file=self.errstream)
             return
         if arg not in self.defined:
             return
@@ -288,7 +288,7 @@ class PreProcessor:
         a = arg.split()
         if len(a)==0:
             ctx = self.context
-            print >>self.errstream, "%s:%d: '#ifdef' with no argument"%(ctx.filename, ctx.linenr)
+            print("%s:%d: '#ifdef' with no argument"%(ctx.filename, ctx.linenr), file=self.errstream)
             return
 
         name = a[0]
@@ -302,7 +302,7 @@ class PreProcessor:
         a = arg.split()
         if len(a)==0:
             ctx = self.context
-            print >>self.errstream, "%s:%d: '#ifndef' with no argument"%(ctx.filename, ctx.linenr)
+            print("%s:%d: '#ifndef' with no argument"%(ctx.filename, ctx.linenr), file=self.errstream)
             return
         
         name = a[0]
@@ -328,7 +328,7 @@ class PreProcessor:
         """Handle #endif directives.
         """
         if len(self.context.condition_list)==0:
-            print >>self.errstream, "%s:%d: unbalanced '#endif'"%(self.context.filename, self.context.linenr)
+            print("%s:%d: unbalanced '#endif'"%(self.context.filename, self.context.linenr), file=self.errstream)
             return
         
         self.context.condition_list.pop()
@@ -518,7 +518,7 @@ if __name__=="__main__":
                  help="Specify include paths")    
     
     opts, args = op.parse_args()
-    p = PreProcessor(includedirs=opts.includedir, defines=map(lambda x: (x,None), opts.define))
+    p = PreProcessor(includedirs=opts.includedir, defines=[(x,None) for x in opts.define])
     if len(args)==0:
         print (p(sys.stdin))
     else:

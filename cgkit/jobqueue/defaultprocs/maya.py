@@ -16,15 +16,15 @@ class maya(cgkit.jobqueue.JobProc):
         label: The GUI label string
         """
         # Check the parameter types...
-        if not isinstance(sceneFile, basestring):
+        if not isinstance(sceneFile, str):
             raise TypeError("sceneFile argument must be a string, got a %s instead"%getattr(type(sceneFile), "__name__", "?"))
-        if not (project is None or isinstance(project, basestring)):
+        if not (project is None or isinstance(project, str)):
             raise TypeError("project argument must be a string or None, got a %s instead"%getattr(type(project), "__name__", "?"))
         if not (startFrame is None or type(startFrame) in [int, float]):
             raise TypeError("startFrame must be a number type or None, got a %s instead"%getattr(type(startFrame), "__name__", "?"))
         if not (endFrame is None or type(endFrame) in [int, float]):
             raise TypeError("endFrame must be a number type or None, got a %s instead"%getattr(type(endFrame), "__name__", "?"))
-        if not isinstance(renderCmd, basestring):
+        if not isinstance(renderCmd, str):
             raise TypeError("renderCmd argument must be a string, got a %s instead"%getattr(type(renderCmd), "__name__", "?"))
 
         # Set the default label if no label was given
@@ -48,10 +48,10 @@ class maya(cgkit.jobqueue.JobProc):
     def run(self):
         """Run the Render tool.
         """
-        print >>self.stdout, self._cmdLine
+        print(self._cmdLine, file=self.stdout)
         ret = self.execCmd(self._cmdLine)
         if ret!=0:
-            print >>self.stderr, "\nReturn code:",ret
+            print("\nReturn code:",ret, file=self.stderr)
             self.setError()
         else:
             self.setStatusLine("Done")

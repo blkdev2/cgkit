@@ -36,9 +36,9 @@
 import sys, os, os.path, glob, inspect, socket
 import random, traceback, shutil
 import xml.dom.minidom
-import ConfigParser as configparser
-from jobproc import JobProc
-from jobhandle import JobHandle
+import configparser
+from .jobproc import JobProc
+from .jobhandle import JobHandle
 
 class JobQueueError(Exception):
     pass
@@ -155,7 +155,7 @@ class Job(object):
         """
         if not isinstance(jobRoot, JobRoot):
             raise TypeError("jobRoot must be a JobRoot object")
-        if not isinstance(jobType, basestring):
+        if not isinstance(jobType, str):
             raise TypeError("Job type must be a string")
 
         # The root of the job
@@ -275,7 +275,7 @@ class Job(object):
         paramEl.appendChild(paramDictEl)
         
         # Write the XML file
-        f = open(fileName, "wb")
+        f = open(fileName, "wt")
         jobProc.writexml(f, addindent="  ", newl="\n")
         f.close()
         
@@ -526,7 +526,7 @@ class JobQueue:
         an object with the same interface) which will receive log message.
         """
         # Verify the input types
-        if location is not None and not isinstance(location, basestring):
+        if location is not None and not isinstance(location, str):
             raise TypeError("Job location must be a string or None.")
         
         # Make the directory path absolute
@@ -567,7 +567,7 @@ class JobQueue:
             for pyName in pyNames:
                 modName = os.path.splitext(os.path.basename(pyName))[0]
                 ns = {}
-                exec "import %s"%modName in ns
+                exec("import %s"%modName, ns)
                 if hasattr(ns[modName], modName):
                     cls = getattr(ns[modName], modName)
                     if inspect.isclass(cls) and cls!=JobProc and issubclass(cls, JobProc):
@@ -598,7 +598,7 @@ class JobQueue:
         jobDirPattern = os.path.join(self._location, "job*")
         jobDirs = glob.glob(jobDirPattern)
         #jobDirs = filter(lambda p: os.path.isdir(p), jobDirs)
-        jobs = map(lambda jobDir: (jobDir, int(os.path.basename(jobDir)[3:])), jobDirs)
+        jobs = [(jobDir, int(os.path.basename(jobDir)[3:])) for jobDir in jobDirs]
         jobs.sort(key=lambda a: a[1])
         return [JobHandle(jobDir, jobDir) for jobDir,nr in jobs]
     
@@ -695,7 +695,7 @@ class JobQueue:
         object that is the "deepest" job that is in waiting state.
         """
         # Ignore any job that is not currently waiting
-        jobs = filter(lambda job: job.isWaiting(), jobs)
+        jobs = [job for job in jobs if job.isWaiting()]
         
         # Search for the first waiting sub-job...
         for job in jobs:
@@ -781,7 +781,7 @@ class JobQueue:
         # Mark the job as being finished
         self._logger.debug("Creating finished directory %s"%job.finishedDir)
         try:
-            os.mkdir(job.finishedDir, 0777)
+            os.mkdir(job.finishedDir, 0o777)
         except:
             self._logger.warn("Failed to create directory %s: "%(job.finishedDir, sys.exc_info()[1]))
             
@@ -802,8 +802,8 @@ class JobQueue:
         # the job procedure
         self._logger.debug("Creating %s"%runningDir)
         try:
-            os.mkdir(runningDir, 0777)
-        except OSError, exc:
+            os.mkdir(runningDir, 0o777)
+        except OSError as exc:
             self._logger.debug("Failed to create directory: %s"%exc)
             return False
         
@@ -813,7 +813,7 @@ class JobQueue:
             pid = os.getpid()
             f = open(pidFile, "wt")
             try:
-                print >>f, pid
+                print(pid, file=f)
             finally:
                 f.close()
     
@@ -821,7 +821,7 @@ class JobQueue:
             host = socket.gethostname()
             f = open(hostFile, "wt")
             try:
-                print >>f, host
+                print(host, file=f)
             finally:
                 f.close()
         except:
@@ -993,12 +993,12 @@ def createJobQueue(location, keepJobsInRepository=False, useSymLinks=False):
     using the :class:`JobQueue` class.
     """
     # Check the type of location
-    if not isinstance(location, basestring):
+    if not isinstance(location, str):
         raise TypeError("Job location must be a string.")
     
     # If the directory exists, check that it is empty, otherwise create it.
     if os.path.exists(location):
-        dp,dirNames,fileNames = os.walk(location).next()
+        dp,dirNames,fileNames = next(os.walk(location))
         if dirNames!=[] or fileNames!=[]:
             raise ValueError("Cannot create a new job queue in '%s'. The directory is not empty."%location)
     else:
@@ -1007,7 +1007,7 @@ def createJobQueue(location, keepJobsInRepository=False, useSymLinks=False):
     
     # Create the procs directory (only writable for the current user)
     procPath = os.path.join(location, "procs")
-    os.mkdir(procPath, 0755)
+    os.mkdir(procPath, 0o755)
     
     # Copy the default procedure scripts into the procs directory.
     # The permissions of the scripts are set to -r--r--r-- (to prevent
@@ -1020,7 +1020,7 @@ def createJobQueue(location, keepJobsInRepository=False, useSymLinks=False):
             continue
         dst = os.path.join(procPath, os.path.basename(proc))
         shutil.copy(proc, dst)
-        os.chmod(dst, 0444)
+        os.chmod(dst, 0o444)
         
     # Create the config file
     configPath = os.path.join(location, "queue.cfg")

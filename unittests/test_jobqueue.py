@@ -16,7 +16,7 @@ class TestJobQueue(unittest.TestCase):
         j1.addDependency(shad)
         j2.addDependency(shad)
         jr.activate()
-        print jr._location
+        print(jr._location)
     
     def testDependencySimplification(self):
         """Check that redundant dependencies are removed.
