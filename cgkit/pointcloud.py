@@ -36,6 +36,7 @@
 
 import os.path
 import ctypes
+import functools
 from . import cgtypes
 from . import rmanlibutil
 from . import _pointcloud
@@ -68,11 +69,11 @@ def _arrayPointer(a, n):
         data = a.__array_interface__.get("data", None)
         if strides is not None:
             raise TypeError("Unsupported array type (strides are not supported)")
-        if not (isinstance(typestr, basestring) and len(typestr)==3 and typestr[1:3]=="f4"):
+        if not (isinstance(typestr, str) and len(typestr)==3 and typestr[1:3]=="f4"):
             raise TypeError("Unsupported array type (the array must contain 4-byte floats)")
         if type(shape) is not tuple:
             raise TypeError("Unsupported array type (unexpected shape value)")
-        numFloats = reduce(lambda x,y: x*y, shape)
+        numFloats = functools.reduce(lambda x,y: x*y, shape)
         if numFloats<n:
             raise TypeError("Array is not large enough")
         if type(data) is not tuple or len(data)!=2:
@@ -84,7 +85,7 @@ def _arrayPointer(a, n):
         return data[0]
     # Unknown array
     else:
-        raise TypeError, "Unknown array type"
+        raise TypeError("Unknown array type")
 
 
 class PtcReader(object):
@@ -141,8 +142,8 @@ class PtcReader(object):
         idx = 0
         vars = []
         for i in range(nvars.value):
-            name = names[i]
-            type = types[i]
+            name = names[i].decode("ascii")
+            type = types[i].decode("ascii")
             vars.append((type, name))
             if type=="float":
                 code += "dataDict['%s'] = data[%s]\n"%(name,idx)
@@ -248,7 +249,7 @@ class PtcReader(object):
         
         Yields tuples (name,value).
         """
-        return self._ptcAttrs.iteritems()
+        return self._ptcAttrs.items()
     
     def close(self):
         """Close the point cloud file.
@@ -281,7 +282,7 @@ class PtcReader(object):
         else:
             dataDict = {}
             data = self._data
-            exec self._dataCollectionCode
+            exec(self._dataCollectionCode)
             return tuple(self._pos), tuple(self._normal), self._radius.value, dataDict
 
     def readDataPoints(self, numPoints, buffer):
@@ -528,7 +529,7 @@ class PtcWriter:
         p = (3*ctypes.c_float)(*tuple(point))
         n = (3*ctypes.c_float)(*tuple(normal))
         cdata = (self.datasize*ctypes.c_float)()
-        exec self._dataInitCode
+        exec(self._dataInitCode)
         res = self._PtcWriteDataPoint(self._handle, p, n, radius, cdata)
         if res==0:
             raise IOError("Failed to write point cloud data point")
@@ -634,7 +635,7 @@ if __name__=="__main__":
     import random
     
     if 1:
-        print "---WRITE---"
+        print("---WRITE---")
         ptc = open("test.ptc", "w", "3delight", vars=[("float", "spam"), ("vector", "dir")], world2eye=None, world2ndc=None, format=(320,240,1.333))
         for i in range(100):
             x = random.random()
@@ -643,15 +644,15 @@ if __name__=="__main__":
             ptc.writeDataPoint((x,y,z), (0,1,0), 0.2, {"spam":0.5})
         ptc.close()
     
-    print "----READ----"
+    print("----READ----")
     rd = open("test.ptc", "r", "3delight")
-    print rd.variables
-    print "npoints:",rd.npoints
-    print "datasize",rd.datasize
-    print "bbox",rd.bbox
-    print "format",rd.format
-    print "world2eye",rd.world2eye
-    print "world2ndc",rd.world2ndc
+    print(rd.variables)
+    print("npoints:",rd.npoints)
+    print("datasize",rd.datasize)
+    print("bbox",rd.bbox)
+    print("format",rd.format)
+    print("world2eye",rd.world2eye)
+    print("world2ndc",rd.world2ndc)
     p,n,r,data = rd.readDataPoint()
-    print p,n,r,data
-    print rd.readDataPoint()
+    print(p,n,r,data)
+    print(rd.readDataPoint())

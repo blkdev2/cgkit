@@ -37,13 +37,13 @@
 """This module contains various noise functions.
 """
 
-from _core import noise, snoise, cellnoise, scellnoise, fBm, turbulence
-from _core import pnoise as _pnoise
-from _core import spnoise as _spnoise
-from _core import vnoise, vsnoise, vcellnoise, vscellnoise, vfBm, vturbulence
-from _core import vpnoise as _vpnoise
-from _core import vspnoise as _vspnoise
-from cgtypes import vec3
+from ._core import noise, snoise, cellnoise, scellnoise, fBm, turbulence
+from ._core import pnoise as _pnoise
+from ._core import spnoise as _spnoise
+from ._core import vnoise, vsnoise, vcellnoise, vscellnoise, vfBm, vturbulence
+from ._core import vpnoise as _vpnoise
+from ._core import vspnoise as _vspnoise
+from .cgtypes import vec3
 
 # pnoise
 def pnoise(*args):
@@ -78,7 +78,7 @@ def pnoise(*args):
             px,py,pz,pt = pv
             return _pnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
         
     elif n==4:
         v,t,pv,pt = args
@@ -97,10 +97,10 @@ def pnoise(*args):
             px,py,pz = pv
             return _pnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
     
     else:
-        raise TypeError, "only 2 or 4 arguments allowed"
+        raise TypeError("only 2 or 4 arguments allowed")
 
 
 # spnoise
@@ -134,7 +134,7 @@ def spnoise(*args):
             px,py,pz,pt = pv
             return _spnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
         
     elif n==4:
         v,t,pv,pt = args
@@ -153,10 +153,10 @@ def spnoise(*args):
             px,py,pz = pv
             return _spnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
     
     else:
-        raise TypeError, "only 2 or 4 arguments allowed"
+        raise TypeError("only 2 or 4 arguments allowed")
 
 
 # vpnoise
@@ -193,7 +193,7 @@ def vpnoise(*args):
             px,py,pz,pt = pv
             return _vpnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
         
     elif n==4:
         v,t,pv,pt = args
@@ -213,10 +213,10 @@ def vpnoise(*args):
             res = _vpnoise(x,y,z,t,px,py,pz,pt)
             return vec3(res.x, res.y, res.z)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
     
     else:
-        raise TypeError, "only 2 or 4 arguments allowed"
+        raise TypeError("only 2 or 4 arguments allowed")
 
 
 # vspnoise
@@ -253,7 +253,7 @@ def vspnoise(*args):
             px,py,pz,pt = pv
             return _vspnoise(x,y,z,t,px,py,pz,pt)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
         
     elif n==4:
         v,t,pv,pt = args
@@ -273,9 +273,9 @@ def vspnoise(*args):
             res = _vspnoise(x,y,z,t,px,py,pz,pt)
             return vec3(res.x, res.y, res.z)
         else:
-            raise ValueError, "Invalid arguments"
+            raise ValueError("Invalid arguments")
     
     else:
-        raise TypeError, "only 2 or 4 arguments allowed"
+        raise TypeError("only 2 or 4 arguments allowed")
 
 

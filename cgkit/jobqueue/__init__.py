@@ -34,8 +34,8 @@
 # ***** END LICENSE BLOCK *****
 
 import os
-from jobqueue import createJobQueue, JobQueue, JobQueueError
-from jobproc import JobProc
+from .jobqueue import createJobQueue, JobQueue, JobQueueError
+from .jobproc import JobProc
 
 def defaultJobQueueLocation():
     """Return the directory location of the default job queue.

@@ -38,6 +38,7 @@
 ## Contains the EventManager class.
 
 import sys, types, bisect
+from copy import copy
 
 # Receiver
 class _Receiver:
@@ -123,13 +124,13 @@ class EventManager:
 
         # Process system wide connections
         receivers = self.system_connections.get(name, [])
-        for rec in receivers:
+        for rec in copy(receivers):
             if rec.receiver(*params, **keyargs):
                 return True
 
         # Process scene wide connections
         receivers = self.scene_connections.get(name, [])
-        for rec in receivers:
+        for rec in copy(receivers):
             if rec.receiver(*params, **keyargs):
                 return True
 
@@ -165,7 +166,7 @@ class EventManager:
 
         rec = _Receiver(receiver, priority)
         # Has the event already any connections? then add the new receiver
-        if connections.has_key(name):
+        if name in connections:
             bisect.insort(connections[name], rec)
 #            connections[name].append(receiver)
         # otherwise create a new list
@@ -195,27 +196,27 @@ class EventManager:
 
         # Are all connections to be removed?
         if receiver==None:
-            if connections.has_key(name):
+            if name in connections:
                 del connections[name]
                 return
 
         receiver = self._determine_receiver(name, receiver)
 
         # Has the event any connections at all?
-        if not connections.has_key(name):
-            raise KeyError, 'Receiver is not connected to event "%s"'%name
+        if name not in connections:
+            raise KeyError('Receiver is not connected to event "%s"'%name)
 
         # Try to remove the connection
 #        try:
 #            connections[name].remove(receiver)
 #        except ValueError:
-#            raise KeyError, 'Receiver is not connected to event "%s"'%name
+#            raise KeyError('Receiver is not connected to event "%s"'%name)
         
         for i,rec in enumerate(connections[name]):
             if rec.receiver==receiver:
                 break
         else:
-            raise KeyError, 'Receiver is not connected to event "%s"'%name
+            raise KeyError('Receiver is not connected to event "%s"'%name)
 
         del connections[name][i]
 
@@ -250,10 +251,10 @@ class EventManager:
         if hasattr(receiver, methodname):
             return getattr(receiver, methodname)
         
-        if callable(receiver):
+        if hasattr(receiver, "__call__"):
             return receiver
             
-        raise ValueError, "Receiver argument must be a callable or an object with an %s() method"%methodname
+        raise ValueError("Receiver argument must be a callable or an object with an %s() method"%methodname)
         
 ######################################################################
 

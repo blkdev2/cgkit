@@ -59,8 +59,8 @@ def splitDAGPath(path):
     |foo|bar ->  (None, ['', 'foo', 'bar'])
     foo|bar  ->  (None, ['foo', 'bar'])
     """
-    if not isinstance(path, types.StringTypes):
-        raise ValueError, "string type expected as path argument, got %s"%type(path)
+    if not isinstance(path, str):
+        raise ValueError("string type expected as path argument, got %s"%type(path))
         
     namespace = None
     n = path.find(":")
@@ -268,7 +268,7 @@ class Attribute:
         # Check if the value type was specified in the setAttr call
         valtype = self._opts.get("type", [None])[0]
         if valtype==None and type==None:
-            if filter(lambda x: x in _true_keywords+_false_keywords, self._vals)!=[]:
+            if [x for x in self._vals if x in _true_keywords+_false_keywords]!=[]:
                 valtype = "bool"
             else:
                 valtype = "float"
@@ -283,19 +283,19 @@ class Attribute:
 
         # No type information given?
         if valtype==None:
-            raise ValueError, "No type information available for attribute '%s'"%self.getBaseName()
+            raise ValueError("No type information available for attribute '%s'"%self.getBaseName())
 
         # Check if the type matches the required type...
         if valtype!=type:
-            raise ValueError, "Attribute of type %s expected, got %s"%(type, valtype)
+            raise ValueError("Attribute of type %s expected, got %s"%(type, valtype))
 
         # Convert the values..
         convertername = "convert"+type[0].upper()+type[1:]
         f = getattr(self, convertername)
         try:
             vs = f()
-        except ValueError, e:
-            print >>sys.stderr, e
+        except ValueError as e:
+            sys.stderr("%s\n"%e)
             # Try a string conversion when no type was specified...
             if type==None and convertername!="convertString":
                 vs = self.convertString()
@@ -304,7 +304,7 @@ class Attribute:
         if n==None:
             return vs
         if len(vs)!=n:
-            raise ValueError, "%s: %d values expected, got %d"%(self._attr, n, len(vs))
+            raise ValueError("%s: %d values expected, got %d"%(self._attr, n, len(vs)))
         if n==1:
             return vs[0]
         else:
@@ -314,10 +314,10 @@ class Attribute:
     # into the appropriate type. The return value is always a list of values.
 
     def convertInt(self):
-        return map(lambda x: int(x), self._vals)
+        return [int(x) for x in self._vals]
 
     def convertFloat(self):
-        return map(lambda x: float(x), self._vals)
+        return [float(x) for x in self._vals]
 
     def convertBool(self):
         res = []
@@ -371,15 +371,15 @@ class Attribute:
     convertFloat4 = convertDouble4
 
     def convertString(self):
-        return map(lambda x: str(x), self._vals)
+        return [str(x) for x in self._vals]
 
     def convertInt32Array(self):
         n = int(self._vals[0])
-        return map(lambda x: int(x), self._vals[1:n+1])
+        return [int(x) for x in self._vals[1:n+1]]
 
     def convertDoubleArray(self):
         n = int(self._vals[0])
-        return map(lambda x: float(x), self._vals[1:n+1])
+        return [float(x) for x in self._vals[1:n+1]]
 
     def convertPolyFaces(self):
         res = []
@@ -390,14 +390,14 @@ class Attribute:
             c = vs[i]
             i+=1
             if c not in ["f", "h", "mf", "mh", "mu", "fc"]:
-                raise ValueError, "Unknown polyFace data: %s"%c
+                raise ValueError("Unknown polyFace data: %s"%c)
             
             if c=="mu":
                 uvset = int(vs[i])
                 i+=1
                 
             n = int(vs[i])
-            ids = map(lambda x: int(x), vs[i+1:i+n+1])
+            ids = [int(x) for x in vs[i+1:i+n+1]]
             i+=n+1
             
             # Is that already a new polyFace? Then store the previous one
@@ -437,7 +437,7 @@ class Attribute:
             nc.dimension = int(vs[4])
             # Get knots
             n = int(vs[5])
-            nc.knots = map(lambda x: float(x), vs[6:n+6])
+            nc.knots = [float(x) for x in vs[6:n+6]]
             vs = vs[n+6:]
             # Get CVs
             n = int(vs[0])
@@ -446,7 +446,7 @@ class Attribute:
                 dim += 1
             cvs = []
             for i in range(n):
-                cvs.append( tuple(map(lambda x: float(x), vs[1+i*dim:1+(i+1)*dim])) )
+                cvs.append( tuple([float(x) for x in vs[1+i*dim:1+(i+1)*dim]]) )
             nc.cvs = cvs
             vs = vs[1+n*dim:]
             res.append(nc)
@@ -467,11 +467,11 @@ class Attribute:
             vs = vs[5:]
             # Get u knots
             n = int(vs[0])
-            ns.uknots = map(lambda x: float(x), vs[1:n+1])
+            ns.uknots = [float(x) for x in vs[1:n+1]]
             vs = vs[n+1:]
             # Get v knots
             n = int(vs[0])
-            ns.vknots = map(lambda x: float(x), vs[1:n+1])
+            ns.vknots = [float(x) for x in vs[1:n+1]]
             vs = vs[n+1:]
             # Skip TRIM|NOTRIM
             if vs[0] in ["TRIM", "NOTRIM"]:
@@ -484,7 +484,7 @@ class Attribute:
                 dim = 3
             cvs = []
             for i in range(n):
-                cvs.append( tuple(map(lambda x: float(x), vs[1+i*dim:1+(i+1)*dim])) )
+                cvs.append( tuple([float(x) for x in vs[1+i*dim:1+(i+1)*dim]]) )
             ns.cvs = cvs
             vs = vs[1+n*dim:]
             res.append(ns)
@@ -526,7 +526,7 @@ class MultiAttrStorage:
         self._array = []
 
     def __str__(self):
-        namedattrs = filter(lambda x: x[0:1]!="_", self.__dict__.keys())
+        namedattrs = [x for x in list(self.__dict__.keys()) if x[0:1]!="_"]
         # Not an array but a 'struct' with named attributes...
         if namedattrs!=[] and self._array==[]:
             a = []
@@ -534,7 +534,7 @@ class MultiAttrStorage:
                 a.append(".%s:%s"%(name, getattr(self, name)))
             return ", ".join(a)
         else:
-            return "["+", ".join(map(lambda x: str(x), self._array))+"]"
+            return "["+", ".join([str(x) for x in self._array])+"]"
 
     def __iter__(self):
         return iter(self._array)
@@ -544,7 +544,7 @@ class MultiAttrStorage:
 
     def __getattr__(self, name):
         if name[:2]=="__":
-            raise AttributeError, name
+            raise AttributeError(name)
         ma = MultiAttrStorage()
         setattr(self, name, ma)
         return ma
@@ -563,7 +563,7 @@ class MultiAttrStorage:
             if key.stop>=al:
                 self._array += (key.stop-al+1)*[None]
             if len(value)!=(key.stop-key.start+1):
-                raise ValueError, "%d values expected, got %d"%(key.stop-key.start+1, len(value))
+                raise ValueError("%d values expected, got %d"%(key.stop-key.start+1, len(value)))
             self._array[key.start:key.stop+1] = value
 #            print key.start,key.stop
         else:
@@ -594,12 +594,12 @@ class Node:
         """
 
         # Do some type checking...
-        if not isinstance(nodetype, types.StringTypes):
-            raise ValueError, "Argument 'nodetype' must be a string, got %s."%(type(nodetype))
+        if not isinstance(nodetype, str):
+            raise ValueError("Argument 'nodetype' must be a string, got %s."%(type(nodetype)))
         if type(opts)!=dict:
-            raise ValueError, "Argument 'opts' must be a dict, got %s."%(type(opts))
+            raise ValueError("Argument 'opts' must be a dict, got %s."%(type(opts)))
         if parent!=None and not isinstance(parent, Node):
-            raise ValueError, "Argument 'parent' must be a Node object or None, got %s."%(type(parent))
+            raise ValueError("Argument 'parent' must be a Node object or None, got %s."%(type(parent)))
 
         # A string containing the node type
         self.nodetype = nodetype
@@ -636,7 +636,7 @@ class Node:
             ma = MultiAttrStorage()
             setattr(self, name, ma)
             return ma
-        raise AttributeError, name
+        raise AttributeError(name)
 
     # getName
     def getName(self):
@@ -735,7 +735,7 @@ class Node:
         the full attribute name.
         """
         if not isinstance(node, Node):
-            raise ValueError, "Argument 'node' must be a Node instance."
+            raise ValueError("Argument 'node' must be a Node instance.")
         if localattr in self.out_connections:
             self.out_connections[localattr].append((node, nodename, attrname))
         else:
@@ -848,7 +848,7 @@ class Node:
             else:
                 cmd = "self%s = v"%attr.getFullName()
             if v!=[]:
-                exec cmd
+                exec(cmd)
         self._create_attributes = False
 
 ######################################################################
@@ -867,7 +867,7 @@ class MAReader:
     method that has to execute the command. These callback methods
     have to be implemented in a derived class.
 
-    There are 12 MEL commands that can appear in a Maya ASCII file: 
+    There are 13 MEL commands that can appear in a Maya ASCII file: 
 
     - file 
     - requires 
@@ -881,6 +881,7 @@ class MAReader:
     - parent 
     - select
     - lockNode
+    - relationship
 
     Each command has a number of arguments and can also take
     options. The callback methods receive the arguments as regular
@@ -1133,6 +1134,11 @@ class MAReader:
                                     "ic":"ignoreComponents" }
         self.lockNode_opt_def = { "lock" : (1, None),
                                   "ignoreComponents" : (0, None) }
+
+        # relationship options
+        self.relationship_name_dict = { "b":"break" }
+        self.relationship_opt_def = { "break" : (0, None)}
+
         
     # Provide linenr as an alias for cmd_start_linenr
     @property
@@ -1145,7 +1151,7 @@ class MAReader:
         f is a file-like object or the name of a file.
         """
         self.begin()
-        if isinstance(f, types.StringTypes):
+        if isinstance(f, str):
             self.filename = f
         else:
             self.filename = getattr(f, "name", "?")
@@ -1258,6 +1264,14 @@ class MAReader:
         pass
 #        print "lockNode",objects,opts
 
+    def onRelationship(self, args, opts):
+        """Callback for the 'relationship' MEL command.
+        
+        args is a list of the command line arguments. opts is the options dict.
+        """
+        pass
+#        print "relationship",args,opts
+
     # onCommand
     def onCommand(self, cmd, args):
         """Generic command callback.
@@ -1345,9 +1359,15 @@ class MAReader:
                                      self.lockNode_opt_def,
                                      self.lockNode_name_dict)
             self.onLockNode(args, opts)
+        # relationship
+        elif cmd=="relationship":
+            args, opts = self.getOpt(args,
+                                     self.relationship_opt_def,
+                                     self.relationship_name_dict)
+            self.onRelationship(args, opts)
         # unknown
         else:
-            print >>sys.stderr, "WARNING: %s, line %d: Unknown MEL command: '%s'"%(self.filename, self.cmd_start_linenr, cmd)
+            sys.stderr.write("WARNING: %s, line %d: Unknown MEL command: '%s'\n"%(self.filename, self.cmd_start_linenr, cmd))
 
 
     # getOpt
@@ -1386,7 +1406,7 @@ class MAReader:
                 optname = name_dict.get(a[1:], a[1:])
                 # Check if the option is known
                 if optname not in opt_def:
-                    raise SyntaxError, "Unknown option in line %d: %s"%(self.cmd_start_linenr, optname)
+                    raise SyntaxError("Unknown option in line %d: %s"%(self.cmd_start_linenr, optname))
                 # Get the number of arguments
                 numargs, filter = opt_def[optname]
                 optvals = [stripQuotes(x) for x in arglist[i:i+numargs]]
@@ -1552,15 +1572,15 @@ class DefaultMAReader(MAReader):
     def onSelect(self, objects, opts):
         """Make another node current."""
         # Remove all quotes...
-        objects = map(lambda x: stripQuotes(x), objects)
+        objects = [stripQuotes(x) for x in objects]
         
         if opts!={"noExpand":[]}:
-            raise ValueError, "%s, %d: The select command contains unsupported options."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains unsupported options."%(self.filename, self.linenr))
 
         if len(objects)==0:
-            raise ValueError, "%s, %d: The select command contains no object name."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains no object name."%(self.filename, self.linenr))
         if len(objects)!=1:
-            raise ValueError, "%s, %d: The select command contains more than one object."%(self.filename, self.linenr)
+            raise ValueError("%s, %d: The select command contains more than one object."%(self.filename, self.linenr))
 
         self.currentnode = self.findNode(objects[0], create=True)
 
@@ -1576,7 +1596,7 @@ class DefaultMAReader(MAReader):
 #            opts[name] = map(lambda x: stripQuotes(x), opts[name])
 
         if attr[0]!=".":
-            print >>sys.stderr, "mayaascii: Warning: DefaultMAReader.onSetAttr(): The attribute refers to a different object than the current object. This is not yet supported."
+            sys.stderr.write("mayaascii: Warning: DefaultMAReader.onSetAttr(): The attribute refers to a different object than the current object. This is not yet supported.\n")
 
         self.currentnode.setAttr(attr, vals, opts)
 
@@ -1615,8 +1635,8 @@ class DefaultMAReader(MAReader):
         dn = self.findNode(dnode, create=True)
         if sn!=None:
             if dn==None:
-                print >>sys.stderr, 'WARNING: %s, %d: connectAttr "%s" "%s"'%(self.filename, self.linenr, srcattr, dstattr)
-                print >>sys.stderr, ' Node "%s" not found. The connection is ignored.'%dnode
+                sys.stderr.write('WARNING: %s, %d: connectAttr "%s" "%s"\n'%(self.filename, self.linenr, srcattr, dstattr))
+                sys.stderr.write(' Node "%s" not found. The connection is ignored.\n'%dnode)
             else:
                 sn.addOutConnection(sattr, dn, dnode, dattr)
         if dn!=None:
@@ -1650,7 +1670,7 @@ class DefaultMAReader(MAReader):
                         if create:
                             node = self.createNode("<unknown>", {"name":[name]})
                         else:
-                            raise KeyError, "Node %s not found (%s is missing)"%(path, name)
+                            raise KeyError("Node %s not found (%s is missing)"%(path, name))
                 else:
                     for cn in node.iterChildren():
                         if name==cn.getName():
@@ -1660,7 +1680,7 @@ class DefaultMAReader(MAReader):
                         if create:
                             node = self.createNode("<unknown>", {"name":[name], "parent":[node.getFullName()]})
                         else:
-                            raise KeyError, "Node %s not found (%s is missing)"%(path, name)
+                            raise KeyError("Node %s not found (%s is missing)"%(path, name))
         return node
 
     # createNode
@@ -1688,7 +1708,7 @@ if __name__=="__main__":
 
         def end(self):
             for node in self.nodelist:
-                print '%-30s %-20s parent:%s'%('"'+node.getFullName()+'"', node.nodetype, node.getParentName())
+                print ('%-30s %-20s parent:%s'%('"'+node.getFullName()+'"', node.nodetype, node.getParentName()))
                 for attrname in node._setattr:
                     try:
                         val = node.getAttrValue(attrname, attrname, None, None)
@@ -1697,7 +1717,7 @@ if __name__=="__main__":
                     val = str(val)
                     if len(val)>60:
                         val = val[:60]+"..."
-                    print "  %s = %s"%(attrname, val)
+                    print ("  %s = %s"%(attrname, val))
                 
 
 

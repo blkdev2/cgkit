@@ -18,12 +18,12 @@ class renderrib(cgkit.jobqueue.JobProc):
         outdata,errdata = proc.communicate()
         outdata = outdata.rstrip()
         errdata = errdata.rstrip()
-        print "OUT"
-        print outdata
-        print "ERR"
-        print errdata
-        print "RET"
-        print proc.returncode
+        print("OUT")
+        print(outdata)
+        print("ERR")
+        print(errdata)
+        print("RET")
+        print(proc.returncode)
         
         if proc.returncode!=0 or errdata!="":
             self.setError()

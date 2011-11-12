@@ -393,7 +393,7 @@ class ArraySlotWrapper : public ArraySlot<T>
 	PyErr_Clear();
 	// Throw a more descriptive ValueError
 	boost::python::object msg = "The values have to be given as a %d-sequence."%make_tuple(self->multiplicity());
-	throw EValueError(PyString_AsString(msg.ptr()));
+	throw EValueError(PyByteArray_AsString(msg.ptr()));
       }
       // ...and convert it to the corresponding C++ value
       try

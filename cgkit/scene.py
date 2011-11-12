@@ -40,7 +40,7 @@
 from .cgtypes import vec3
 from .Interfaces import ISceneItem
 from . import timer
-import protocols
+from . import protocols
 from .boundingbox import BoundingBox
 from . import joystick
 from . import _core
@@ -82,7 +82,7 @@ class Scene(object):
         return iter(self.items)
 
     def hasGlobal(self, name):
-        return self._globals.has_key(name)
+        return name in self._globals
             
     def getGlobal(self, name, default=None):
         return self._globals.get(name, default)
@@ -131,7 +131,7 @@ class Scene(object):
     # insert
     def insert(self, item):
         """Insert an item into the scene."""
-        protocols.adapt(item, ISceneItem)
+#        protocols.adapt(item, ISceneItem)
 #        if isinstance(item, worldobject.WorldObject):
         if isinstance(item, _core.WorldObject):
             self._worldroot.addChild(item)
@@ -240,7 +240,7 @@ class Scene(object):
         """
         h = h.lower()
         if h!="l" and h!="r":
-            raise ValueError, "Handedness must be either 'l' or 'r'."
+            raise ValueError("Handedness must be either 'l' or 'r'.")
         self._handedness = h
 
     handedness = property(_getHandedness, _setHandedness, None, "Handedness")
@@ -270,11 +270,13 @@ class Scene(object):
 
 ######################################################################
 
-_scene = Scene()
+_scene = None
 
 # getScene
 def getScene():
     """Return the global %scene instance."""
     global _scene
+    if _scene is None:
+        _scene = Scene()
     return _scene
 

@@ -123,28 +123,26 @@ class SeqString:
 
         The text parts are treated as strings, the number parts as numbers
         (e.g. 'a08' is greater than 'a2').
+        If other is a regular string, then only a regular string comparison
+        is done.
         """
         if other is None:
             return 1
         if not isinstance(other, SeqString):
             if type(other) is not str:
                 return 1
+            # If other is a regular string, then turn self into a string as well
+            # and use normal string comparison
+            s = str(self)
+            if s<other:
+                return -1
+            elif s>other:
+                return 1
+            else:
+                return 0
         
-        # Convert both strings into pristine SeqStrings (because some numbers
-        # on the input strings may have been replaced by strings which would
-        # mess with the comparison).
-        selfStr = SeqString(self)
-        other = SeqString(other)
-        
-        # Check the 'structure' of the strings first.
-        # The numeric comparison is only done when the strings have the same
-        # text/num patterns.
-        res = selfStr.match_cmp(other)
-        if res!=0:
-            return res
-
         # Compare the individual components of the values side by side
-        for i, (a,b) in enumerate(zip(selfStr._value, other._value)):
+        for i, (a,b) in enumerate(zip(self._value, other._value)):
             if i%2==1:
                 # Get the numbers
                 a = a[0]
@@ -157,7 +155,7 @@ class SeqString:
 
         # If we are here everything has been equal so far, but maybe
         # one string has one component more in _value
-        s1 = len(selfStr._value)
+        s1 = len(self._value)
         s2 = len(other._value)
         if s1<s2:
             return -1
@@ -229,7 +227,7 @@ class SeqString:
         
         *numPos* is the index of the number that is allowed to vary. For example,
         if *numPos* is -1, only the last number in a string may be different for two
-        strings to be in the same sequence. Al other numbers must match exactly
+        strings to be in the same sequence. All other numbers must match exactly
         (including the padding). If *numPos* is ``None``, all numbers may vary.
         """
         if not isinstance(template, SeqString):
@@ -1638,7 +1636,7 @@ class OutputNameGenerator:
         numValues = len(ranges)
         numVaryingValues = len(list(filter(lambda rng: len(rng)>1, ranges)))
         
-        numIdxs = range(numValues)
+        numIdxs = list(range(numValues))
         
         indices = dstTemplate.expressionIndices(numValues)
         numPatterns = len(indices)
@@ -2142,7 +2140,7 @@ def _buildSequences(objects, numPos=None, assumeFiles=False):
             # n: The number count in the path (these numbers have to be frozen)
             n = pathseq.numCount()
             for i in range(n):
-                name.replaceNum(i, name.getNumStr(i))
+                name.replaceNum(0, name.getNumStr(0))
             
         sequenceSplit = False
         

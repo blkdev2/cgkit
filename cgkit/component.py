@@ -37,11 +37,12 @@
 ## \file component.py
 ## Contains the Component base class.
 
-from _core import Component as _Component
-from Interfaces import ISceneItem
-import protocols, copy, inspect, re
-from slots import *
-import scene
+from ._core import Component as _Component
+from .Interfaces import ISceneItem
+import copy, inspect, re
+from . import protocols
+from .slots import *
+from . import scene
 
 # Component
 class Component(_Component):
@@ -88,7 +89,7 @@ def _parseFuncDecl(funcdecl):
     # Parse the result type...
     m = re.match("[a-zA-Z0-9]+ ", funcdecl)
     if m==None:
-        raise SyntaxError, "No valid return type found"
+        raise SyntaxError("No valid return type found")
         
     restype = funcdecl[m.start():m.end()].strip()
 
@@ -96,7 +97,7 @@ def _parseFuncDecl(funcdecl):
     s = funcdecl[m.end():]
     i = s.find("(")
     if i==-1:
-        raise SyntaxError, "Parameter block is missing"
+        raise SyntaxError("Parameter block is missing")
     funcname = s[:i].strip()
 
     # Parse the arguments...
@@ -111,7 +112,7 @@ def _parseFuncDecl(funcdecl):
         elif len(f)==2:
             type,name = f
         else:
-            raise SyntaxError, "Invalid parameter declaration: '%s'"%s
+            raise SyntaxError("Invalid parameter declaration: '%s'"%s)
         inputs.append((name,type,None))
 
     return restype, funcname, inputs
@@ -203,7 +204,7 @@ class %s(Component):
     res += """\n    def compute%s(self):
         return self._func_obj("""%(outname.capitalize())
 
-    inames = map(lambda x: "%s=self.%s"%(x[0],x[0]), inputs)
+    inames = ["%s=self.%s"%(x[0],x[0]) for x in inputs]
     res += ", ".join(inames)
     res += ")\n"
     
@@ -216,7 +217,7 @@ def createFunctionComponent(func, funcdeclaration=None):
     if funcdeclaration==None:
         restype, funcname, inputs = _inspectFuncDecl(func)
         if restype==None:
-            raise ValueError, "Cannot determine the types of the arguments and the return value."
+            raise ValueError("Cannot determine the types of the arguments and the return value.")
     else:
         restype, funcname, inputs = _parseFuncDecl(funcdeclaration)
 
@@ -227,6 +228,6 @@ def createFunctionComponent(func, funcdeclaration=None):
     s = createFunctionComponentSource(clsname, restype, funcname, inputs)
     ns = copy.copy(globals())
     ns["func"]=func
-    exec s in ns
+    exec(s, ns)
     return ns[clsname]
     

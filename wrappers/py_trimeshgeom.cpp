@@ -64,7 +64,7 @@ void class_TriMeshGeom()
          "be amortized.\n\n"
          "The ray must be given in the local coordinate system L of the geometry.\n\n"
          "The ray-triangle intersection code (non-culling case) is based on:\n\n"
-	 "Tomas Möller and Ben Trumbore.\n"
+	 "Tomas Moeller and Ben Trumbore.\n"
 	 "Fast, minimum storage ray-triangle intersection.\n"
          "Journal of graphics tools, 2(1):21-28, 1997\n"
          "http://www.acm.org/jgt/papers/MollerTrumbore97/")

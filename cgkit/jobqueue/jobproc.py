@@ -211,7 +211,7 @@ class JobProc(object):
             try:
                 f = open(progressFile, "ab")
             except:
-                print >>sys.stderr, "Failed to update progress file "%progressFile
+                print("Failed to update progress file "%progressFile, file=sys.stderr)
                 return
             try:
                 f.write(n*"*")
@@ -229,7 +229,7 @@ class JobProc(object):
         try:
             f = open(statusLineFile, "wt")
         except:
-            print >>sys.stderr, "Failed to update progress file "%progressFile
+            print("Failed to update progress file "%progressFile, file=sys.stderr)
             return
         try:
             f.write(s)

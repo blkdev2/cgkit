@@ -33,10 +33,10 @@
 #
 # ***** END LICENSE BLOCK *****
 
-from irenderer import IRenderer, IRenderInstance
-from isceneitem import ISceneItem, ISceneItemContainer
-from icomponent import IComponent
-from iworldobject import IWorldObject
-from irigidbody import IRigidBody
-from icamera import ICamera
+from .irenderer import IRenderer, IRenderInstance
+from .isceneitem import ISceneItem, ISceneItemContainer
+from .icomponent import IComponent
+from .iworldobject import IWorldObject
+from .irigidbody import IRigidBody
+from .icamera import ICamera
 

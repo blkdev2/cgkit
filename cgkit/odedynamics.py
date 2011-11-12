@@ -40,7 +40,8 @@
 """This module contains a Dynamics component using the ODE rigid body
 dynamics package."""
 
-import protocols, weakref
+import weakref
+from . import protocols
 from Interfaces import *
 from component import Component
 from scene import getScene
@@ -129,11 +130,14 @@ class ODEDynamics(Component):
                  contactmarkersize = 0.1,
                  contactnormalsize = 1.0,
                  collision_events = False,
+                 use_quick_step = True,
                  auto_add = False,
-                 auto_insert=True):
+                 auto_insert = True):
         """Constructor.
 
         \param name (\c str) Component name
+        \param use_quick_step (\c bool) if True, use QuickStep method for ODE
+               stepping (default); if False, use Step (slower, but more accurate)
         \param auto_add (\c bool) Automatically add the world objects to the simulation
         \param auto_insert (\c bool) Automatically add the component to the scene
         """
@@ -141,6 +145,8 @@ class ODEDynamics(Component):
 
         scene = getScene()
 
+        self.use_quick_step = use_quick_step
+        
         self.substeps = substeps
         self.collision_events = collision_events
 
@@ -210,6 +216,29 @@ class ODEDynamics(Component):
                 if isinstance(obj, ODEJointBase):
                     self.add(obj)
 
+    # remove
+    def remove(self, objs):
+        """Remove one or more world objects from the simulation.
+
+        \param objs  World objects to be removed (given as names or objects)
+        """
+        objs = cmds.worldObjects(objs)
+        for obj in objs:
+            self._remove(obj)
+    
+    def _remove(self, obj):
+        for body in self.bodies:
+            if body.obj == obj:
+                # after deleting all the references to the body, 
+                # PyODE will remove it from simulation (in the destructor)
+                self.bodies.remove(body)
+                del(self.body_dict[obj])
+                del(body.odegeoms)
+                del(body.odebody)
+                del(obj.manip)
+                break
+        
+
     # add
     def add(self, objs, categorybits=None, collidebits=None):
         """Add a world object to the simulation.
@@ -230,7 +259,7 @@ class ODEDynamics(Component):
         try:
             obj = protocols.adapt(obj, IRigidBody)
         except NotImplementedError:
-            print 'Object "%s" is not a rigid body.'%obj.name
+            print('Object "%s" is not a rigid body.'%obj.name)
             return
 
         # Should the object be ignored?
@@ -276,9 +305,17 @@ class ODEDynamics(Component):
 #        print "New inertia tensor:"
 #        print obj.inertiatensor
 
+
+        # If the mass of a rigid body is <= 0, ODE will crash
+        # Using a more reasonable default: mass = 1
+        if obj.mass <= 0:
+            print("Using default mass=1 for " + str(obj))
+            obj.mass = 1
         body = ODEBody(obj, self, categorybits=categorybits, collidebits=collidebits)
         self.bodies.append(body)
         self.body_dict[obj] = body
+
+        obj.manip = self.createBodyManipulator(obj) # Quick access to manipulator
 
     # reset
     def reset(self):
@@ -307,9 +344,9 @@ class ODEDynamics(Component):
         \param mat2 (\c Material) Material 2
         \param props (\c ODEContactProperties) Contact properties
         """
-        self.contactprops[(mat1,mat2)] = props
-        self.contactprops[(mat2,mat1)] = props
-
+        self.contactprops[(mat1,mat2)] = props  
+        # Collision events are forced to appear in (mat1,mat2) order
+     
     # getContactProperties
     def getContactProperties(self, matpair):
         """Return the contact properties for a material pair.
@@ -331,7 +368,15 @@ class ODEDynamics(Component):
         return bm
 
     # nearCallback
-    def nearCallback(self, args, geom1, geom2):
+    def nearCallback(self, args, geom1, geom2):        
+        try:            
+            # Force collision event to appear in (mat1, mat2) order
+            # (i.e. the order in which the material pair was defined in contactprops)
+            if not (geom1.material, geom2.material) in self.contactprops:
+                (geom1, geom2) = (geom2, geom1)
+        except:
+            pass
+
         # Check if the objects do collide
         contacts = ode.collide(geom1, geom2)
 
@@ -399,9 +444,13 @@ class ODEDynamics(Component):
             # Detect collisions and create contact joints
             self.space.collide(None, self.nearCallback)
 #            print "#Contacts:",self.numcontacts
+
             # Simulation step
-#            self.world.step(subdt)
-            self.world.quickStep(subdt)
+            if self.use_quick_step:
+                self.world.quickStep(subdt)
+            else:
+                self.world.step(subdt)
+
             # Remove all contact joints
             self.contactgroup.empty()
             
@@ -557,15 +606,18 @@ class ODEBodyManipulator(object):
 
         pos must be a 3-sequence of floats.
         """
+        self._odebody.enable()
         self._odebody.setPosition(pos)
 
     # setRot
     def setRot(self, rot):
         """Set the rotation of the body.
 
-        rot must be a mat3 containing the orientation.
+        rot must be a mat3 containing the orientation or a list of 9 values
+        in row-major order.
         """
-        self._odebody.setRotation(rot)
+        self._odebody.enable()
+        self._odebody.setRotation(mat3(rot).toList(True))  # Now setRot really accepts a mat3 (and also a list with 9 elements)
 
     # setLinearVel
     def setLinearVel(self, vel):
@@ -573,6 +625,7 @@ class ODEBodyManipulator(object):
 
         vel must be a 3-sequence of floats.
         """
+        self._odebody.enable()
         self._odebody.setLinearVel(vel)
 
     # setAngularVel
@@ -581,6 +634,7 @@ class ODEBodyManipulator(object):
 
         vel must be a 3-sequence of floats.
         """
+        self._odebody.enable()
         self._odebody.setAngularVel(vel)
 
     # setInitialPos
@@ -674,6 +728,10 @@ class ODEBodyManipulator(object):
         This method is called by the ODEDynamics object during the simulation
         step (once for every sub step).
         """
+        
+        if self._force_flag or self._torque_flag:
+            self._odebody.enable()
+            
         if self._force_flag:
             self._odebody.addForce(self._force)
         if self._torque_flag:
@@ -708,9 +766,10 @@ class ODEBodyManipulator(object):
     body = property(_getBody, None, None, "Rigid body")
 
     # "odebody" property...
-    
-    def _getODEBody(self):
-        """Return the current ODE body.
+    # Someone may think this method would return an ODEBody, not an ode.Body
+    # That's why I changed the case.
+    def _get_odeBody(self):
+        """Return the current ODE body (type ode.Body from PyODE). 
 
         This method is used for retrieving the \a odebody property.
 
@@ -718,8 +777,22 @@ class ODEBodyManipulator(object):
         """
         return self._odebody
 
-    odebody = property(_getODEBody, None, None, "ODE body")
+    odebody = property(_get_odeBody, None, None, "ODE body")
 
+    # odegeoms property
+    
+    def _get_odeGeoms(self):
+        """Return the current ODE geom list.
+
+        This method is used for retrieving the \a odegeoms property.
+
+        \return ODE geom list
+        """
+        return self._body.odegeoms
+
+    odegeoms = property(_get_odeGeoms, None, None, "ODE geoms")
+
+    
     
 ######################################################################
 
@@ -843,7 +916,7 @@ class ODEBody:
         if self.initialization:
             return
         
-        print "Mass changed to",self.obj.mass
+        print("Mass changed to",self.obj.mass)
 
     # reset
     def reset(self):
@@ -869,7 +942,7 @@ class ODEBody:
         M = ode.Mass()
         m = obj.totalmass
         if m==0:
-            print 'WARNING: Object "%s" has a mass of zero.'%obj.name
+            print('WARNING: Object "%s" has a mass of zero.'%obj.name)
         cog = obj.cog
         I = obj.inertiatensor
 #        print '---Rigid body "%s"--------'%obj.name
@@ -900,7 +973,7 @@ class ODEBody:
         # Plane? This is a special case because ODE planes are not placeable
         if isinstance(obj.geom, PlaneGeom):
             if not obj.static:
-                raise RuntimeError, "Planes can only be used as static bodies"
+                raise RuntimeError("Planes can only be used as static bodies")
             L = obj.localTransform()
             n = L*vec3(0,0,1) - L*vec3(0)
             n = n.normalize()
@@ -921,7 +994,7 @@ class ODEBody:
         Pinv = P.inverse()
         pos,rot,scale = Pinv.decompose()
         if scale!=vec3(1,1,1):
-            print 'WARNING: ODEDynamics: Scaled geometries are not supported'
+            print('WARNING: ODEDynamics: Scaled geometries are not supported')
         res = []
         for g in geoms:
             M = mat4(1).translation(vec3(g.getPosition()))
@@ -1025,7 +1098,7 @@ class ODEBody:
             odegeom = ode.GeomPlane(space, n, d)
         # Unknown geometry
         else:
-            raise ValueError, 'WARNING: ODEDynamics: Cannot determine collision geometry of object "%s".'%geom.name
+            raise ValueError('WARNING: ODEDynamics: Cannot determine collision geometry of object "%s".'%geom.name)
 #            print 'WARNING: ODEDynamics: Cannot determine collision geometry of object "%s". Using bounding box instead.'%obj.name
 #            bmin, bmax = obj.boundingBox().getBounds()
 #            s = bmax-bmin
@@ -1039,7 +1112,7 @@ class ODEBody:
         # Displace the geom by M
         pos,rot,scale = M.decompose()
         if scale!=vec3(1,1,1):
-            print 'WARNING: ODEDynamics: Scaled geometries are not supported'
+            print('WARNING: ODEDynamics: Scaled geometries are not supported')
         odegeom.setPosition(pos)
         # row major or column major?
         odegeom.setRotation(rot.getMat3().toList(rowmajor=True))
@@ -1104,7 +1177,7 @@ class ODEJointBase(WorldObject):
         if odedynamics==self.odedynamics:
             return
         if self.odedynamics!=None:
-            print 'Warning: Joint "%s" is already in use'%self.name
+            print('Warning: Joint "%s" is already in use'%self.name)
         self.odedynamics = odedynamics
         self._createODEjoint()
         self._initODEjoint()
@@ -1173,18 +1246,21 @@ class ODEJointBase(WorldObject):
         """
         # This will call the attach() method of the ODE joint
         self.attach(self.body1, self.body2)
-
-        print "***",self.odejoint.getParam(ode.ParamStopCFM)
-
-        self.odejoint.setParam(ode.ParamFMax, self.motorfmax)
-        self.odejoint.setParam(ode.ParamVel, self.motorvel)
-        self.odejoint.setParam(ode.ParamLoStop, self.lostop)
-        self.odejoint.setParam(ode.ParamHiStop, self.histop)
-        self.odejoint.setParam(ode.ParamFudgeFactor, self.fudgefactor)
-        self.odejoint.setParam(ode.ParamBounce, self.bounce)
-        self.odejoint.setParam(ode.ParamCFM, self.cfm)
-        self.odejoint.setParam(ode.ParamStopERP, self.stoperp)
-        self.odejoint.setParam(ode.ParamStopCFM, self.stopcfm)
+        
+        try:
+            print("***",self.odejoint.getParam(ode.ParamStopCFM))
+            
+            self.odejoint.setParam(ode.ParamFMax, self.motorfmax)
+            self.odejoint.setParam(ode.ParamVel, self.motorvel)
+            self.odejoint.setParam(ode.ParamLoStop, self.lostop)
+            self.odejoint.setParam(ode.ParamHiStop, self.histop)
+            self.odejoint.setParam(ode.ParamFudgeFactor, self.fudgefactor)
+            self.odejoint.setParam(ode.ParamBounce, self.bounce)
+            self.odejoint.setParam(ode.ParamCFM, self.cfm)
+            self.odejoint.setParam(ode.ParamStopERP, self.stoperp)
+            self.odejoint.setParam(ode.ParamStopCFM, self.stopcfm)
+        except AttributeError:
+            pass  # not all joints have these attributes
 
     def onLoStopChanged(self):
 #        print "Lostop has been changed to",self.lostop_slot.getValue()
@@ -1331,6 +1407,37 @@ class ODEHingeJoint(ODEJointBase):
         self.odejoint.setParam(ode.ParamVel, self.motorvel)
 
 
+
+# FixedJoint
+class ODEFixedJoint(ODEJointBase):
+    """
+    Fixed Joint: Glues two bodies together.
+    Not recommended by ODE manual, but useful when a solid body has different contact properties on different sides.
+    """
+
+    def __init__(self,
+                 name = "ODEFixedJoint",
+                 body1 = None,
+                 body2 = None,
+                 **params):
+        ODEJointBase.__init__(self, name=name, body1=body1, body2=body2,
+                              **params)
+
+        self._createSlots()
+
+    # _createODEjoint
+    def _createODEjoint(self):
+        # Create the ODE joint
+        self.odejoint = ode.FixedJoint(self.odedynamics.world)
+
+    # _initODEjoint
+    def _initODEjoint(self):
+        ODEJointBase._initODEjoint(self)
+        self.odejoint.setFixed()
+
+
+
+
 # SliderJoint
 class ODESliderJoint(ODEJointBase):
     """
@@ -1433,13 +1540,13 @@ class ODEHinge2Joint(ODEJointBase):
         self.odejoint.setParam(ode.ParamVel, self.motorvel)
 
     def onSuspensionERPChanged(self):
-        print "susp. erp has been changed to",self.suspensionerp_slot.getValue()
+        print("susp. erp has been changed to",self.suspensionerp_slot.getValue())
         if self.odejoint!=None:
             self.odejoint.setParam(ode.ParamSuspensionERP,
                                    self.suspensionerp_slot.getValue())
 
     def onSuspensionCFMChanged(self):
-        print "susp. cfm has been changed to",self.suspensioncfm_slot.getValue()
+        print("susp. cfm has been changed to",self.suspensioncfm_slot.getValue())
         if self.odejoint!=None:
             self.odejoint.setParam(ode.ParamSuspensionCFM,
                                    self.suspensioncfm_slot.getValue())

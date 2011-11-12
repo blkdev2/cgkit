@@ -32,21 +32,47 @@
 # the terms of any one of the MPL, the GPL or the LGPL.
 #
 # ***** END LICENSE BLOCK *****
-# $Id: irigidbody.py,v 1.1.1.1 2004/12/12 14:31:43 mbaas Exp $
 
-from .iworldobject import IWorldObject
+"""Dummy module that is used as a replacement for PyProtocols for the time being.
+"""
 
-class IRigidBody(IWorldObject):
-    """The rigid body protocol.
+import inspect
 
-    - There must be a geom
-    - There must be a bool attribute "dynamics"
-    - There must be a bool slot "static"
-    - There must be a float slot "mass" containing the total mass
-    - There must be a vec3 slot "cog" containing the center of gravity
-      with respect to T (?)
-    - There must be a mat3 slot "inertiatensor" (with respect to T)
+# Key:Class name - Value:Dict (key:interface obj, value:None or adapter class)
+_interfaces = {}
 
-    
-
+def adapt(obj, interface):
+    """Dummy implementation.
     """
+    global _interfaces
+    
+    className = obj.__class__.__name__
+    interfaces = _interfaces.get(className, {})
+    
+#    print "ADAPT",obj.__class__.__name__, interface, interfaces.has_key(interface)
+    if interfaces.has_key(interface):
+        return obj
+    else:
+        raise NotImplementedError("interface not implemented")
+
+def advise(instancesProvide, asAdapterForTypes=None):
+    """Dummy implementation.
+    """
+    global _interfaces
+    
+    frame = inspect.currentframe()
+    outer = inspect.getouterframes(frame)
+    currentClassName = outer[1][3]
+
+#    print "ADVISE",currentClassName, asAdapterForTypes
+    
+    for interface in instancesProvide:
+        if currentClassName not in _interfaces:
+            _interfaces[currentClassName] = {}
+        _interfaces[currentClassName][interface] = 1
+#        print "    %s implements %s"%(currentClassName, interface)
+
+class Interface:
+    """Dummy interface base class.
+    """
+    pass

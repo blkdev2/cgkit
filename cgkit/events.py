@@ -107,7 +107,7 @@ class KeyEvent:
 #           c = self.key
 #        else:
 #            c = "."
-        return u"<KeyEvent key:%s (%d) mods:%d>"%(c,self.keycode,self.mods)
+        return "<KeyEvent key:%s (%d) mods:%d>"%(c,self.keycode,self.mods)
 
     # shiftKey
     def shiftKey(self):

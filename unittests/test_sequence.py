@@ -36,13 +36,21 @@ class TestSeqString(unittest.TestCase):
         
         self.assertEqual("spam004_018", s1)
         self.assertEqual(True, "spam004_018"==s1)
-        self.assertEqual(True, "spam04_18"==s1)
-        self.assertEqual(True, "spam04_19"!=s1)
+        self.assertEqual(True, SeqString("spam04_18")==s1)
+        self.assertEqual(True, SeqString("spam04_19")!=s1)
         
         s = SeqString("spam1_1")
         self.assertEqual(True, s=="spam1_1")
         s.replaceNum(0, "1")
         self.assertEqual(True, s=="spam1_1")
+
+        s1 = SeqString("P1_z")
+        s2 = SeqString("P2_a")
+        self.assertEqual(True, s1<s2)
+
+        s1 = SeqString("P1_z76a")
+        s2 = SeqString("P2_a")
+        self.assertEqual(True, s1<s2)
     
     def testMatch(self):
         """Test the match method.
@@ -475,6 +483,10 @@ class TestBuildSequences(unittest.TestCase):
         self.assertEqual(2, len(seqs))
         self.assertEqual(["dir1/spam1"], list(seqs[0]))
         self.assertEqual(["dir2/spam1"], list(seqs[1]))
+
+        seqs = buildSequences(["/dir1/dir2/spam1", "/dir1/dir2/spam2"], assumeFiles=True)
+        self.assertEqual(1, len(seqs))
+        self.assertEqual(("/dir1/dir2/spam@", ["1-2"]), seqs[0].sequenceName())
 
 class TestSeqTemplate(unittest.TestCase):
     """Test the SeqTemplate class.

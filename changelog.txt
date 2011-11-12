@@ -9,9 +9,47 @@ New features:
 - New sub-package ffmpeg that contains wrappers for the ffmpeg libraries
   (using ctypes. The ffmpeg libraries themselves are not included, they must
   already be on the system)
+- ODEDynamics: New option use_quick_step (patch 2977479). This can be used
+  to select whether the ODE quickStep() or the step() method should be
+  used for the simulation.
+- The viewer tool window is now resizable (patch 2977469).
 
 Bug fixes/enhancements:
 
+- mayaascii: Added support for the "relationship" MEL command that can appear
+  in .ma files.
+- cgtypes: Bugfix: slerp() could produce NaNs when the magnitude of the input
+  quats were slightly larger than 1 (bug #3377718).
+- cgtypes: In the light version of cgkit, the quat.fromMat() method was
+  broken. The regular version was not affected by this.
+- ODEDynamics: Objects can now be removed from the simulation. An object that
+  is part of a simulation automatically receives a new attribute "manip" which
+  is its body manipulator. The manipulator has a new attribute "odegeoms" to
+  access the underlying collision geometry. When setting forces, torques, etc
+  on objects, the objects are automatically enabled again if they were disabled.
+  Objects without a mass get a default mass of 1.0. The material setting in
+  collision events now always has a well-defined order. New joint object
+  ODEFixedJoint. (patch 2983970)
+- eventmanager: Disconnecting/connecting event handlers while an event was handled
+  could result in handlers not being called (patch 2983964).
+- GLRenderer: OpenGL errors could leak through into Python and produce exceptions
+  on unrelated PyOpenGL calls. The error flag is now cleared at the end of
+  the C++ rendering code (bug #2974422).
+- sequence: SeqString comparison doesn't convert its argument into fresh
+  SeqStrings anymore. This means comparing a SeqString with a regular string
+  uses regular string comparison semantics. It also means, a SeqString that
+  has a number replaced by a string containing a number will treat this part
+  as a string, not a number. This change considerably increases performance when
+  sorting large string lists. 
+- sequence: Comparison of SeqStrings didn't work properly when the string parts
+  did already differ (in that case, numbers were completely ignored)
+- sequence: buildSequences() didn't work properly when assumeFiles was set to
+  True and there was more than one number inside the path. Thanks to Scott Ballard.
+- viewer: Joystick support was partially broken (copy&paste error). Thanks
+  to Mariano Sospiro for providing a patch.
+- mat3/mat4: The decompose() method doesn't raise a ZeroDivisionError anymore
+  when called on a null matrix. Instead, it just returns a scaling part that
+  is 0.
 - Bugfix (2909382): The world transform didn't properly update in certain
   circumstances. This was because the slot dependency was set between the world
   transforms, but the computation was actually using all the local transforms.

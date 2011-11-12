@@ -159,6 +159,15 @@ class AVFrame(Structure):
     """
     _fields_ = [("data", c_void_p*4),
                 ("linesize", c_int*4),
+                ("base", c_void_p*4),
+                ("key_frame", c_int),
+                ("pict_type", c_int),
+                ("pts", c_longlong),
+                ("coded_picture_number", c_int),
+                ("display_picture_number", c_int),
+                ("quality", c_int),
+                ("age", c_int),
+                ("reference", c_int)
                 #...
                 ]
 
@@ -295,7 +304,7 @@ def avpicture_alloc(picture, pix_fmt, width, height):
     """
     ret = _lib().avpicture_alloc(byref(picture), pix_fmt, width, height)
     if ret<0:
-        raise RuntimeError, "Error: %s"%ret
+        raise RuntimeError("Error: %s"%ret)
     
 def avpicture_free(picture):
     """Free a picture previously allocated by avpicture_alloc().

@@ -55,9 +55,8 @@ Functions:
 - setEpsilon(): Set a new threshold used for float comparisons
 """
 
-import types
-import _core
-from _core import slerp, squad
+from . import _core
+from ._core import slerp, squad
 
 # vec3
 class vec3(_core.vec3):
@@ -72,13 +71,13 @@ class vec3(_core.vec3):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.vec3.__init__(self, float(args[0]))
             # vec3  
             elif isinstance(args[0], vec3) or isinstance(args[0], _core.vec3):
                 _core.vec3.__init__(self, *args)
             # Tuple/List
-#            elif T==types.TupleType or T==types.ListType:
+#            elif T in [tuple, list]:
 #                _core.vec3.__init__(self, *args[0])
 #                if len(args[0])==0:
 #                    self.x = self.y = self.z = 0.0
@@ -90,13 +89,13 @@ class vec3(_core.vec3):
 #                elif len(args[0])==3:
 #                    self.x, self.y, self.z = args[0]
 #                else:
-#                    raise TypeError, "vec3() takes at most 3 arguments"
+#                    raise TypeError("vec3() takes at most 3 arguments")
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.vec3.__init__(self, *f)
             # error
             else:
@@ -105,7 +104,7 @@ class vec3(_core.vec3):
                     lst = list(args[0])
                     _core.vec3.__init__(self, *lst)
                 except:
-                    raise TypeError,"vec3() arg can't be converted to vec3"
+                    raise TypeError("vec3() arg can't be converted to vec3")
 
         else:
             # everything else that is not just one argument...
@@ -124,17 +123,17 @@ class vec4(_core.vec4):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.vec4.__init__(self, float(args[0]))
             # vec4
             elif isinstance(args[0], vec4) or isinstance(args[0], _core.vec4):
                 _core.vec4.__init__(self, *args)
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.vec4.__init__(self, *f)
             # error
             else:
@@ -143,7 +142,7 @@ class vec4(_core.vec4):
                     lst = list(args[0])
                     _core.vec4.__init__(self, *lst)
                 except:
-                    raise TypeError,"vec4() arg can't be converted to vec4"
+                    raise TypeError("vec4() arg can't be converted to vec4")
 
         else:
             # everything else that is not just one argument...
@@ -162,24 +161,24 @@ class mat3(_core.mat3):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.mat3.__init__(self, float(args[0]))
             # mat3
             elif isinstance(args[0], mat3) or isinstance(args[0], _core.mat3):
                 _core.mat3.__init__(self, *args)
             # Tuple/List
-            elif T==types.TupleType or T==types.ListType:
+            elif T in [tuple, list]:
                 _core.mat3.__init__(self, mat3(*args[0]))
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.mat3.__init__(self, *f)
             # error
             else:
-                raise TypeError,"mat3() arg can't be converted to mat3"
+                raise TypeError("mat3() arg can't be converted to mat3")
 
         elif len(args)==3:
             try:
@@ -189,7 +188,7 @@ class mat3(_core.mat3):
                 c,f,i = c3
                 _core.mat3.__init__(self, a,b,c,d,e,f,g,h,i)
             except:
-                raise TypeError,"mat3() arg can't be converted to mat3"
+                raise TypeError("mat3() arg can't be converted to mat3")
         else:
             # everything else that is not just one argument...
             _core.mat3.__init__(self, *args)
@@ -198,17 +197,17 @@ class mat3(_core.mat3):
     def __getitem__(self, key):
         
         T = type(key)
-        if T==int or T==long:
+        if T is int:
             return _core.mat3.__getitem__(self, key)
-        elif T==tuple:
+        elif T is tuple:
             if len(key)!=2:
-                raise ValueError, "index tuple must be a 2-tuple"
+                raise ValueError("index tuple must be a 2-tuple")
             i,j = key
             if i<0 or i>2 or j<0 or j>2:
-                raise IndexError, "index out of range"
+                raise IndexError("index out of range")
             return self[j][i]
         else:
-            raise TypeError, "index must be integer or 2-tuple"
+            raise TypeError("index must be integer or 2-tuple")
 
 # mat4
 class mat4(_core.mat4):
@@ -223,24 +222,24 @@ class mat4(_core.mat4):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.mat4.__init__(self, float(args[0]))
             # mat4
             elif isinstance(args[0], mat4) or isinstance(args[0], _core.mat4):
                 _core.mat4.__init__(self, *args)
             # Tuple/List
-            elif T==types.TupleType or T==types.ListType:
+            elif T in [tuple, list]:
                 _core.mat4.__init__(self, mat4(*args[0]))
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.mat4.__init__(self, mat4(*f))
             # error
             else:
-                raise TypeError,"mat4() arg can't be converted to mat4"
+                raise TypeError("mat4() arg can't be converted to mat4")
 
         elif len(args)==4:
             try:
@@ -251,7 +250,7 @@ class mat4(_core.mat4):
                 self.setColumn(2,vec4(c3))
                 self.setColumn(3,vec4(c4))
             except:
-                raise TypeError,"mat4() arg can't be converted to mat4"
+                raise TypeError("mat4() arg can't be converted to mat4")
         elif len(args)==16:
             _core.mat4.__init__(self)
             self.setRow(0, vec4(args[0:4]))
@@ -265,17 +264,17 @@ class mat4(_core.mat4):
     def __getitem__(self, key):
         
         T = type(key)
-        if T==int or T==long:
+        if T is int:
             return _core.mat4.__getitem__(self, key)
-        elif T==tuple:
+        elif T is tuple:
             if len(key)!=2:
-                raise ValueError, "index tuple must be a 2-tuple"
+                raise ValueError("index tuple must be a 2-tuple")
             i,j = key
             if i<0 or i>3 or j<0 or j>3:
-                raise IndexError, "index out of range"
+                raise IndexError("index out of range")
             return self[j][i]
         else:
-            raise TypeError, "index must be integer or 2-tuple"
+            raise TypeError("index must be integer or 2-tuple")
 
 # quat
 class quat(_core.quat):
@@ -290,7 +289,7 @@ class quat(_core.quat):
         if len(args)==1:
             T = type(args[0])
             # scalar
-            if T==types.FloatType or T==types.IntType or T==types.LongType:
+            if T in [float, int]:
                 _core.quat.__init__(self, float(args[0]))
             # quat
             elif isinstance(args[0], quat) or isinstance(args[0], _core.quat):
@@ -300,11 +299,11 @@ class quat(_core.quat):
                 _core.quat.__init__(self)
                 self.fromMat(args[0])
             # String
-            elif T==types.StringType:
+            elif T is str:
                 s=args[0].replace(","," ").replace("  "," ").strip().split(" ")
                 if s==[""]:
                     s=[]
-                f = map(lambda x: float(x), s)
+                f = [float(x) for x in s]
                 _core.quat.__init__(self, *f)
             # error
             else:
@@ -313,7 +312,7 @@ class quat(_core.quat):
                     lst = list(args[0])
                     _core.quat.__init__(self, *lst)
                 except:
-                    raise TypeError,"quat() arg can't be converted to quat"
+                    raise TypeError("quat() arg can't be converted to quat")
 
         # 2 arguments (angle & axis)
         elif len(args)==2:
@@ -328,7 +327,7 @@ class quat(_core.quat):
     def __pow__(self, other, modulo=None):
         """Return self**q."""
         if modulo!=None:
-            raise TypeError, "unsupported operation"
+            raise TypeError("unsupported operation")
         q = quat(other)
         return (q*self.log()).exp()
 

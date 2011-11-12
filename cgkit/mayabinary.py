@@ -47,7 +47,7 @@ class Chunk:
     
     The class has the following attributes:
     
-    - tag: The chunk name (four characters)
+    - tag: The chunk name (four characters) as a string
     - size: The size in bytes of the data part of the chunk
     - pos: The absolute position of the data part within the input file
     - parent: The GroupChunk object of the parent chunk
@@ -62,13 +62,16 @@ class Chunk:
     
     def __init__(self, file, parent, tag, size, pos, depth):
         """Constructor.
+        
+        tag is a bytes object containing the four character tag. It is stored
+        as a string.
         """
         # The file handle that currently points to the start of the chunk data
         self.file = file
         # The parent chunk object
         self.parent = parent
         # The chunk name (four characters)
-        self.tag = tag
+        self.tag = tag.decode("ascii")
         # The chunk size in bytes (only the data part)
         self.size = size
         # The absolute position (of the data) within the input file
@@ -99,7 +102,7 @@ class Chunk:
         If bytes is -1 the entire chunk data is read.
         """
         if self.file is None:
-            raise RuntimeError, "This chunk is not active anymore"
+            raise RuntimeError("This chunk is not active anymore")
 
         maxbytes = self.size-self._bytesRead
         if bytes<0:
@@ -120,7 +123,7 @@ class GroupChunk(Chunk):
         Chunk.__init__(self, file=file, parent=parent, tag=tag, size=size, pos=pos, depth=depth)
 
         # The group type
-        self.type = type
+        self.type = type.decode("ascii")
 
         # Start with 4 because the type was already read
         self._bytesRead = 4
@@ -192,7 +195,7 @@ class MBReader:
         callback methods. 
         file is a file-like object or the name of a file.
         """
-        if isinstance(file, basestring):
+        if isinstance(file, str):
             self.filename = file
             file = open(file, "rb")
         else:
@@ -202,8 +205,8 @@ class MBReader:
         # (and that it starts with a group tag)
         header = file.read(12)
         file.seek(0)
-        if len(header)!=12 or header[0:4]!="FOR4" or header[8:12]!="Maya":
-            raise ValueError, 'The file "%s" is not a Maya binary file.'%self.filename 
+        if len(header)!=12 or header[0:4]!=b"FOR4" or header[8:12]!=b"Maya":
+            raise ValueError('The file "%s" is not a Maya binary file.'%self.filename) 
         
         self._file = file
         self._abortFlag = False
@@ -236,7 +239,7 @@ class MBReader:
                 alignments.append(av)
                 end = pos+self.paddedSize(size, av)
                 if len(pendingGroups)>0 and end>pendingGroups[-1][0]:
-                    raise ValueError, 'Chunk %s at position %s in file "%s" has an invalid size (%d) that goes beyond its contained group chunk.'%(tag,pos-8,os.path.basename(self.filename),size)
+                    raise ValueError('Chunk %s at position %s in file "%s" has an invalid size (%d) that goes beyond its contained group chunk.'%(tag,pos-8,os.path.basename(self.filename),size))
                 pendingGroups.append((end, chunk))
                 pos += 4
                 depth += 1
@@ -271,7 +274,7 @@ class MBReader:
         if len(header)==0:
             return None,None
         if len(header)!=8:
-            raise ValueError, 'Premature end of file "%s" (chunk tag & size expected)'%os.path.basename(self.filename)
+            raise ValueError('Premature end of file "%s" (chunk tag & size expected)'%os.path.basename(self.filename))
         return (header[:4], struct.unpack(">L", header[4:])[0])
         
     def isGroupChunk(self, tag):
@@ -280,20 +283,20 @@ class MBReader:
         tag is the chunk name. Returns True when tag is the name
         of a group chunk.
         """
-        return tag in ["FORM", "CAT ", "LIST", "PROP",
-                       "FOR4", "CAT4", "LIS4", "PRO4",
-                       "FOR8", "CAT8", "LIS8", "PRO8"]
+        return tag in [b"FORM", b"CAT ", b"LIST", b"PROP",
+                       b"FOR4", b"CAT4", b"LIS4", b"PRO4",
+                       b"FOR8", b"CAT8", b"LIS8", b"PRO8"]
     
     def alignmentValue(self, tag):
         """Return the alignment value for a group chunk.
         
         Returns 2, 4 or 8.
         """
-        if tag in ["FORM", "CAT ", "LIST", "PROP"]:
+        if tag in [b"FORM", b"CAT ", b"LIST", b"PROP"]:
             return 2
-        elif tag in ["FOR4", "CAT4", "LIS4", "PRO4"]:
+        elif tag in [b"FOR4", b"CAT4", b"LIS4", b"PRO4"]:
             return 4
-        elif tag in ["FOR8", "CAT8", "LIS8", "PRO8"]:
+        elif tag in [b"FOR8", b"CAT8", b"LIS8", b"PRO8"]:
             return 8
         else:
             return 2
@@ -329,7 +332,7 @@ class MBReader:
                 if ord(c)<32:
                     c = '.'
                 s += c
-            print s
+            print(s)
             offset += 16
             
             
@@ -339,13 +342,13 @@ if __name__=="__main__":
     
     class MBDumper(MBReader):
         def onBeginGroup(self, chunk):
-            print "GRP BEGIN", chunk
+            print("GRP BEGIN", chunk)
         
         def onEndGroup(self, chunk):
-            print "GRP END  ", chunk
+            print("GRP END  ", chunk)
         
         def onDataChunk(self, chunk):
-            print "CHUNK    ",chunk
+            print("CHUNK    ",chunk)
             
     rd = MBDumper()
     rd.read(open(sys.argv[1], "rb"))
