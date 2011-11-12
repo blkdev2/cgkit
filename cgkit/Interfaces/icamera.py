@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: icamera.py,v 1.1.1.1 2004/12/12 14:31:41 mbaas Exp $
 
-from iworldobject import IWorldObject
+from .iworldobject import IWorldObject
 
 class ICamera(IWorldObject):
     """The camera protocol.

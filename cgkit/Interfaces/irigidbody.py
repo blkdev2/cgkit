@@ -34,7 +34,7 @@
 # ***** END LICENSE BLOCK *****
 # $Id: irigidbody.py,v 1.1.1.1 2004/12/12 14:31:43 mbaas Exp $
 
-from iworldobject import IWorldObject
+from .iworldobject import IWorldObject
 
 class IRigidBody(IWorldObject):
     """The rigid body protocol.

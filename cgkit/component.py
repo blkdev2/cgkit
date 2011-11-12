@@ -37,11 +37,12 @@
 ## \file component.py
 ## Contains the Component base class.
 
-from _core import Component as _Component
-from Interfaces import ISceneItem
-import protocols, copy, inspect, re
-from slots import *
-import scene
+from ._core import Component as _Component
+from .Interfaces import ISceneItem
+import copy, inspect, re
+from . import protocols
+from .slots import *
+from . import scene
 
 # Component
 class Component(_Component):
@@ -203,7 +204,7 @@ class %s(Component):
     res += """\n    def compute%s(self):
         return self._func_obj("""%(outname.capitalize())
 
-    inames = map(lambda x: "%s=self.%s"%(x[0],x[0]), inputs)
+    inames = ["%s=self.%s"%(x[0],x[0]) for x in inputs]
     res += ", ".join(inames)
     res += ")\n"
     
@@ -227,6 +228,6 @@ def createFunctionComponent(func, funcdeclaration=None):
     s = createFunctionComponentSource(clsname, restype, funcname, inputs)
     ns = copy.copy(globals())
     ns["func"]=func
-    exec s in ns
+    exec(s, ns)
     return ns[clsname]
     

@@ -38,9 +38,9 @@
 ## Contains the Timer class.
 
 import time
-from component import Component
-from eventmanager import eventManager
-import slots, events
+from .component import Component
+from .eventmanager import eventManager
+from . import slots, events
 
 # Timer
 class Timer(Component):
