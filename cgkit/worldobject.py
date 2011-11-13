@@ -39,11 +39,11 @@
 
 #from _core import WorldObject as _WorldObject
 #from _core import _WorldObjectChildIterator
-import _core
-from Interfaces import ISceneItem, ISceneItemContainer
-import protocols
-import scene
-from cgtypes import *
+from . import _core
+from .Interfaces import ISceneItem, ISceneItemContainer
+from . import protocols
+from . import globalscene
+from .cgtypes import *
 
 # WorldObject
 class WorldObject(_core.WorldObject):
@@ -102,7 +102,7 @@ class WorldObject(_core.WorldObject):
         \param auto_insert (\c bool) If True, the object is inserted into the
                         scene automatically
         """
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.WorldObject.__init__(self, name)
 
         _initWorldObject(self, name=name,
@@ -152,7 +152,7 @@ class WorldObject(_core.WorldObject):
     def __setattr__(self, name, val):
         if self.geom!=None and self.geom.hasSlot(name):
 #            print "self.geom.%s=%s"%(name, val)
-            exec "self.geom.%s=%s"%(name, val)
+            exec("self.geom.%s=%s"%(name, val))
         else:
             _core.WorldObject.__setattr__(self, name, val)
         
@@ -162,10 +162,10 @@ class WorldObject(_core.WorldObject):
 _preInitWorldObject = """
 if auto_insert:
     if parent==None:
-        parent = scene.getScene().worldRoot()
+        parent = globalscene.getScene().worldRoot()
     else:
         if type(parent) in [str, unicode]:
-            parent = scene.getScene().worldObject(parent)
+            parent = globalscene.getScene().worldObject(parent)
     name = parent.makeChildNameUnique(name)
 """
     

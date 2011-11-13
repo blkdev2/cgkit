@@ -37,7 +37,7 @@
 ## \file material.py
 ## Contains the Material base class.
 
-import _core
+from . import _core
 
 class Material(_core.Material):
 

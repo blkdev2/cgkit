@@ -37,15 +37,15 @@
 ## \file glmaterial.py
 ## Contains the GLMaterial class.
 
-import _core
-from cgtypes import *
-from _OpenGL.GL import *
-from _OpenGL.GLU import *
+from . import _core
+from .cgtypes import *
+from ._OpenGL.GL import *
+from ._OpenGL.GLU import *
 import math
 import sys, os, os.path
-import _Image as Image
-import glslangparams
-from slots import *
+from . import _Image as Image
+from . import glslangparams
+from .slots import *
 
 GLSLANG_VERTEX = _core.GLShader.ShaderType.VERTEX
 GLSLANG_FRAGMENT = _core.GLShader.ShaderType.FRAGMENT
@@ -98,14 +98,14 @@ class GLTexture(_core.GLTexture):
         if self.image==None:
             if self.imagename=="":
                 return
-            print 'Loading "%s"...'%self.imagename,
+            print('Loading "%s"...'%self.imagename, end=" ")
             fullname = os.path.join(self._path, self.imagename)
             try:
                 img = Image.open(fullname)
                 self._passPILImage(img)
-            except IOError, e:
-                print "failed"
-                print e
+            except IOError as e:
+                print ("failed")
+                print (e)
                 return
         else:
             data = self.image
@@ -209,7 +209,7 @@ class GLShader(_core.GLShader):
         self._uniform = {}
         for type,name,arraysize,structname,struct in uniform:
             if type=="struct":
-                print "Warning: structs are not yet supported"
+                print ("Warning: structs are not yet supported")
                 continue
             self._uniform[name] = (type,name,arraysize,structname,struct)
 
@@ -262,7 +262,7 @@ class GLShader(_core.GLShader):
 
     # iterUniform
     def iterUniform(self):
-        return self._uniform.itervalues()
+        return self._uniform.values()
 
     # _createSlot
     def _createSlot(self, param, type):
@@ -294,7 +294,7 @@ class GLShader(_core.GLShader):
         slotname = slot_lut.get(type, None)
         if slotname==None:
             raise ValueError("Invalid parameter type: %s"%type)
-        exec "slot = %s()"%slotname
+        exec("slot = %s()"%slotname)
         self.addSlot(param, slot)
         # Store the slot as <param>_slot 
         setattr(self, "%s_slot"%param, slot)

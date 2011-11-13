@@ -42,7 +42,7 @@ from .Interfaces import ISceneItem
 import copy, inspect, re
 from . import protocols
 from .slots import *
-from . import scene
+from .globalscene import getScene
 
 # Component
 class Component(_Component):
@@ -59,7 +59,7 @@ class Component(_Component):
         _Component.__init__(self, name)
         
         if auto_insert:
-            scene.getScene().insert(self)
+            getScene().insert(self)
 
     def protocols(self):
         return [ISceneItem]
@@ -169,7 +169,7 @@ def createFunctionComponentSource(clsname, restype, funcname, inputs):
     """
 
     res = """from cgkit import _core
-from cgkit.scene import getScene
+from cgkit.globalscene import getScene
     
 class %s(Component):
     

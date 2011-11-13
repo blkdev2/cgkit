@@ -46,7 +46,7 @@ import sys, os, os.path, types, string
 from . import pluginmanager
 from . import eventmanager
 from . import events
-from .scene import getScene
+from .globalscene import getScene
 from . import worldobject
 from . import draw, drawtextgeom
 from . import trimeshgeom
