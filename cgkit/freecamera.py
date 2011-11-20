@@ -39,16 +39,16 @@
 
 """This module contains the FreeCamera class."""
 
-from Interfaces import *
-import protocols
-import slots
-from cgtypes import *
+from .Interfaces import *
+from . import protocols
+from . import slots
+from .cgtypes import *
 from math import pi
-from worldobject import WorldObject
-from globalscene import getScene
-import camerabase
+from .worldobject import WorldObject
+from .globalscene import getScene
+from . import camerabase
 import sys
-import _core
+from . import _core
        
 
 # FreeCamera
@@ -113,8 +113,8 @@ class FreeCamera(camerabase.CameraBase):
 
     ## protected:
 
-    exec slots.slotPropertyCode("fstop")
-    exec slots.slotPropertyCode("focallength")
+    exec(slots.slotPropertyCode("fstop"))
+    exec(slots.slotPropertyCode("focallength"))
 
     # "fov" property...
     

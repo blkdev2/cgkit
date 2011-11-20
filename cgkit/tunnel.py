@@ -37,10 +37,10 @@
 ## \file tunnel.py
 ## Contains the Tunnel class.
 
-from cgtypes import *
-import component
-from slots import *
-import _core
+from .cgtypes import *
+from . import component
+from .slots import *
+from . import _core
 import socket, threading, struct
 
 # _ImmediateForwarder
@@ -235,7 +235,7 @@ class Tunnel(component.Component):
         self.createClientSlotAttribs()
 
         # Send init message
-        s = map(lambda x: "%s:%s"%x, self.slots)
+        s = ["%s:%s"%x for x in self.slots]
         s = ";".join(s)
         self.send(struct.pack(">H", 0)+s)
 
@@ -250,7 +250,7 @@ class Tunnel(component.Component):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ipaddr = socket.gethostbyname(self.host)
         if self.verbose:
-            print("Open UDP port %d on %s (%s)"%(self.port, ipaddr, self.host))
+            print(("Open UDP port %d on %s (%s)"%(self.port, ipaddr, self.host)))
         self.sock.bind((ipaddr, self.port))
 
         # Split thread with the server loop
@@ -270,7 +270,7 @@ class Tunnel(component.Component):
         """
 
         if self.verbose:
-            print("Tunnel server running at port",self.port)
+            print(("Tunnel server running at port",self.port))
         while 1:
             # Read a packet (blocking)
             rawdata, addr = self.sock.recvfrom(5000)
@@ -292,45 +292,45 @@ class Tunnel(component.Component):
                     if self.verbose:
                         print("Init")
                     f = msgdata.split(";")
-                    localslots = map(lambda x: x[1], list(self.iterSlotDefs(self.slots)))
-                    remoteslots = map(lambda x: tuple(x.split(":")), f)
-                    remoteslots = map(lambda x: x[1], list(self.iterSlotDefs(remoteslots)))
+                    localslots = [x[1] for x in list(self.iterSlotDefs(self.slots))]
+                    remoteslots = [tuple(x.split(":")) for x in f]
+                    remoteslots = [x[1] for x in list(self.iterSlotDefs(remoteslots))]
                     mismatch = True
                     if len(localslots)==len(remoteslots):
                         mismatch = localslots!=remoteslots
                     if mismatch:
-                        print("%s: The types of the remote and local slots don't match."%self.name)
+                        print(("%s: The types of the remote and local slots don't match."%self.name))
                     rawdata = ""
                 else:
                     # Decode the slot index and the value to set...
                     try:
                         n,idx,v = self.decodeValueMessage(id, msgdata)
-                    except struct.error, e:
+                    except struct.error as e:
                         print(e)
                         rawdata = ""
                         continue
-                    except ValueError, e:
+                    except ValueError as e:
                         print(e)
                         rawdata = ""
                         continue
                     # Prepare the next message...
                     rawdata = msgdata[n:]
                     if self.verbose:
-                        print("Message id: %d - Slot:%d Value:%s"%(id,idx,v))
+                        print(("Message id: %d - Slot:%d Value:%s"%(id,idx,v)))
                     # Get the slot that will receive the new value...
                     try:
                         slot,id = self.slotobjs[idx]
-                    except IndexError,e:
-                        print("Error: Invalid slot index (%d)"%idx)
+                    except IndexError as e:
+                        print(("Error: Invalid slot index (%d)"%idx))
                     # Set the new value...
                     try:
                         slot.setValue(v)
                     except:
-                        print("Error: Could not assign value",v,"to slot of type",slot.typeName())
+                        print(("Error: Could not assign value",v,"to slot of type",slot.typeName()))
 
         self.sock.close()
         if self.verbose:
-            print("Tunnel server stopped at port",self.port)
+            print(("Tunnel server stopped at port",self.port))
 
     # markAsChanged
     def markAsChanged(self, idx):
@@ -351,7 +351,7 @@ class Tunnel(component.Component):
         """Send the values of all slots that have changed since the last call.
         """
         msgs = ""
-        for idx in self.changed.keys():
+        for idx in list(self.changed.keys()):
             slot,id = self.slotobjs[idx]
             msgs += self.encodeValueMessage(id, idx, slot)
 
@@ -370,10 +370,10 @@ class Tunnel(component.Component):
 
         for varname, slotname, slotparams in self.iterSlotDefs(slots):
             # Create the slot object
-            exec "slot = %s%s"%(slotname, slotparams)
+            exec("slot = %s%s"%(slotname, slotparams))
             # Add the slot as attribute
             setattr(self, "%s_slot"%varname, slot)
-            exec "self.addSlot('%s', self.%s_slot)"%(varname, varname)
+            exec("self.addSlot('%s', self.%s_slot)"%(varname, varname))
 
             id = slotnames.index(slotname)
             idx = len(self.forwarders)
@@ -399,10 +399,10 @@ class Tunnel(component.Component):
 
         for varname, slotname, slotparams in self.iterSlotDefs(slots):
             # Create the slot object
-            exec "slot = %s%s"%(slotname, slotparams)
+            exec("slot = %s%s"%(slotname, slotparams))
             # Add the slot as attribute
             setattr(self, "%s_slot"%varname, slot)
-            exec "self.addSlot('%s', self.%s_slot)"%(varname, varname)
+            exec("self.addSlot('%s', self.%s_slot)"%(varname, varname))
 
             id = slotnames.index(slotname)
             idx = len(self.forwarders)
@@ -417,7 +417,7 @@ class Tunnel(component.Component):
         
         for name,slot in self.slots:
             slotname = "%s_slot"%name
-            exec "del self.%s"%slotname
+            exec("del self.%s"%slotname)
 
         self.slots = None
 

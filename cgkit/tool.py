@@ -38,13 +38,13 @@
 ## Contains the Tool base class.
 
 import os, os.path, sys, optparse, re
-import pluginmanager
-from eventmanager import eventManager
-from globalscene import getScene
-from targetcamera import TargetCamera
-from Interfaces import *
-from cmds import *
-import application
+from . import pluginmanager
+from .eventmanager import eventManager
+from .globalscene import getScene
+from .targetcamera import TargetCamera
+from .Interfaces import *
+from .cmds import *
+from . import application
 
 
 # Tool
@@ -101,12 +101,12 @@ class Tool:
 
         # Print default options
         if self.options.verbose:
-            print ("Python %s"%sys.version)
+            print(("Python %s"%sys.version))
             if defaultoptionvar!=None:
                 if defaultoptionvar in os.environ:
-                    print ("Default options in %s: %s"%(defaultoptionvar, os.environ[defaultoptionvar]))
+                    print(("Default options in %s: %s"%(defaultoptionvar, os.environ[defaultoptionvar])))
                 else:
-                    print ("Environment variable %s not set."%defaultoptionvar)
+                    print(("Environment variable %s not set."%defaultoptionvar))
 
         # Determine screen resolution...
         self._no_resolution_specified = False
@@ -187,7 +187,7 @@ class Tool:
         # Load the input files...
         for filename in self.args:
             if self.options.verbose:
-                print ('Loading "%s"...'%filename)
+                print(('Loading "%s"...'%filename))
             load(filename)
 
         # Convert global settings into command line options
@@ -287,7 +287,7 @@ class Tool:
             te = "%1.2fs"%self.time_end
             fe = "%d"%self.frame_end
         if self.options.verbose:
-            print ("Time range: %1.2fs - %s (frames %d - %s)"%(self.time_start, te, self.frame_start, fe))
+            print(("Time range: %1.2fs - %s (frames %d - %s)"%(self.time_start, te, self.frame_start, fe)))
 
 
     # loadPlugins
@@ -353,7 +353,7 @@ class Tool:
                                fov = 50)
         else:
             if self.options.verbose:
-                print ("Camera: %s"%cam.name)
+                print(("Camera: %s"%cam.name))
 
         return cam
 
@@ -365,7 +365,7 @@ class Tool:
         """
         res = getScene().getGlobal("resolution", (640,480))
         # If the resolution is a string, try to evaluate it
-        if isinstance(res, basestring):
+        if isinstance(res, str):
             try:
                 res = eval(res)
             except:
@@ -379,7 +379,7 @@ class Tool:
             else:
                 raise Exception()
         except:
-            print >>sys.stderr, "Error: Invalid resolution setting:",res
+            print("Error: Invalid resolution setting:",res, file=sys.stderr)
             w,h,aspect = 640,480,1
         return w,h,aspect
 

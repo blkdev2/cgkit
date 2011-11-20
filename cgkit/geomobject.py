@@ -37,8 +37,8 @@
 ## \file geomobject.py
 ## Contains the GeomObject base class.
 
-import _core
-from _core import GeomObject
+from . import _core
+from ._core import GeomObject
 
 CONSTANT = _core.VarStorage.CONSTANT
 UNIFORM = _core.VarStorage.UNIFORM

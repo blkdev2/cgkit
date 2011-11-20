@@ -37,7 +37,7 @@
 ## \file ccylindergeom.py
 ## Contains the CCylinderGeom class.
 
-import _core
+from . import _core
 
 # CCylinderGeom
 class CCylinderGeom(_core.CCylinderGeom):

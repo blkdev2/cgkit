@@ -37,12 +37,12 @@
 ## \file ccylinder.py
 ## Contains the capped cylinder class.
 
-from cgtypes import vec3
-from Interfaces import *
-from worldobject import WorldObject
-from ccylindergeom import CCylinderGeom
-from slots import *
-import protocols
+from .cgtypes import vec3
+from .Interfaces import *
+from .worldobject import WorldObject
+from .ccylindergeom import CCylinderGeom
+from .slots import *
+from . import protocols
 
 
 # CCylinder
@@ -68,8 +68,8 @@ class CCylinder(WorldObject):
         self.addSlot("dynamics", self.dynamics_slot)
         self.addSlot("static", self.static_slot)
 
-    exec slotPropertyCode("dynamics")
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("dynamics"))
+    exec(slotPropertyCode("static"))
         
     def protocols(self):
         return [ISceneItem, IRigidBody]

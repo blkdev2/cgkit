@@ -35,13 +35,13 @@
 # $Id: asfamcimport.py,v 1.2 2005/04/21 17:25:45 mbaas Exp $
 
 import os.path, glob
-from cgtypes import *
-from quadrics import Sphere
-from joint import Joint
-from valuetable import ValueTable
-import asfamc
-import pluginmanager
-from sl import *
+from .cgtypes import *
+from .quadrics import Sphere
+from .joint import Joint
+from .valuetable import ValueTable
+from . import asfamc
+from . import pluginmanager
+from .sl import *
 
 # ASFReader
 class ASFReader(asfamc.ASFReader):
@@ -115,7 +115,7 @@ class ASFReader(asfamc.ASFReader):
                           radius = 0.3,
                           pos = length*dir.normalize(),
                           parent = parent)
-                exec "fromEuler = mat3.fromEuler%s"%axis_order.upper()
+                exec("fromEuler = mat3.fromEuler%s"%axis_order.upper())
                 R = fromEuler(radians(axis.x), radians(axis.y), radians(axis.z))
                 j.setOffsetTransform(mat4(1).setMat3(R))
                 j.freezePivot()
@@ -169,14 +169,14 @@ class AMCReader(asfamc.AMCReader):
         framerate is the rate that was used to record the motion data.
         """
 
-        for name in self.values.keys():
+        for name in list(self.values.keys()):
             track = self.values[name]
-            print name,
+            print(name, end=' ')
             if name=="root":
                 self.applyRootTrack(asf, track, framerate)
             else:
                 self.applyBoneTrack(asf, name, track, framerate)
-        print ""
+        print("")
 
     def applyBoneTrack(self, asf, name, track, framerate):
         data = asf.bones[name]
@@ -229,7 +229,7 @@ class AMCReader(asfamc.AMCReader):
             vtab.append((t, pos))
             
             ang = vec3(d["rx"], d["ry"], d["rz"])
-            exec "fromEuler = mat3.fromEuler%s"%axis_order.upper()
+            exec("fromEuler = mat3.fromEuler%s"%axis_order.upper())
             R = fromEuler(radians(ang.x), radians(ang.y), radians(ang.z))
             vtabrot.append((t, R))
             

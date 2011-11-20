@@ -34,12 +34,12 @@
 # ***** END LICENSE BLOCK *****
 # $Id: bvhimport.py,v 1.1 2005/02/11 14:32:34 mbaas Exp $
 
-from cgtypes import *
-from joint import Joint
-from valuetable import ValueTable
-import bvh
-import pluginmanager
-from sl import *
+from .cgtypes import *
+from .joint import Joint
+from .valuetable import ValueTable
+from . import bvh
+from . import pluginmanager
+from .sl import *
 
 # BVHReader
 class BVHReader(bvh.BVHReader):

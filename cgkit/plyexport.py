@@ -35,14 +35,14 @@
 # $Id: plyexport.py,v 1.2 2005/05/08 22:17:42 mbaas Exp $
 
 import os.path, sys
-from cgtypes import *
-from globalscene import getScene
-from geomobject import *
-from trimeshgeom import TriMeshGeom
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
-import cmds
-import _core
+from .cgtypes import *
+from .globalscene import getScene
+from .geomobject import *
+from .trimeshgeom import TriMeshGeom
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
+from . import cmds
+from . import _core
 
 # PLYExporter
 class PLYExporter:
@@ -75,7 +75,7 @@ class PLYExporter:
         if object==None:
             # Get a list of all objects that have a geom
             objs = list(getScene().walkWorld())
-            objs = filter(lambda obj: obj.geom!=None, objs)
+            objs = [obj for obj in objs if obj.geom!=None]
             if len(objs)==0:
                 raise ValueError("No object to export.")
             elif len(objs)>1:

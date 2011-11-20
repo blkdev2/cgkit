@@ -38,7 +38,7 @@
 """
 
 import sys, copy
-import StringIO
+import io
 from . import glslangtokenize
 from . import simplecpp
 from . import slparams
@@ -311,7 +311,7 @@ class _GLSLangParser:
         """Collect the struct contents.
         """
         if s=="}":
-            f = StringIO.StringIO(self.structcontents)
+            f = io.StringIO(self.structcontents)
             p = _GLSLangParser(f, structs=self.named_structs)
             p.read()
             self.struct = p.other
@@ -367,7 +367,7 @@ def glslangparams(shader=None, cpp=None, cpperrstream=sys.stderr):
         cpp = simplecpp.PreProcessor()
         
     glslangsrc = slparams.preprocess(cpp, shader, cpperrstream)
-    f = StringIO.StringIO(glslangsrc)
+    f = io.StringIO(glslangsrc)
 
     # Extract the variables...
     parser = _GLSLangParser(f)

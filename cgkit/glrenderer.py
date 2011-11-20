@@ -37,10 +37,10 @@
 ## \file glrenderer.py
 ## Contains the GLRenderer class.
 
-from _OpenGL.GL import *
-from _OpenGL.GLU import *
-from globalscene import getScene
-import _core
+from ._OpenGL.GL import *
+from ._OpenGL.GLU import *
+from .globalscene import getScene
+from . import _core
 
 # GLRenderInstance
 class GLRenderInstance(_core.GLRenderInstance):

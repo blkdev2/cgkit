@@ -39,14 +39,14 @@
 
 """This module contains the CameraBase class."""
 
-from Interfaces import *
-import protocols
-import slots
-from cgtypes import *
+from .Interfaces import *
+from . import protocols
+from . import slots
+from .cgtypes import *
 from math import pi
-from worldobject import WorldObject
-from globalscene import getScene
-import _core
+from .worldobject import WorldObject
+from .globalscene import getScene
+from . import _core
 
 # CameraBase
 class CameraBase(WorldObject):
@@ -68,9 +68,9 @@ class CameraBase(WorldObject):
         self.addSlot("autonearfar", self.autonearfar_slot)
 
     # "output" property...
-    exec slots.slotPropertyCode("nearplane")
-    exec slots.slotPropertyCode("farplane")
-    exec slots.slotPropertyCode("autonearfar")
+    exec(slots.slotPropertyCode("nearplane"))
+    exec(slots.slotPropertyCode("farplane"))
+    exec(slots.slotPropertyCode("autonearfar"))
     
 
     def protocols(self):

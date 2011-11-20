@@ -37,7 +37,7 @@
 ## \file boxgeom.py
 ## Contains the BoxGeom class.
 
-import _core
+from . import _core
 
 # BoxGeom
 class BoxGeom(_core.BoxGeom):

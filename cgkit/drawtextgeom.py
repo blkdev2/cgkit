@@ -38,7 +38,7 @@ import sys
 from cgkit.geomobject import GeomObject
 from cgkit.boundingbox import BoundingBox
 from cgkit.cgtypes import *
-from _OpenGL.GL import *
+from ._OpenGL.GL import *
 try:
     from OpenGL.GLUT import *
     has_glut = True
@@ -68,7 +68,7 @@ class DrawTextGeom(GeomObject):
         self.boundingbox = BoundingBox()
 
         if not has_glut:
-            print >>sys.stderr, "WARNING: Cannot draw texts. GLUT is not available."
+            print("WARNING: Cannot draw texts. GLUT is not available.", file=sys.stderr)
 
     def uniformCount(self):
         return 0

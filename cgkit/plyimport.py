@@ -35,11 +35,11 @@
 # $Id: plyimport.py,v 1.4 2005/05/09 14:34:24 mbaas Exp $
 
 import os.path
-import _core
-from cgtypes import *
-from geomobject import *
-from polyhedron import *
-import pluginmanager
+from . import _core
+from .cgtypes import *
+from .geomobject import *
+from .polyhedron import *
+from . import pluginmanager
 
 
 # PLYImporter

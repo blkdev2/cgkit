@@ -39,17 +39,17 @@
 
 """This module contains the Expression class."""
 
-from Interfaces import *
-import protocols
-import slots
-from eventmanager import eventManager
-from globalscene import getScene
-import events
-from cgtypes import *
-from component import *
-from sl import *
+from .Interfaces import *
+from . import protocols
+from . import slots
+from .eventmanager import eventManager
+from .globalscene import getScene
+from . import events
+from .cgtypes import *
+from .component import *
+from .sl import *
 from math import *
-import _core
+from . import _core
        
 
 # Expression
@@ -129,8 +129,8 @@ class Expression(Component):
                 valstr = "keyargs[k]"
 #                raise ValueError("Unsupported type: %s"%T)
             # Create slot
-            exec "self.%s_slot = %sSlot(%s)"%(k, typ.capitalize(), valstr)
-            exec "self.addSlot(k, self.%s_slot)"%k
+            exec("self.%s_slot = %sSlot(%s)"%(k, typ.capitalize(), valstr))
+            exec("self.addSlot(k, self.%s_slot)"%k)
 
         # If t was not explicitly given use the timer...
         if "t" not in keyargs:
@@ -139,7 +139,7 @@ class Expression(Component):
             self.addSlot("t", self.t_slot)
 
         # Store a list of all parameter names
-        self.vars = keyargs.keys()
+        self.vars = list(keyargs.keys())
         if "t" not in self.vars:
             self.vars.append("t")
 
@@ -150,12 +150,12 @@ class Expression(Component):
         e = self.exprtype
         if e.lower()=="float":
             e = "double"
-        exec "self.output_slot = Procedural%sSlot(self.outProc)"%e.capitalize()
+        exec("self.output_slot = Procedural%sSlot(self.outProc)"%e.capitalize())
         self.addSlot("output", self.output_slot)
 
         # Create dependencies
         for v in self.vars:
-            exec "self.%s_slot.addDependent(self.output_slot)"%(v)
+            exec("self.%s_slot.addDependent(self.output_slot)"%(v))
 
             
 
@@ -164,19 +164,19 @@ class Expression(Component):
 
     def outProc(self):
         for _v in self.vars:
-            exec "%s = self.%s_slot.getValue()"%(_v, _v)
+            exec("%s = self.%s_slot.getValue()"%(_v, _v))
         return eval("%s(%s)"%(self.exprtype, self.expr))
      
     ## protected:
         
     # "output" property...
-    exec slotPropertyCode("output")
+    exec(slotPropertyCode("output"))
 
     def _determineReturnType(self):
         """Try to execute the stored expression and return the output type.
         """
         for _v in self.vars:
-            exec "%s = self.%s_slot.getValue()"%(_v, _v)
+            exec("%s = self.%s_slot.getValue()"%(_v, _v))
         out = eval(self.expr)
         T = type(out)
         if T==float or T==int:

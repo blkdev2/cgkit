@@ -132,7 +132,7 @@ class BVHReader:
             a = s.split()
             if len(a)!=self._numchannels:
                 raise SyntaxError("Syntax error in line %d: %d float values expected, got %d instead"%(self.linenr, self._numchannels, len(a)))
-            values = map(lambda x: float(x), a)
+            values = [float(x) for x in a]
             self.onFrame(values)
 
 

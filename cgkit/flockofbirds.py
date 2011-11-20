@@ -38,11 +38,11 @@
 ## Contains the FlockOfBirds class.
 
 import types
-import component
-import eventmanager, events
-from slots import *
-from cgtypes import *
-import fob
+from . import component
+from . import eventmanager, events
+from .slots import *
+from .cgtypes import *
+from . import fob
 
 # FlockOfBirds
 class FlockOfBirds(component.Component):
@@ -96,12 +96,12 @@ class FlockOfBirds(component.Component):
         self.num_birds = num_birds
         self.hemisphere = hemisphere
 
-        if isinstance(bird_mode, types.StringTypes):
+        if isinstance(bird_mode, str):
             self.bird_mode = self.num_birds*[bird_mode]
         else:
             self.bird_mode = bird_mode
 
-        self.bird_mode = map(lambda x: x.upper(), self.bird_mode)
+        self.bird_mode = [x.upper() for x in self.bird_mode]
 
         if len(self.bird_mode)!=self.num_birds:
             raise ValueError("%d bird modes expected (got %d)"%(self.num_birds, len(self.bird_mode)))
@@ -151,7 +151,7 @@ class FlockOfBirds(component.Component):
         for i in range(1, self.num_birds):
             values = self._fob.point(i+1)
             if values==None:
-                print("No values received from bird %d."%(i+1))                
+                print(("No values received from bird %d."%(i+1)))                
             else:
                 # 1. Convert values into proper types
                 #    (position, angles, matrix, quat)

@@ -20,7 +20,7 @@ void class_WorldObjectSlots()
 
   class_<_WorldObjectChildIterator>("_WorldObjectChildIterator", init<WorldObject&>())
     .def("__iter__", &_WorldObjectChildIterator::__iter__)
-    .def("next", &_WorldObjectChildIterator::next)
+    .def("__next__", &_WorldObjectChildIterator::next)
   ;
 
 }

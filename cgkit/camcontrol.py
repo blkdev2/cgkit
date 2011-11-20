@@ -37,12 +37,12 @@
 ## \file camcontrol.py
 ## Contains the CameraControl class.
 
-import component
-import eventmanager
-from globalscene import getScene
-from events import *
-from keydefs import *
-from cgtypes import *
+from . import component
+from . import eventmanager
+from .globalscene import getScene
+from .events import *
+from .keydefs import *
+from .cgtypes import *
 
 # CameraControl
 class CameraControl(component.Component):

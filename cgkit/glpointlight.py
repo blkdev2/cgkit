@@ -37,13 +37,13 @@
 ## \file glpointlight.py
 ## Contains the GLPointLight class.
 
-import protocols
-from Interfaces import *
-from slots import *
-from cgtypes import vec3
-from worldobject import _initWorldObject, _preInitWorldObject
-import cmds
-import _core
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .cgtypes import vec3
+from .worldobject import _initWorldObject, _preInitWorldObject
+from . import cmds
+from . import _core
 
 # GLPointLight
 class GLPointLight(_core.GLPointLight):
@@ -65,7 +65,7 @@ class GLPointLight(_core.GLPointLight):
                  auto_insert = True,
                  **params
                  ):
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.GLPointLight.__init__(self, name)
 
         _initWorldObject(self, name=name, parent=parent,

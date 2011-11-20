@@ -35,13 +35,13 @@
 # $Id: objexport.py,v 1.4 2005/06/07 12:01:05 mbaas Exp $
 
 import os.path, sys, re
-from cgtypes import *
-from globalscene import getScene
-from geomobject import *
-from trimeshgeom import TriMeshGeom
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
-import cmds
+from .cgtypes import *
+from .globalscene import getScene
+from .geomobject import *
+from .trimeshgeom import TriMeshGeom
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
+from . import cmds
 
 # OBJExporter
 class OBJExporter:
@@ -93,7 +93,7 @@ class OBJExporter:
             mtlname = name+".mtl"
 
         if self.use_materials:
-            print >>self.fhandle, "mtllib %s"%os.path.basename(mtlname)
+            print("mtllib %s"%os.path.basename(mtlname), file=self.fhandle)
 
         # Export objects...
         if root!=None:
@@ -114,7 +114,7 @@ class OBJExporter:
         f = file(filename, "w")
         for matname in self.materials:
             mat = self.materials[matname]
-            print >>f, "newmtl %s"%matname
+            print("newmtl %s"%matname, file=f)
             if hasattr(mat, "mtlDefinition"):
                 f.write(mat.mtlDefinition())
         f.close()
@@ -136,7 +136,7 @@ class OBJExporter:
 
         # Export vertices...
         for v in geom.verts:
-            print >>self.fhandle, "v %f %f %f"%tuple(WT*v)
+            print("v %f %f %f"%tuple(WT*v), file=self.fhandle)
 
         # Export normals...
         N = None
@@ -149,7 +149,7 @@ class OBJExporter:
                     norm = norm.normalize()
                 except:
                     pass
-                print >>self.fhandle, "vn %f %f %f"%tuple(norm)
+                print("vn %f %f %f"%tuple(norm), file=self.fhandle)
 
             if info[1]==VARYING:
                 self.vn_mode = 1
@@ -166,7 +166,7 @@ class OBJExporter:
         if info!=None and info[2]==FLOAT and info[3]==2:
             st = geom.slot("st")
             for vt in st:
-                print >>self.fhandle, "vt %f %f"%vt
+                print("vt %f %f"%vt, file=self.fhandle)
 
             if info[1]==VARYING:
                 self.vt_mode = 1
@@ -178,13 +178,13 @@ class OBJExporter:
                     self.vt_mode = 3
 
         # Export groups...
-        print >>self.fhandle, "g %s"%" ".join(self.getGroups(obj))
+        print("g %s"%" ".join(self.getGroups(obj)), file=self.fhandle)
 
         # Export material name...
         mat = obj.getMaterial()
         if mat!=None and self.use_materials:
             mname = self.preProcessMaterial(mat)
-            print >>self.fhandle, "usemtl %s"%mname
+            print("usemtl %s"%mname, file=self.fhandle)
         
         # Export faces...
         if isinstance(geom, TriMeshGeom):
@@ -259,7 +259,7 @@ class OBJExporter:
                 else:
                     a.append("%d/%s/%s"%(v+self.v_offset, vt, vn))
                 facevaridx += 1
-            print >>self.fhandle, "f %s"%" ".join(a)
+            print("f %s"%" ".join(a), file=self.fhandle)
         
 
     # exportPolyFaces
@@ -302,7 +302,7 @@ class OBJExporter:
                 else:
                     a.append("%d/%s/%s"%(v+self.v_offset, vt, vn))
                 facevaridx += 1
-            print >>self.fhandle, "f %s"%" ".join(a)
+            print("f %s"%" ".join(a), file=self.fhandle)
 
     # preProcessMaterial
     def preProcessMaterial(self, mat):

@@ -38,15 +38,15 @@
 ## Contains the OBJMaterial class.
 
 import os.path, sys
-import protocols
-from Interfaces import *
-from slots import *
-from material import Material
-import ribexport
-import _Image as Image
-from expression import Expression
-import _core
-from cgtypes import *
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .material import Material
+from . import ribexport
+from . import _Image as Image
+from .expression import Expression
+from . import _core
+from .cgtypes import *
 
 # OBJTextureMap
 class OBJTextureMap:
@@ -158,7 +158,7 @@ class OBJMaterial(_core.GLMaterial):
         self.removeSlot("shininess")
         self.removeSlot("emission")
 
-    exec slotPropertyCode("Kd")
+    exec(slotPropertyCode("Kd"))
 
     def mtlDefinition(self):
         s = """illum %d

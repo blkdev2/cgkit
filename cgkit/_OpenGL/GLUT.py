@@ -5,7 +5,7 @@ try:
     # Try to import the original module...
     from OpenGL.GLUT import *
     
-except ImportError:
+except:
 
     # Create dummy symbols...
 

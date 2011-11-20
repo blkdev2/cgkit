@@ -37,12 +37,12 @@
 ## \file box.py
 ## Contains the Box class.
 
-import protocols
-from Interfaces import *
-from slots import *
-from cgtypes import vec3
-from worldobject import WorldObject
-from boxgeom import BoxGeom
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .cgtypes import vec3
+from .worldobject import WorldObject
+from .boxgeom import BoxGeom
 
 # Box
 class Box(WorldObject):
@@ -64,6 +64,6 @@ class Box(WorldObject):
         self.addSlot("dynamics", self.dynamics_slot)
         self.addSlot("static", self.static_slot)
 
-    exec slotPropertyCode("dynamics")
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("dynamics"))
+    exec(slotPropertyCode("static"))
         

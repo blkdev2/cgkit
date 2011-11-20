@@ -37,12 +37,12 @@
 ## \file plane.py
 ## Contains the Plane class.
 
-import protocols
-from Interfaces import *
-from cgtypes import vec3
-from worldobject import WorldObject
-from planegeom import PlaneGeom
-from slots import *
+from . import protocols
+from .Interfaces import *
+from .cgtypes import vec3
+from .worldobject import WorldObject
+from .planegeom import PlaneGeom
+from .slots import *
 
 # Plane
 class Plane(WorldObject):
@@ -64,6 +64,6 @@ class Plane(WorldObject):
         self.addSlot("dynamics", self.dynamics_slot)
         self.addSlot("static", self.static_slot)
 
-    exec slotPropertyCode("dynamics")
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("dynamics"))
+    exec(slotPropertyCode("static"))
         

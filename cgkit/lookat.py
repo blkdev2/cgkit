@@ -42,9 +42,9 @@ slot (pos) and a target slot (target) which are both of type vec3.
 The output (output) is a mat3 that contains a rotation so that when positioned
 at pos the z axis points to target."""
 
-from component import createFunctionComponent
-from cgtypes import *
-from sl import radians
+from .component import createFunctionComponent
+from .cgtypes import *
+from .sl import radians
 
 def _lookat(pos=vec3(0), target=vec3(0), up=vec3(0,0,1), roll=0.0):
     try:

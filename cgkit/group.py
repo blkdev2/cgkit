@@ -37,11 +37,11 @@
 ## \file group.py
 ## Contains the Group class.
 
-from Interfaces import *
-import protocols
-from slots import *
-from worldobject import WorldObject
-import cmds
+from .Interfaces import *
+from . import protocols
+from .slots import *
+from .worldobject import WorldObject
+from .globalscene import getScene
 
 # Group
 class Group(WorldObject):
@@ -72,10 +72,25 @@ class Group(WorldObject):
         self.addSlot("static", self.static_slot)
         
         for c in childs:
-            c = cmds.worldObject(c)
+            c = _worldObject(c)
             if c.parent!=None:
                 c.parent.removeChild(c)
             self.addChild(c)
 
-    exec slotPropertyCode("dynamics")
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("dynamics"))
+    exec(slotPropertyCode("static"))
+
+
+
+def _worldObject(obj):
+    """Return a world object.
+
+    (this has been pulled in from the cmds module, so that we don't need
+    to import the cmds module (producing a cycle). This needs to be fixed
+    in a future version)
+    """
+    
+    if isinstance(obj, str):
+        return getScene().worldObject(obj)
+    else:
+        return obj

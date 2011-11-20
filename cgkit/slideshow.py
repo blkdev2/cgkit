@@ -33,24 +33,24 @@
 #
 # ***** END LICENSE BLOCK *****
 
-from _OpenGL.GL import *
-import _Image as Image
-import _ImageDraw as ImageDraw
+from ._OpenGL.GL import *
+from . import _Image as Image
+from . import _ImageDraw as ImageDraw
 import glob, types
-import component
-from eventmanager import eventManager
-from events import *
-from globalscene import getScene
-from targetcamera import TargetCamera
-from plane import Plane
-from quadrics import Sphere
-from glmaterial import GLMaterial, GLTexture
-from sl import *
-from slots import *
-from cgtypes import *
+from . import component
+from .eventmanager import eventManager
+from .events import *
+from .globalscene import getScene
+from .targetcamera import TargetCamera
+from .plane import Plane
+from .quadrics import Sphere
+from .glmaterial import GLMaterial, GLTexture
+from .sl import *
+from .slots import *
+from .cgtypes import *
 from math import *
-import cmds
-import _core
+from . import cmds
+from . import _core
 
 # Cube transition
 class XCube:
@@ -143,7 +143,7 @@ class SlideShow(component.Component):
         
         component.Component.__init__(self, name, auto_insert)
 
-        if isinstance(slides, types.StringTypes):
+        if isinstance(slides, str):
             slides = Slide(slides)
 
         try:

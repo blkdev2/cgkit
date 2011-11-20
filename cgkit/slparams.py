@@ -54,6 +54,7 @@ from . import sltokenize
 from . import cgtypes, sl, simplecpp
 from . import _slparser
 from ._slreturntypes import _ShaderInfo, _ShaderParam
+import collections
 try:
     from . import sloargs
     _has_sloargs = True
@@ -321,7 +322,7 @@ def slparams(slfile=None, cpp=None, cpperrstream=sys.stderr, slname=None, includ
     
     # Check if the input file is a string referring to a compiled shader
     # (suffix != .sl). If so, use the sloargs module to get the shader information
-    if isinstance(slfile, basestring):
+    if isinstance(slfile, str):
         if os.path.splitext(slfile)[1].lower()!=".sl":
             if (_has_sloargs):
                 return sloargs.slparams(slfile)
@@ -350,7 +351,7 @@ def slparams(slfile=None, cpp=None, cpperrstream=sys.stderr, slname=None, includ
     try:
         lst = getattr(parser, "definitions")()
         # Turn the 3-tuples into _ShaderInfo objects
-        return map(lambda tup: _ShaderInfo(*tup), lst)
+        return [_ShaderInfo(*tup) for tup in lst]
     except _slparser.NoMoreTokens as err:
         raise NoMoreTokens("No more tokens")
     except _slparser.SyntaxError as err:
@@ -403,7 +404,7 @@ def preprocess(cpp, file, cpperrstream=sys.stderr, defines=None, includedirs=Non
         cpp = simplecpp.PreProcessor(defines=defines, includedirs=includedirs)
         return cpp(file, cpperrstream)
     # Is cpp a callable then invoke it and return the result
-    elif callable(cpp):
+    elif isinstance(cpp, collections.Callable):
         return cpp(file, cpperrstream)
 
     # no callable, so cpp contains the name of an external preprocessor tool
@@ -417,7 +418,7 @@ def preprocess(cpp, file, cpperrstream=sys.stderr, defines=None, includedirs=Non
     # ppslsrc: Preprocessed SL source (this is the result).
 
     # Is file a string? Then it's a file name...
-    if isinstance(file, types.StringTypes):
+    if isinstance(file, str):
         cmdtoks = [cpp]
         if defines!=None:
             for name,value in defines:
@@ -426,7 +427,7 @@ def preprocess(cpp, file, cpperrstream=sys.stderr, defines=None, includedirs=Non
                 else:
                     cmdtoks.append("-D%s=%s"%(name,value))
         if includedirs!=None:
-            cmdtoks.extend(map(lambda dir: "-I%s"%dir, includedirs))
+            cmdtoks.extend(["-I%s"%dir for dir in includedirs])
         cmdtoks.append(file)
         cmd = " ".join(cmdtoks)
         print (cmd)
@@ -503,7 +504,7 @@ def convertdefault(paramtuple):
     # The default value is not a string? Then it already contains the
     # converted default value (this is the case when the value was
     # extracted from a compiled shader).
-    if not isinstance(defstr, basestring):
+    if not isinstance(defstr, str):
         # Make sure that point-like types are returned as vec3 and matrix types
         # are returned as mat4.
         if typ in ["color", "point", "vector", "normal"]:
@@ -517,7 +518,7 @@ def convertdefault(paramtuple):
         if arraylen is None:
             return retType(defstr)
         else:
-            return map(lambda v: retType(v), defstr)
+            return [retType(v) for v in defstr]
 
     # Replace {} with [] so that SL arrays look like Python lists
     if arraylen is not None:
@@ -535,22 +536,22 @@ def convertdefault(paramtuple):
     # Convert into the appropriate type...
     if typ=="float":
         try:
-            res = map(lambda x: float(x), rawres)
+            res = [float(x) for x in rawres]
         except:
             return None
     elif typ=="color" or typ=="point" or typ=="vector" or typ=="normal":
         try:
-            res = map(lambda x: cgtypes.vec3(x), rawres)
+            res = [cgtypes.vec3(x) for x in rawres]
         except:
             return None
     elif typ=="matrix":
         try:
-            res = map(lambda x: cgtypes.mat4(x), rawres)
+            res = [cgtypes.mat4(x) for x in rawres]
         except:
             return None
     elif typ=="string":
         try:
-            res = map(lambda x: str(x), rawres)
+            res = [str(x) for x in rawres]
         except:
             return None
 

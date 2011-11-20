@@ -38,12 +38,12 @@
 ## Contains the GnuPlotter class.
 
 import sys
-import component
-import eventmanager, events
-from globalscene import getScene
-from slots import *
-from cgtypes import *
-import _core
+from . import component
+from . import eventmanager, events
+from .globalscene import getScene
+from .slots import *
+from .cgtypes import *
+from . import _core
 try:
     import Gnuplot
     gnuplot_installed = True
@@ -90,7 +90,7 @@ class GnuPlotter(component.Component):
 
         for i in range(inputs):
             s = DoubleSlot()
-            exec "self.input%d_slot = s"%(i+1)
+            exec("self.input%d_slot = s"%(i+1))
             if i<len(plottitles):
                 t = plottitles[i]
             else:
@@ -102,7 +102,7 @@ class GnuPlotter(component.Component):
             return
 
         if not gnuplot_installed:
-            print >>sys.stderr, "Warning: PyGnuplot is not installed"
+            print("Warning: PyGnuplot is not installed", file=sys.stderr)
             return
 
         self.gp = Gnuplot.Gnuplot()

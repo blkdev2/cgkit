@@ -37,17 +37,17 @@
 ## \file joint.py
 ## Contains the Joint class.
 
-from _OpenGL.GL import *
-from cgtypes import *
-from component import *
-from worldobject import WorldObject
-from geomobject import GeomObject
-from spheregeom import SphereGeom
-from boundingbox import BoundingBox
-from euleradapter import EulerAdapter
-import _core
-import cmds
-from sl import *
+from ._OpenGL.GL import *
+from .cgtypes import *
+from .component import *
+from .worldobject import WorldObject
+from .geomobject import GeomObject
+from .spheregeom import SphereGeom
+from .boundingbox import BoundingBox
+from .euleradapter import EulerAdapter
+from . import _core
+from . import cmds
+from .sl import *
 
 # JointGeom
 class JointGeom(GeomObject):
@@ -172,9 +172,9 @@ class Mult(Component):
         return self.op1*self.op2
 
     # Create value attributes
-    exec slotPropertyCode("op1")
-    exec slotPropertyCode("op2")
-    exec slotPropertyCode("output")
+    exec(slotPropertyCode("op1"))
+    exec(slotPropertyCode("op2"))
+    exec(slotPropertyCode("output"))
 
 # Joint
 class Joint(WorldObject):
@@ -210,9 +210,9 @@ class Joint(WorldObject):
     ## protected:
 
     # angle properties...
-    exec slotPropertyCode("anglex")
-    exec slotPropertyCode("angley")
-    exec slotPropertyCode("anglez")
+    exec(slotPropertyCode("anglex"))
+    exec(slotPropertyCode("angley"))
+    exec(slotPropertyCode("anglez"))
 
     # freezePivot
     def freezePivot(self):

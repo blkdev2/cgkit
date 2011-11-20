@@ -34,15 +34,15 @@
 # ***** END LICENSE BLOCK *****
 # $Id: beziercurvegeom.py,v 1.2 2005/09/02 12:58:02 mbaas Exp $
 
-from _OpenGL.GL import *
+from ._OpenGL.GL import *
 import bisect
-from geomobject import *
-from slots import *
-from cgtypes import *
-from boundingbox import BoundingBox
-import protocols
-from ribexport import IGeometry
-from ri import *
+from .geomobject import *
+from .slots import *
+from .cgtypes import *
+from .boundingbox import BoundingBox
+from . import protocols
+from .ribexport import IGeometry
+from .ri import *
 
 # BezierPoint
 class BezierPoint:

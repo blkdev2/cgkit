@@ -37,11 +37,11 @@
 ## \file spotlight3ds.py
 ## Contains the SpotLight3DS class.
 
-import protocols
-from Interfaces import *
-from slots import *
-import lookat
-from lightsource import LightSource
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from . import lookat
+from .lightsource import LightSource
 
 # SpotLight3DS
 class SpotLight3DS(LightSource):
@@ -118,7 +118,7 @@ class SpotLight3DS(LightSource):
         
 
     # Create the "target" property
-    exec slotPropertyCode("target")
+    exec(slotPropertyCode("target"))
 
     def protocols(self):
         return [ISceneItem]

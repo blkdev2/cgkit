@@ -35,16 +35,16 @@
 # $Id: lwobimport.py,v 1.1 2006/03/12 22:41:42 mbaas Exp $
 
 import os.path, sys
-from cgtypes import *
-from worldobject import WorldObject
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-from polyhedron import Polyhedron
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
-import cmds
+from .cgtypes import *
+from .worldobject import WorldObject
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from .polyhedron import Polyhedron
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
+from . import cmds
 from cgkit.all import UNIFORM, INT, GLMaterial
-import lwob
+from . import lwob
 
 
 class _LWOBReader(lwob.LWOBReader):

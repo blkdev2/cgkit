@@ -37,7 +37,7 @@
 ## \file planegeom.py
 ## Contains the PlaneGeom class.
 
-import _core
+from . import _core
 
 # PlaneGeom
 class PlaneGeom(_core.PlaneGeom):

@@ -37,13 +37,13 @@
 ## \file trimesh.py
 ## Contains the TriMesh class.
 
-from cgtypes import vec3
-from Interfaces import *
-from worldobject import WorldObject
-from trimeshgeom import TriMeshGeom
-from slots import *
-import protocols
-import _core
+from .cgtypes import vec3
+from .Interfaces import *
+from .worldobject import WorldObject
+from .trimeshgeom import TriMeshGeom
+from .slots import *
+from . import protocols
+from . import _core
 
 
 # TriMesh
@@ -83,6 +83,6 @@ class TriMesh(WorldObject):
                 tm.faces.setValue(i, f)
                 i+=1
         
-    exec slotPropertyCode("static")
-    exec slotPropertyCode("dynamics")
+    exec(slotPropertyCode("static"))
+    exec(slotPropertyCode("dynamics"))
 

@@ -37,8 +37,8 @@
 ## \file joints.py
 ## Contains the joint classes.
 
-from worldobject import WorldObject
-from slots import *
+from .worldobject import WorldObject
+from .slots import *
 
 # HingeJoint
 class HingeJoint(WorldObject):

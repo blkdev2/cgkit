@@ -107,7 +107,7 @@ def outputSpecs(tiles):
             yres += h
 
     # Create a dict with the x pixel positions of the tiles...
-    xv = xsplits.keys()
+    xv = list(xsplits.keys())
     xv.sort()
     xposs = {}
     xpos = 0
@@ -116,7 +116,7 @@ def outputSpecs(tiles):
         xpos += xsplits[x]
 
     # Create a dict with the y pixel positions of the tiles...
-    yv = ysplits.keys()
+    yv = list(ysplits.keys())
     yv.sort()
     yposs = {}
     ypos = 0
@@ -178,7 +178,7 @@ def stitch(filename, removetiles=False, infostream=None):
     # No tiles? then exit
     if len(tiles)==0:
         if infostream!=None:
-            print >>infostream, 'No image tiles found for image "%s"'%filename
+            print('No image tiles found for image "%s"'%filename, file=infostream)
         return
 
 
@@ -186,7 +186,7 @@ def stitch(filename, removetiles=False, infostream=None):
     width, height, xposs, yposs = outputSpecs(tiles)
     mode = tiles[0][2].mode
     if infostream!=None:
-        print >>infostream, "Final resolution: %dx%d, mode: %s"%(width, height, mode)
+        print("Final resolution: %dx%d, mode: %s"%(width, height, mode), file=infostream)
     outimg = Image.new(mode, (width, height))
 
     # Paste the tiles into the output image...
@@ -200,18 +200,18 @@ def stitch(filename, removetiles=False, infostream=None):
 
     # Save the output image
     if infostream!=None:
-        print >>infostream, "Stitched %d tiles"%len(tiles)
-        print >>infostream, 'Saving "%s"...'%filename
+        print("Stitched %d tiles"%len(tiles), file=infostream)
+        print('Saving "%s"...'%filename, file=infostream)
     outimg.save(filename)
 
     # Remove tiles (if desired)
     if removetiles:
         if infostream!=None:
-            print >>infostream, "Removing tiles..."
+            print("Removing tiles...", file=infostream)
         # Get the tile names and delete the tiles list
         # so that the images are no longer referenced
         # (otherwise they couldn't be deleted)
-        tilenames = map(lambda x: x[0], tiles)
+        tilenames = [x[0] for x in tiles]
         tiles = None
         for tilename in tilenames:
             os.remove(tilename)
@@ -243,5 +243,5 @@ def main():
 if __name__=="__main__":
     try:
         main()
-    except ValueError, e:
-        print e
+    except ValueError as e:
+        print(e)

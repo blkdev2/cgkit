@@ -37,11 +37,11 @@
 ## \file draw.py
 ## Contains the Draw class.
 
-import protocols
-from Interfaces import *
-from cgtypes import vec3
-from worldobject import WorldObject
-from drawgeom import DrawGeom
+from . import protocols
+from .Interfaces import *
+from .cgtypes import vec3
+from .worldobject import WorldObject
+from .drawgeom import DrawGeom
 
 # Draw
 class Draw(WorldObject):

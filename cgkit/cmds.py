@@ -233,7 +233,7 @@ def convFaceVarToVar(geom):
         vidx2 = vidx
         for loop in poly:
             ids += loop
-            newpoly.append(range(vidx2, vidx2+len(loop)))
+            newpoly.append(list(range(vidx2, vidx2+len(loop))))
             vidx2 += len(loop)
 
         workinggeom.setPoly(i, newpoly)
@@ -248,7 +248,7 @@ def convFaceVarToVar(geom):
 
 def removeIsolatedVertices(tm):
 
-    print >>sys.stderr, 'Removing isolated vertices...'
+    print('Removing isolated vertices...', file=sys.stderr)
 
     newgeom = trimeshgeom.TriMeshGeom()
     newgeom.faces.resize(len(tm.faces))
@@ -310,7 +310,7 @@ def extractUniform(tm, varname, value):
     given value.
     """
 
-    print >>sys.stderr, 'Extracting variable "%s"...'%(varname)
+    print('Extracting variable "%s"...'%(varname), file=sys.stderr)
 
     var_slot = tm.slot(varname)
     # A list representing the new faces.
@@ -420,7 +420,7 @@ def convMeshAttr(tm, attrname, attrfacesname=None):
     if attrfacesname==None:
         attrfacesname = attrname+"faces"
         
-    print >>sys.stderr, 'Converting "%s"/"%s" into "varying %s"...'%(attrname,attrfacesname,attrname)
+    print('Converting "%s"/"%s" into "varying %s"...'%(attrname,attrfacesname,attrname), file=sys.stderr)
     newgeom = trimeshgeom.TriMeshGeom()
 
     attrdesc = tm.findVariable(attrname)
@@ -677,7 +677,7 @@ def splitPaths(paths):
             pathlist.append(chunks[0])
             chunks = chunks[1:]
 
-    return map(lambda x: x.strip(), pathlist)
+    return [x.strip() for x in pathlist]
 
 # group
 def group(*children, **keyargs):
@@ -702,7 +702,7 @@ def group(*children, **keyargs):
     # "Flatten" the children list...
     childs = []
     for c in children:
-        if isinstance(c, types.StringTypes):
+        if isinstance(c, str):
             childs += [c]
         else:
             # Is c a sequence?
@@ -712,7 +712,7 @@ def group(*children, **keyargs):
                 # obviously not...
                 childs += [c]
                 
-    childs = map(worldObject, childs)
+    childs = list(map(worldObject, childs))
     name = keyargs.get("name", "group")
     grp = group_module.Group(name=name, childs=childs)
     return grp
@@ -769,7 +769,7 @@ def link(childs, parent=None, relative=False):
     # Check if childs is a sequence (other than a string)...
     try:
         len(childs)
-        if isinstance(childs, types.StringTypes):
+        if isinstance(childs, str):
             is_sequence = False
         else:
             is_sequence = True
@@ -877,7 +877,7 @@ def listWorld():
     """List the contents of the world as a tree.
     """
     scn = getScene()
-    print "Root"
+    print("Root")
     _listWorld(scn.worldRoot(), "")
 
 def _listWorld(obj, lines):
@@ -889,7 +889,7 @@ def _listWorld(obj, lines):
             g = child.geom.__class__.__name__
         else:
             g = "-"
-        print "%s+---%s (%s/%s)"%(lines,child.name,child.__class__.__name__, g)
+        print("%s+---%s (%s/%s)"%(lines,child.name,child.__class__.__name__, g))
         if idx<len(childs)-1:
             childlines = lines+"|   "
         else:
@@ -1005,7 +1005,7 @@ def worldObjects(objs):
     \return A list of WorldObject objects.
     """
 
-    if isinstance(objs, types.StringTypes):
+    if isinstance(objs, str):
         objs = [objs]
 
     try:
@@ -1029,7 +1029,7 @@ def worldObject(obj):
     \param obj An object or the name of an object.
     """
     
-    if isinstance(obj, types.StringTypes):
+    if isinstance(obj, str):
         return getScene().worldObject(obj)
     else:
         return obj

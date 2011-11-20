@@ -35,14 +35,14 @@
 # $Id: offimport.py,v 1.3 2005/04/14 08:01:50 mbaas Exp $
 
 import os.path, sys
-from cgtypes import *
-from worldobject import WorldObject
-from geomobject import *
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-from polyhedron import Polyhedron
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
+from .cgtypes import *
+from .worldobject import WorldObject
+from .geomobject import *
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from .polyhedron import Polyhedron
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
 
 # OffImporter
 class OffImporter:
@@ -136,11 +136,11 @@ class OffImporter:
             # Get the number of vertices in this face
             Nv = int(a[0])
             if Nv<3:
-                print >>sys.stderr, "Warning: Faces must have at least three vertices"
+                print("Warning: Faces must have at least three vertices", file=sys.stderr)
                 continue
 
             # Set the face...
-            face = map(lambda x: int(x), a[1:Nv+1])
+            face = [int(x) for x in a[1:Nv+1]]
             if self.invertfaces:
                 face.reverse()
             if self.is_trimesh:
@@ -234,7 +234,7 @@ class OffImporter:
         # Read the vertices...
         for i in range(self.numverts):
             z = self.readLine()
-            f = map(lambda x: float(x), z.split())
+            f = [float(x) for x in z.split()]
             geom.verts[i] = vec3(f[:self.ndim])
             f = f[self.ndim:]
             if self.four_flag:
@@ -281,7 +281,7 @@ class OffImporter:
             header = header[1:]
 
         if header!="OFF":
-            print >>sys.stderr, "Warning: Unknown prefixes in the header keyword"
+            print("Warning: Unknown prefixes in the header keyword", file=sys.stderr)
         return True
 
     # readLine

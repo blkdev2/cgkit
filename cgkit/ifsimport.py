@@ -35,11 +35,11 @@
 # $Id: ifsimport.py,v 1.1.1.1 2004/12/12 14:31:04 mbaas Exp $
 
 import os.path, struct
-from cgtypes import *
-from worldobject import WorldObject
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-import pluginmanager
+from .cgtypes import *
+from .worldobject import WorldObject
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from . import pluginmanager
 
 # IfsImporter
 class IfsImporter:

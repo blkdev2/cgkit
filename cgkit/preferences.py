@@ -61,7 +61,7 @@ class Preferences(object):
         return len(self._prefs)
 
     def __iter__(self):
-        return self._prefs.iteritems()
+        return iter(self._prefs.items())
 
     def __getitem__(self, key):
         if key in self._prefs:
@@ -91,7 +91,7 @@ class Preferences(object):
         f = open(self._filename)
         id = pickle.load(f)
         if id!=1:
-            raise Exception, "Unknown config file format"
+            raise Exception("Unknown config file format")
         self._prefs = pickle.load(f)
         f.close()
 
@@ -164,7 +164,7 @@ def configPath(appname="gaia"):
 
 if __name__=="__main__":
 
-    print(configPath())
+    print((configPath()))
             
             
 

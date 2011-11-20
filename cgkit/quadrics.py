@@ -37,13 +37,13 @@
 ## \file quadrics.py
 ## Contains the quadrics classes.
 
-from cgtypes import vec3
-from Interfaces import *
-from worldobject import WorldObject
-from spheregeom import SphereGeom
-from slots import *
-import protocols
-import _core
+from .cgtypes import vec3
+from .Interfaces import *
+from .worldobject import WorldObject
+from .spheregeom import SphereGeom
+from .slots import *
+from . import protocols
+from . import _core
 
 # Sphere
 class Sphere(WorldObject):
@@ -67,8 +67,8 @@ class Sphere(WorldObject):
         self.addSlot("dynamics", self.dynamics_slot)
         self.addSlot("static", self.static_slot)
 
-    exec slotPropertyCode("dynamics")
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("dynamics"))
+    exec(slotPropertyCode("static"))
 
     def protocols(self):
         return [ISceneItem, IRigidBody]

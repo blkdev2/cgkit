@@ -197,9 +197,9 @@ class %s(Component):
 #    res += "        self._func_obj = %s\n"%funcname
     res += "        self._func_obj = func\n"
 
-    res += '\n    exec slotPropertyCode("%s")\n'%(outname)
+    res += '\n    exec(slotPropertyCode("%s"))\n'%(outname)
     for name,type,default in inputs:
-        res += '    exec slotPropertyCode("%s")\n'%(name)
+        res += '    exec(slotPropertyCode("%s"))\n'%(name)
 
     res += """\n    def compute%s(self):
         return self._func_obj("""%(outname.capitalize())

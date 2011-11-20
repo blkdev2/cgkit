@@ -37,7 +37,7 @@
 ## \file polyhedrongeom.py
 ## Contains the PolyhedronGeom class.
 
-import _core
+from . import _core
 
 # PolyhedronGeom
 class PolyhedronGeom(_core.PolyhedronGeom):

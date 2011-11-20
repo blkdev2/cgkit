@@ -37,14 +37,14 @@
 ## \file gltargetdistantlight.py
 ## Contains the GLTargetDistantLight class.
 
-import protocols
-from Interfaces import *
-from slots import *
-from cgtypes import vec3
-from worldobject import _initWorldObject, _preInitWorldObject
-import lookat
-import cmds
-import _core
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .cgtypes import vec3
+from .worldobject import _initWorldObject, _preInitWorldObject
+from . import lookat
+from . import cmds
+from . import _core
 
 # GLTargetDistantLight
 class GLTargetDistantLight(_core.GLDistantLight):
@@ -68,7 +68,7 @@ class GLTargetDistantLight(_core.GLDistantLight):
                  auto_insert=True,
                  **params
                  ):
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.GLDistantLight.__init__(self, name)
 
         _initWorldObject(self, name=name, parent=parent,
@@ -101,7 +101,7 @@ class GLTargetDistantLight(_core.GLDistantLight):
         
 
     # Create the "target" property
-    exec slotPropertyCode("target")
+    exec(slotPropertyCode("target"))
 
     def protocols(self):
         return [ISceneItem]

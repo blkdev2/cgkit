@@ -34,12 +34,12 @@
 # ***** END LICENSE BLOCK *****
 # $Id: beziercurve.py,v 1.2 2005/09/02 12:58:02 mbaas Exp $
 
-from cgtypes import *
-from Interfaces import *
-from worldobject import WorldObject
-from beziercurvegeom import BezierCurveGeom
-import protocols
-import _core
+from .cgtypes import *
+from .Interfaces import *
+from .worldobject import WorldObject
+from .beziercurvegeom import BezierCurveGeom
+from . import protocols
+from . import _core
 
 # BezierCurve
 class BezierCurve(WorldObject):

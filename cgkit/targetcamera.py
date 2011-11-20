@@ -39,16 +39,16 @@
 
 """This module contains the TargetCamera class."""
 
-from Interfaces import *
-import protocols
-import slots
-from cgtypes import *
+from .Interfaces import *
+from . import protocols
+from . import slots
+from .cgtypes import *
 from math import pi
-from worldobject import WorldObject
-from globalscene import getScene
-import camerabase, lookat
+from .worldobject import WorldObject
+from .globalscene import getScene
+from . import camerabase, lookat
 import sys
-import _core
+from . import _core
 
 # TargetCamera
 class TargetCamera(camerabase.CameraBase):
@@ -135,10 +135,10 @@ class TargetCamera(camerabase.CameraBase):
      
     ## protected:
 
-    exec slots.slotPropertyCode("fstop")
-    exec slots.slotPropertyCode("focallength")
-    exec slots.slotPropertyCode("roll")
-    exec slots.slotPropertyCode("up")
+    exec(slots.slotPropertyCode("fstop"))
+    exec(slots.slotPropertyCode("focallength"))
+    exec(slots.slotPropertyCode("roll"))
+    exec(slots.slotPropertyCode("up"))
 
     # "fov" property...
     

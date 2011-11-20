@@ -37,7 +37,7 @@
 ## \file trimeshgeom.py
 ## Contains the TriMeshGeom class.
 
-import _core
+from . import _core
 
 # TriMeshGeom
 class TriMeshGeom(_core.TriMeshGeom):

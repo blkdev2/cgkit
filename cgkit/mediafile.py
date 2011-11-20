@@ -34,12 +34,12 @@
 # ***** END LICENSE BLOCK *****
 
 import sys
-from ffmpeg import avutil, swscale, avformat, avcodec
+from .ffmpeg import avutil, swscale, avformat, avcodec
 import ctypes
 try:
     import Image
     _pilImportException = None
-except ImportError, exc:
+except ImportError as exc:
     _pilImportException = exc
 
 

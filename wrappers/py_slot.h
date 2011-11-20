@@ -42,7 +42,7 @@ using std::string;
 // This macro can be used to create a new Python array slot type
 #define ARRAYSLOT(sname,stype) class_<_ArraySlotIterator<stype> >("_"sname"_Iterator", init<ArraySlot<stype>&>()) \
     .def("__iter__", &_ArraySlotIterator<stype>::__iter__) \
-    .def("next", &_ArraySlotIterator<stype>::next) \
+    .def("__next__", &_ArraySlotIterator<stype>::next) \
   ; \
   class_<ArraySlot<stype>, \
                                ArraySlotWrapper<stype>, \
@@ -391,9 +391,8 @@ class ArraySlotWrapper : public ArraySlot<T>
 	// because __getitem__ is not available or an IndexError because i
 	// is out of range)
 	PyErr_Clear();
-	// Throw a more descriptive ValueError
-	boost::python::object msg = "The values have to be given as a %d-sequence."%make_tuple(self->multiplicity());
-	throw EValueError(PyByteArray_AsString(msg.ptr()));
+	// Throw a ValueError
+	throw EValueError("Invalid array slot value.");
       }
       // ...and convert it to the corresponding C++ value
       try

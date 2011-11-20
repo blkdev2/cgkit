@@ -36,34 +36,34 @@
 
 import sys, os, os.path, shutil, types
 from . import protocols
-import pluginmanager
-import lightsource
+from . import pluginmanager
+from . import lightsource
 #from cgkit import *
-from cgtypes import *
-from targetcamera import TargetCamera
-from globalscene import getScene
-from geomobject import *
-from boxgeom import BoxGeom
-from spheregeom import SphereGeom
-from ccylindergeom import CCylinderGeom
-from torusgeom import TorusGeom
-from planegeom import PlaneGeom
-from trimeshgeom import TriMeshGeom
-from polyhedrongeom import PolyhedronGeom
-from spotlight3ds import SpotLight3DS
-from glpointlight import GLPointLight
-from gltargetspotlight import GLTargetSpotLight
-from glfreespotlight import GLFreeSpotLight
-from gltargetdistantlight import GLTargetDistantLight
-from glfreedistantlight import GLFreeDistantLight
-from glmaterial import GLMaterial
+from .cgtypes import *
+from .targetcamera import TargetCamera
+from .globalscene import getScene
+from .geomobject import *
+from .boxgeom import BoxGeom
+from .spheregeom import SphereGeom
+from .ccylindergeom import CCylinderGeom
+from .torusgeom import TorusGeom
+from .planegeom import PlaneGeom
+from .trimeshgeom import TriMeshGeom
+from .polyhedrongeom import PolyhedronGeom
+from .spotlight3ds import SpotLight3DS
+from .glpointlight import GLPointLight
+from .gltargetspotlight import GLTargetSpotLight
+from .glfreespotlight import GLFreeSpotLight
+from .gltargetdistantlight import GLTargetDistantLight
+from .glfreedistantlight import GLFreeDistantLight
+from .glmaterial import GLMaterial
 from cgkit.Interfaces import *
-from _OpenGL.GL import GL_REPLACE, GL_MODULATE, GL_DECAL, GL_BLEND
-from _OpenGL.GL import *
-import cmds
-from ri import *
-import sl
-from riutil import *
+from ._OpenGL.GL import GL_REPLACE, GL_MODULATE, GL_DECAL, GL_BLEND
+from ._OpenGL.GL import *
+from . import cmds
+from .ri import *
+from . import sl
+from .riutil import *
 from math import *
 
 #class IObject(protocols.Interface): pass
@@ -180,7 +180,7 @@ class RIBExporter:
             except NotImplementedError:
                 # TODO: Use protocols instead of isinstance()
                 if isinstance(obj, lightsource.LightSource):
-                    print 'Unknown light source: "%s"'%obj.name
+                    print('Unknown light source: "%s"'%obj.name)
 
             if obj.geom==None:
                 continue
@@ -261,7 +261,7 @@ class RIBExporter:
             RiArchiveRecord(RI_VERBATIM, globalrib+"\n")
 
         # Do render passes...
-        print len(passes),"passes..."
+        print(len(passes),"passes...")
 #        nr = 0
         # Tex passes first
         for rpass in passes:
@@ -298,7 +298,7 @@ class RIBExporter:
         if output==None:
             return []
         # Is output a string? (i.e. the output file name)
-        elif isinstance(output, types.StringTypes):
+        elif isinstance(output, str):
             out = [(output, display, mode, {})]
             if output_framebuffer:
                 out += [(output, RI_FRAMEBUFFER, mode, {})]
@@ -324,7 +324,7 @@ class RIBExporter:
             expgeom = self.adapt(geom, IGeometry)
             return True
         except NotImplementedError:
-            print '"%s" has unknown geometry.'%wobj.name
+            print('"%s" has unknown geometry.'%wobj.name)
             return False
         
     # applyViewTransform
@@ -509,7 +509,7 @@ class RIBExporter:
         try:
             expgeom = self.adapt(geom, IGeometry)
         except NotImplementedError:
-            print 'Warning: Unknown geometry: "%s" (%s)'%(geom.name, geom.__class__.__name__)
+            print('Warning: Unknown geometry: "%s" (%s)'%(geom.name, geom.__class__.__name__))
             return
 
         # Create the geoms directory if it doesn't exist
@@ -793,7 +793,7 @@ class ImagePass(RenderPass):
             else:
                 raise Exception
         except:
-            print >>sys.stderr, "Error: Invalid resolution setting:",res
+            print("Error: Invalid resolution setting:",res, file=sys.stderr)
             w,h,aspect = 640,480,1
         RiFormat(w,h,aspect)
         RiShadingRate(scene.getGlobal("shadingrate", 1.0))
@@ -1082,7 +1082,7 @@ class BakePass(RenderPass):
             else:
                 raise Exception
         except:
-            print >>sys.stderr, "Error: Invalid resolution setting:",res
+            print("Error: Invalid resolution setting:",res, file=sys.stderr)
             w,h,aspect = 256,256,1
         RiFormat(w,h,aspect)
         RiShadingRate(scene.getGlobal("shadingrate", 1.0))
@@ -1162,7 +1162,7 @@ class BakePass(RenderPass):
         # Convert the tex coords into vec3s...
         st = geom.slot(stvarname)
 #        print "sizes:",geom.verts.size(), st.size()
-        stcoords = map(lambda x: vec3(x), st)
+        stcoords = [vec3(x) for x in st]
 
         # Transform the verts...
 #        verts = []
@@ -1177,7 +1177,7 @@ class BakePass(RenderPass):
         # Create parameter list...
         W = obj.worldtransform
         params = {"P":stcoords,
-                  "Pref":map(lambda x: W*x, geom.verts)}
+                  "Pref":[W*x for x in geom.verts]}
         RiDeclare("Pref", "vertex point")
         clss = ["constant", "uniform", "varying", "vertex", "facevarying", "facevertex", "user"]
         typs = ["integer", "float", "string", "color", "point", "vector",
@@ -1290,18 +1290,18 @@ class TexPass(RenderPass):
         texname = os.path.basename(texmap)
         name, ext = os.path.splitext(texname)
         if ext.lower()!=".tif":
-            print 'Converting "%s"'%texmap
+            print('Converting "%s"'%texmap)
             tifname = os.path.join(self.exporter.map_path, name+".tif")
             # Read original map
             try:
                 img = Image.open(texmap)
-            except IOError, e:
-                print e
+            except IOError as e:
+                print(e)
                 return
             # Save map as TIF file
             img.save(tifname)
         else:
-            print 'Copying "%s"'%texmap
+            print('Copying "%s"'%texmap)
             dest = os.path.join(self.exporter.map_path, os.path.basename(texmap))
             shutil.copyfile(texmap, dest)
 
@@ -1495,7 +1495,7 @@ class PolyhedronAdapter:
                 RiSubdivisionMesh("catmull-clark", nverts, vertids,
                                   [], 0, [], [], params)
             else:
-                print >>sys.stderr, "Warning: Polyhedron with holes in its polys can't be used as subdiv"
+                print("Warning: Polyhedron with holes in its polys can't be used as subdiv", file=sys.stderr)
         else:
             RiPointsGeneralPolygons(nloops, nverts, vertids, params)
 

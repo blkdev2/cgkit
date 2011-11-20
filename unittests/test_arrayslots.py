@@ -44,18 +44,18 @@ class TestArraySlot(unittest.TestCase):
             asl[i]=i+1
 
         # Check if the values were properly set
-        self.assertEqual(list(asl), range(1,9))
+        self.assertEqual(list(asl), list(range(1,9)))
 
         # Enlarge the array
         asl.resize(20)
         self.assertEqual(asl.size(), 20)
         # Check if the values were properly copied
-        self.assertEqual(list(asl), range(1,9)+12*[0])
+        self.assertEqual(list(asl), list(range(1,9))+12*[0])
 
         # Shrink the array
         asl.resize(4)
         # Check if the values were properly copied
-        self.assertEqual(list(asl), range(1,5))
+        self.assertEqual(list(asl), list(range(1,5)))
 
         # Negative size must equal 0
         asl.resize(-2)

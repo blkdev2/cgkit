@@ -35,13 +35,13 @@
 # $Id: offexport.py,v 1.2 2005/04/14 17:22:24 mbaas Exp $
 
 import os.path, sys
-from cgtypes import *
-from globalscene import getScene
-from geomobject import *
-from trimeshgeom import TriMeshGeom
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
-import cmds
+from .cgtypes import *
+from .globalscene import getScene
+from .geomobject import *
+from .trimeshgeom import TriMeshGeom
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
+from . import cmds
 
 # OffExporter
 class OffExporter:
@@ -91,10 +91,10 @@ class OffExporter:
         if self.N_flag:
             kw += "N"
         kw += "OFF"
-        print >>self.fhandle, kw
+        print(kw, file=self.fhandle)
 
         # Write number of vertices and faces
-        print >>self.fhandle, "%d %d 0"%(numverts, numfaces)
+        print("%d %d 0"%(numverts, numfaces), file=self.fhandle)
 
         # Write vertices...
         self.writeVertices()
@@ -126,16 +126,16 @@ class OffExporter:
                     s = "3 %d %d %d"%(f[0]+vo, f[1]+vo, f[2]+vo)
                     if Cs!=None:
                         s += "  %f %f %f"%tuple(Cs[i])
-                    print >>self.fhandle, s
+                    print(s, file=self.fhandle)
             else:
                 for i in range(geom.getNumPolys()):
                     poly = geom.getPoly(i)[0]
                     nv = len(poly)
-                    loop = map(lambda n: n+vo, poly)
+                    loop = [n+vo for n in poly]
                     s = ("%d "%nv)+(nv*"% d")%tuple(loop)
                     if Cs!=None:
                         s += "  %f %f %f"%tuple(Cs[i])
-                    print >>self.fhandle, s
+                    print(s, file=self.fhandle)
                     
 
     # writeVertices
@@ -199,7 +199,7 @@ class OffExporter:
                     else:
                         s += "  0.0 0.0"
                 
-                print >>self.fhandle, s
+                print(s, file=self.fhandle)
 
             voffset += geom.verts.size()
             

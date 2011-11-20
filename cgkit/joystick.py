@@ -218,7 +218,7 @@ class Joystick:
         \param mid (\c float) Middle value (None = take current value)
         """
         if axis==None:
-            axes = range(self.numaxes)
+            axes = list(range(self.numaxes))
         else:
             axes = [axis]
 

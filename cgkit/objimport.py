@@ -35,16 +35,16 @@
 # $Id: objimport.py,v 1.11 2006/03/20 19:33:24 mbaas Exp $
 
 import os.path, sys
-from cgtypes import *
-from worldobject import WorldObject
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-from polyhedron import Polyhedron
-from polyhedrongeom import PolyhedronGeom
-import pluginmanager
+from .cgtypes import *
+from .worldobject import WorldObject
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from .polyhedron import Polyhedron
+from .polyhedrongeom import PolyhedronGeom
+from . import pluginmanager
 from cgkit.all import UNIFORM, VARYING, FACEVARYING, NORMAL, FLOAT, INT, OBJMaterial, OBJTextureMap
-import cmds
-import objmtl
+from . import cmds
+from . import objmtl
 
 
 class _MTLReader(objmtl.MTLReader):
@@ -222,8 +222,8 @@ class _OBJReader(objmtl.OBJReader):
             # Read the MTL file...
             try:
                 f = file(fname)
-            except IOError, e:
-                print e
+            except IOError as e:
+                print(e)
                 continue
             mtlreader.read(f)
             f.close()
@@ -235,7 +235,7 @@ class _OBJReader(objmtl.OBJReader):
     # usemtl
     def usemtl(self, name):
         if name not in self.materials:
-            print >>sys.stderr, 'WARNING: No definition found for material "%s"'%name
+            print('WARNING: No definition found for material "%s"'%name, file=sys.stderr)
             # Store None so that the warning message will only get printed
             # once for each missing material name
             self.materials[name] = None
@@ -273,7 +273,7 @@ class _OBJReader(objmtl.OBJReader):
         """Points."""
         if self.point_msg_flag:
             return
-        print "OBJ import: Points are not supported"
+        print("OBJ import: Points are not supported")
         self.point_msg_flag = True
 
     # l
@@ -281,7 +281,7 @@ class _OBJReader(objmtl.OBJReader):
         """Line."""
         if self.line_msg_flag:
             return
-        print "OBJ import: Lines are not supported"
+        print("OBJ import: Lines are not supported")
         self.line_msg_flag = True
 
     # f

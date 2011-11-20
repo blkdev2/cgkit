@@ -35,9 +35,9 @@
 # $Id: pyimport.py,v 1.4 2005/08/30 09:59:07 mbaas Exp $
 
 import sys, os.path, copy
-import pluginmanager
-import globalscene
-import eventmanager
+from . import pluginmanager
+from . import globalscene
+from . import eventmanager
 
 # PyImporter
 class PyImporter:
@@ -63,9 +63,9 @@ class PyImporter:
         # Commented out the following line as is imported from cgkit.all now
 #        file_globals = copy.copy(cgkit.__dict__)
         # Add some modules...
-        exec "from cgkit.all import *" in file_globals
-        exec "from cgkit.sl import *" in file_globals
-        exec "from math import *" in file_globals
+        exec("from cgkit.all import *", file_globals)
+        exec("from cgkit.sl import *", file_globals)
+        exec("from math import *", file_globals)
         # ...and some special global names...
         scene = globalscene.getScene()
         file_globals["scene"] = scene
@@ -78,7 +78,7 @@ class PyImporter:
         # so that local imports do work
         sys.path = [os.path.abspath(os.path.dirname(filename))] + sys.path
         # Import the file
-        execfile(filename, file_globals)
+        exec(compile(open(filename).read(), filename, 'exec'), file_globals)
         # Restore the old search paths
         sys.path = paths
 

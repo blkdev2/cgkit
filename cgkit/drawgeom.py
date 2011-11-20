@@ -37,7 +37,7 @@
 ## \file drawgeom.py
 ## Contains the DrawGeom class.
 
-import _core
+from . import _core
 
 # DrawGeom
 DrawGeom = _core.DrawGeom

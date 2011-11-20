@@ -37,13 +37,13 @@
 ## \file polyhedron.py
 ## Contains the Polyhedron class.
 
-from cgtypes import *
-from Interfaces import *
-from worldobject import WorldObject
-from polyhedrongeom import PolyhedronGeom
-from slots import *
-import protocols
-import _core
+from .cgtypes import *
+from .Interfaces import *
+from .worldobject import WorldObject
+from .polyhedrongeom import PolyhedronGeom
+from .slots import *
+from . import protocols
+from . import _core
 
 
 # Polyhedron
@@ -81,5 +81,5 @@ class Polyhedron(WorldObject):
                 ph.setPoly(i, poly)
                 i+=1
         
-    exec slotPropertyCode("static")
+    exec(slotPropertyCode("static"))
 

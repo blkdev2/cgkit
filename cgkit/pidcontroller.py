@@ -37,12 +37,12 @@
 ## \file pidcontroller.py
 ## Contains the PIDController class.
 
-import component
-import eventmanager, events
-from globalscene import getScene
-from slots import *
-from cgtypes import *
-import _core
+from . import component
+from . import eventmanager, events
+from .globalscene import getScene
+from .slots import *
+from .cgtypes import *
+from . import _core
 
 # PIDController
 class PIDController(component.Component):
@@ -50,14 +50,14 @@ class PIDController(component.Component):
 
     """
 
-    exec slotPropertyCode("input")
-    exec slotPropertyCode("output")
-    exec slotPropertyCode("setpoint")
-    exec slotPropertyCode("maxout")
-    exec slotPropertyCode("minout")
-    exec slotPropertyCode("Kp")
-    exec slotPropertyCode("Ki")
-    exec slotPropertyCode("Kd")
+    exec(slotPropertyCode("input"))
+    exec(slotPropertyCode("output"))
+    exec(slotPropertyCode("setpoint"))
+    exec(slotPropertyCode("maxout"))
+    exec(slotPropertyCode("minout"))
+    exec(slotPropertyCode("Kp"))
+    exec(slotPropertyCode("Ki"))
+    exec(slotPropertyCode("Kd"))
 
     def __init__(self,
                  name = "PIDController",

@@ -37,12 +37,12 @@
 ## \file torus.py
 ## Contains the Torus class.
 
-from cgtypes import vec3
-from Interfaces import *
-from worldobject import WorldObject
-from torusgeom import TorusGeom
-from slots import *
-import protocols
+from .cgtypes import vec3
+from .Interfaces import *
+from .worldobject import WorldObject
+from .torusgeom import TorusGeom
+from .slots import *
+from . import protocols
 
 
 # Torus

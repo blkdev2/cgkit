@@ -37,13 +37,13 @@
 ## \file glfreedistantlight.py
 ## Contains the GLFreeDistantLight class.
 
-import protocols
-from Interfaces import *
-from slots import *
-from cgtypes import vec3
-from worldobject import _initWorldObject, _preInitWorldObject
-import cmds
-import _core
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .cgtypes import vec3
+from .worldobject import _initWorldObject, _preInitWorldObject
+from . import cmds
+from . import _core
 
 # GLFreeDistantLight
 class GLFreeDistantLight(_core.GLDistantLight):
@@ -66,7 +66,7 @@ class GLFreeDistantLight(_core.GLDistantLight):
                  auto_insert=True,
                  **params
                  ):
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.GLDistantLight.__init__(self, name)
 
         _initWorldObject(self, name=name, parent=parent,

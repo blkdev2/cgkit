@@ -37,7 +37,7 @@
 ## \file spheregeom.py
 ## Contains the SphereGeom class.
 
-import _core
+from . import _core
 
 # SphereGeom
 class SphereGeom(_core.SphereGeom):

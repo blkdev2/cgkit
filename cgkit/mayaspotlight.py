@@ -35,12 +35,12 @@
 # $Id$
 
 import os.path
-import protocols
-from Interfaces import *
-from slots import *
-import lookat
-from lightsource import LightSource
-import ribexport
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from . import lookat
+from .lightsource import LightSource
+from . import ribexport
 from math import *
 
 # MayaSpotLight

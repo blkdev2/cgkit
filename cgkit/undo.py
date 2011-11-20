@@ -51,7 +51,7 @@ class _ReverseIterator:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         if self._idx==-1:
             raise StopIteration()
         res = self._list[self._idx]

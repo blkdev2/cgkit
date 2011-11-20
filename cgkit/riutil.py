@@ -154,7 +154,7 @@ def RiuHeightfield(image):
     if not _PIL_installed:
         raise ImportError("the Python Imaging Library (PIL) is not installed")
     
-    if type(image)==types.StringType or type(image)==types.UnicodeType:
+    if type(image)==bytes or type(image)==str:
         image = Image.open(image)
 
     points = []

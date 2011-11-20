@@ -37,11 +37,11 @@
 ## \file valuetable.py
 ## Contains the ValueTable component.
 
-from globalscene import getScene
-import component
+from .globalscene import getScene
+from . import component
 import bisect
-from cgtypes import *
-from slots import *
+from .cgtypes import *
+from .slots import *
 
 # TableEntry
 class _TableEntry:
@@ -109,10 +109,10 @@ class ValueTable(component.Component):
         self.time_slot = DoubleSlot()
         self.addSlot("time", self.time_slot)
         typ = type.lower()
-        exec "self.output_slot = Procedural%sSlot(self.computeValue)"%typ.capitalize()
+        exec("self.output_slot = Procedural%sSlot(self.computeValue)"%typ.capitalize())
         self.addSlot("output", self.output_slot)
         pytypes = {"double":"float"}
-        exec "self.default_value = %s()"%pytypes.get(typ, typ)
+        exec("self.default_value = %s()"%pytypes.get(typ, typ))
 
         self.time_slot.addDependent(self.output_slot)
         getScene().timer().time_slot.connect(self.time_slot)
@@ -179,4 +179,4 @@ class ValueTable(component.Component):
         """Computes a new output value."""
         return self(self.time_slot.getValue())
 
-    exec slotPropertyCode("output")
+    exec(slotPropertyCode("output"))

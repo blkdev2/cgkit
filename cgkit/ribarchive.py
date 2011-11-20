@@ -37,13 +37,13 @@
 ## \file ribarchive.py
 ## Contains the RIBArchive class.
 
-import protocols
+from . import protocols
 from cgkit.Interfaces import *
-from worldobject import WorldObject
-from geomobject import GeomObject
-from boundingbox import BoundingBox
-import ribexport
-from ri import *
+from .worldobject import WorldObject
+from .geomobject import GeomObject
+from .boundingbox import BoundingBox
+from . import ribexport
+from .ri import *
 
 # RIBArchiveGeom
 class RIBArchiveGeom(GeomObject):

@@ -40,7 +40,7 @@ def getScene():
     """Return the global %scene instance."""
     global _scene
     if _scene is None:
-        import scene
+        from . import scene
         _scene = scene.Scene()
     return _scene
 

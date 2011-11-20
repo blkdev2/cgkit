@@ -35,20 +35,20 @@
 # $Id: dddsimport.py,v 1.5 2005/06/07 07:43:03 mbaas Exp $
 
 import os.path
-import _core
-from cgtypes import *
-from globalscene import getScene
-from worldobject import WorldObject
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-from targetcamera import TargetCamera
-from glpointlight import GLPointLight
-from gltargetspotlight import GLTargetSpotLight
-from spotlight3ds import SpotLight3DS
-from glmaterial import GLMaterial
-from material3ds import Material3DS, TextureMap3DS
-import pluginmanager
-from sl import *
+from . import _core
+from .cgtypes import *
+from .globalscene import getScene
+from .worldobject import WorldObject
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from .targetcamera import TargetCamera
+from .glpointlight import GLPointLight
+from .gltargetspotlight import GLTargetSpotLight
+from .spotlight3ds import SpotLight3DS
+from .glmaterial import GLMaterial
+from .material3ds import Material3DS, TextureMap3DS
+from . import pluginmanager
+from .sl import *
 
 TYPE_UNKNOWN = 0
 TYPE_AMBIENT = 1
@@ -107,7 +107,7 @@ class DDDSImporter:
             if m.name in self.meshes:
                 print("Warning: Duplicate mesh names in 3ds file")
             self.meshes[m.name] = m
-            m = m.next()
+            m = next(m)
 
         # Create objects...
         self.materials = {}
@@ -251,7 +251,7 @@ class DDDSImporter:
             self.createObject(node.childs(), worldobj, flags=flags)
         else:
             self.createObject(node.childs(), parent, flags=flags)
-        self.createObject(node.next(), parent, flags=flags)
+        self.createObject(next(node), parent, flags=flags)
         
 
     ## protected:

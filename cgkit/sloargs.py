@@ -252,7 +252,7 @@ class _SloArgs:
                     if space=="":
                         space = None
                 else:
-                    print >>sys.stderr, "Warning: Slo_GetArrayArgElement(%s) returned a NULL pointer"%i
+                    print("Warning: Slo_GetArrayArgElement(%s) returned a NULL pointer"%i, file=sys.stderr)
                     space = None
                 res.append(space)
             # Did we only get a list of None objects?
@@ -272,7 +272,7 @@ class _SloArgs:
                 if bool(psd):
                     res.append(self._getDefaultVal(psd.contents))
                 else:
-                    print >>sys.stderr, "Warning: Slo_GetArrayArgElement(%s) returned a NULL pointer"%i
+                    print("Warning: Slo_GetArrayArgElement(%s) returned a NULL pointer"%i, file=sys.stderr)
                     res.append(None)
             return res
         
@@ -484,7 +484,7 @@ class _SloArgs_Pixie(_SloArgs):
                         defaultVal.append(self._getDefaultVal(paramType, param.defaultValue.array[i]))
                 
                 params.append((output,storage,paramType,arrLen,name,space,defaultVal))
-                param = param.next
+                param = param.__next__
         finally:
             sdr.sdrDelete(shaderInfo)
           
@@ -605,15 +605,15 @@ if __name__=="__main__":
         info = cgkit.slparams.slparams("foo.sl")
         if len(info)>0:
             type,name,params = info[0]
-            print ("Shader: %s"%name)
-            print ("Type  : %s"%type)
+            print(("Shader: %s"%name))
+            print(("Type  : %s"%type))
             for param in params:
-                print ("%s %s"%(param, cgkit.slparams.convertdefault(param)))
+                print(("%s %s"%(param, cgkit.slparams.convertdefault(param))))
     
     info = slparams("foo.sdr")
     if len(info)>0:
         type,name,params = info[0]
-        print ("Shader: %s"%name)
-        print ("Type  : %s"%type)
+        print(("Shader: %s"%name))
+        print(("Type  : %s"%type))
         for param in params:
             print (param)

@@ -35,22 +35,22 @@
 # $Id: x3dimport.py,v 1.2 2005/04/15 13:30:35 mbaas Exp $
 
 import os.path
-import _core
-from cgtypes import *
-from globalscene import getScene
-from worldobject import WorldObject
-from trimesh import TriMesh
-from trimeshgeom import TriMeshGeom
-from targetcamera import TargetCamera
-from glpointlight import GLPointLight
-from glfreespotlight import GLFreeSpotLight
-from glfreedistantlight import GLFreeDistantLight
-from glmaterial import GLMaterial, GLTexture
-from box import Box
-from quadrics import Sphere
-from group import Group
-import pluginmanager
-from sl import *
+from . import _core
+from .cgtypes import *
+from .globalscene import getScene
+from .worldobject import WorldObject
+from .trimesh import TriMesh
+from .trimeshgeom import TriMeshGeom
+from .targetcamera import TargetCamera
+from .glpointlight import GLPointLight
+from .glfreespotlight import GLFreeSpotLight
+from .glfreedistantlight import GLFreeDistantLight
+from .glmaterial import GLMaterial, GLTexture
+from .box import Box
+from .quadrics import Sphere
+from .group import Group
+from . import pluginmanager
+from .sl import *
 
 
 # VRMLImporter

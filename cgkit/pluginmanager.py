@@ -371,7 +371,7 @@ class PluginManager:
                 raise PluginAlreadyLoaded("Plugin '%s' is already loaded."%filename)
 
         # Find the file description tuple  (suffix, mode, type)
-        filedesc = filter(lambda x: x[0]==ext, imp.get_suffixes())
+        filedesc = [x for x in imp.get_suffixes() if x[0]==ext]
         if filedesc==[]:
             raise UnknownFileType('File "%s" is of unknown type."'%filename)
         filedesc = filedesc[0]
@@ -431,7 +431,7 @@ class PluginManager:
         \return A list of plugin descriptors.
         """
 
-        if isinstance(plugins, types.StringTypes):
+        if isinstance(plugins, str):
             plugins = [plugins]
         
         res = []
@@ -459,7 +459,7 @@ class PluginManager:
                     ext = ext.lower()
                     # Only try to import if the file is actually a
                     # Python module (other than .pyc)...
-                    filedesc = filter(lambda x: x[0]==ext, imp.get_suffixes())
+                    filedesc = [x for x in imp.get_suffixes() if x[0]==ext]
                     if filedesc!=[] and ext!=".pyc":
                         out.write('Loading plugin "'+f+'"...\n')
                         d = self.importPlugin(f)
@@ -543,7 +543,7 @@ class PluginManager:
         \return Plugin descriptor (\c PluginDescriptor) or None
         """
         filename = os.path.abspath(filename)
-        pl = filter(lambda d: d.filename==filename, self._plugins)
+        pl = [d for d in self._plugins if d.filename==filename]
         if pl==[]:
             return None
         else:
@@ -745,7 +745,7 @@ if __name__=="__main__":
         print (pdesc)
 
     for prot in pm.iterProtocols():
-        print ("Protokoll: %s"%prot)
+        print(("Protokoll: %s"%prot))
         for odesc in pm.iterProtoObjects(prot):
             print (odesc)
 

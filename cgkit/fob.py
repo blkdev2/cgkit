@@ -36,7 +36,7 @@
 
 
 import sys, string, time, struct
-from cgtypes import *
+from .cgtypes import *
 from math import pi
 try:
     import serial
@@ -117,13 +117,13 @@ def hexdump(data):
             s = hex(ord(c))[2:]
             if len(s)==1:
                 s="0"+s
-            print s,
+            print(s, end=' ')
             if c in string.printable and c not in string.whitespace:
                 t+=c
             else:
                 t+="."
-        print (48-3*len(data))*" ",
-        print t
+        print((48-3*len(data))*" ", end=' ')
+        print(t)
 
 class FOBRecord:
     def __init__(self):
@@ -229,7 +229,7 @@ class BirdContext:
         ls = ord(s[0]) & 0x7f
         ms = ord(s[1])
         if ms&0x80==0x80:
-            print "MSB bit7 nicht 0!"
+            print("MSB bit7 nicht 0!")
         v = (ms<<9) | (ls<<2)
         if v<0x8000:
             return v
@@ -517,15 +517,15 @@ class FOB:
         while 1:
             record = self._read()
             if record=="":
-                print "FOB: No feedback from the ERC"
+                print("FOB: No feedback from the ERC")
                 return
             if ord(record[0])&0x80:
                 break
-            print "FOB: Bit 7 not set"
+            print("FOB: Bit 7 not set")
             
         record += self._read(ctx.record_size-1)
         if len(record)!=ctx.record_size:
-            print "Wrong number of bytes read (%d instead of %d)"%(len(record), ctx.record_size)
+            print("Wrong number of bytes read (%d instead of %d)"%(len(record), ctx.record_size))
             return None
 #        hexdump(res)
 
@@ -593,9 +593,9 @@ class FOB:
         self._write(METAL_ERROR)               
         met = self._read(1)
         if len(met)!=1:
-            print "Metal error byte nicht erhalten"
+            print("Metal error byte nicht erhalten")
             return
-        print "Metal error:",ord(met[0])
+        print("Metal error:",ord(met[0]))
         
     def fbbAutoConfig(self, numbirds):
         """FBB AUTO-CONFIGURATION command.

@@ -34,15 +34,15 @@
 # ***** END LICENSE BLOCK *****
 # $Id: rmshader.py,v 1.9 2006/05/26 21:33:29 mbaas Exp $
 
-import sys, os, os.path, re, types, StringIO, copy
-import protocols
-from Interfaces import *
-import ri
-import material, lightsource
-import ribexport
-import slparams
-from slots import *
-from cgtypes import *
+import sys, os, os.path, re, types, io, copy
+from . import protocols
+from .Interfaces import *
+from . import ri
+from . import material, lightsource
+from . import ribexport
+from . import slparams
+from .slots import *
+from .cgtypes import *
 
 # RMShader
 class RMShader(object):
@@ -151,7 +151,7 @@ class RMShader(object):
             if len(slinfo)==0:
                 raise ValueError("no shader found in %s"%shader)
             if len(slinfo)>1:
-                print("WARNING: There is more than one shader in %s"%shader)
+                print(("WARNING: There is more than one shader in %s"%shader))
 
             # Declare the variables...
             self.shadertype, self.shadername, params = slinfo[0]
@@ -252,7 +252,7 @@ class RMShader(object):
         """Return a list containing the passes required for this shader.
         """
         res = []
-        for val in self.str_params.values():
+        for val in list(self.str_params.values()):
             if isinstance(val, ribexport.RenderPass):
                 res.append(val)
         return res
@@ -357,9 +357,9 @@ class RMShader(object):
             # Force a syntax error when name contains no declaration
             if " " not in name:
                 raise slparams.SyntaxError()
-            slinfo = slparams.slparams(StringIO.StringIO(shd))
+            slinfo = slparams.slparams(io.StringIO(shd))
             shdtype, shdname, params = slinfo[0]
-        except slparams.SyntaxError, e:
+        except slparams.SyntaxError as e:
             # Check if name is only a single name or if there was an attempt
             # to specify the entire declaration
             invalid = " []():;'\"'"
@@ -402,7 +402,7 @@ class RMShader(object):
             s, e = match.start(), match.end()
             src = src[:e-len(self.shadername)] + "$SHADERNAME" + src[e:]
         else:
-            print('Shader name "%s" not found in %s'%(self.shadername, self.filename))
+            print(('Shader name "%s" not found in %s'%(self.shadername, self.filename)))
 
         return src
         
@@ -420,11 +420,11 @@ class RMShader(object):
         """
         
         if arraylen is None:
-            exec "slot = %sSlot()"%type.capitalize()
+            exec("slot = %sSlot()"%type.capitalize())
             if default is not None:
                 slot.setValue(default)
         else:
-            exec "slot = %sArraySlot()"%type.capitalize()
+            exec("slot = %sArraySlot()"%type.capitalize())
             slot.resize(arraylen)
             if default is not None:
                 for i,v in enumerate(default):
@@ -494,11 +494,11 @@ class RMMaterial(material.Material):
         
         material.Material.__init__(self, name, 0)
 
-        if isinstance(surface, types.StringTypes):
+        if isinstance(surface, str):
             surface = RMShader(surface)
-        if isinstance(displacement, types.StringTypes):
+        if isinstance(displacement, str):
             displacement = RMShader(displacement)
-        if isinstance(interior, types.StringTypes):
+        if isinstance(interior, str):
             interior = RMShader(interior)
 
         self.surface = surface
@@ -642,7 +642,7 @@ class RMLightSource(lightsource.LightSource):
         
         lightsource.LightSource.__init__(self, name=name, **params)
 
-        if isinstance(shader, types.StringTypes):
+        if isinstance(shader, str):
             shader = RMShader(shader)
 
         self.shader = shader

@@ -42,22 +42,22 @@ dynamics package."""
 
 import weakref
 from . import protocols
-from Interfaces import *
-from component import Component
-from globalscene import getScene
-from eventmanager import eventManager
-from cgtypes import *
-from worldobject import WorldObject
-from spheregeom import SphereGeom
-from ccylindergeom import CCylinderGeom
-from boxgeom import BoxGeom
-from trimeshgeom import TriMeshGeom
-from planegeom import PlaneGeom
-from joints import *
-from events import *
-from slots import *
-import cmds
-import _core
+from .Interfaces import *
+from .component import Component
+from .globalscene import getScene
+from .eventmanager import eventManager
+from .cgtypes import *
+from .worldobject import WorldObject
+from .spheregeom import SphereGeom
+from .ccylindergeom import CCylinderGeom
+from .boxgeom import BoxGeom
+from .trimeshgeom import TriMeshGeom
+from .planegeom import PlaneGeom
+from .joints import *
+from .events import *
+from .slots import *
+from . import cmds
+from . import _core
 try:
     import ode
     has_ode = True
@@ -259,7 +259,7 @@ class ODEDynamics(Component):
         try:
             obj = protocols.adapt(obj, IRigidBody)
         except NotImplementedError:
-            print('Object "%s" is not a rigid body.'%obj.name)
+            print(('Object "%s" is not a rigid body.'%obj.name))
             return
 
         # Should the object be ignored?
@@ -309,7 +309,7 @@ class ODEDynamics(Component):
         # If the mass of a rigid body is <= 0, ODE will crash
         # Using a more reasonable default: mass = 1
         if obj.mass <= 0:
-            print("Using default mass=1 for " + str(obj))
+            print(("Using default mass=1 for " + str(obj)))
             obj.mass = 1
         body = ODEBody(obj, self, categorybits=categorybits, collidebits=collidebits)
         self.bodies.append(body)
@@ -334,7 +334,7 @@ class ODEDynamics(Component):
             j.reset()
 
     # setContactProperties
-    def setContactProperties(self, (mat1, mat2), props):
+    def setContactProperties(self, mat_tuple, props):
         """Set the contact properties of a pair of materials.
 
         The contact properties \a props are applied whenever an object
@@ -344,6 +344,7 @@ class ODEDynamics(Component):
         \param mat2 (\c Material) Material 2
         \param props (\c ODEContactProperties) Contact properties
         """
+        mat1,mat2 = mat_tuple
         self.contactprops[(mat1,mat2)] = props  
         # Collision events are forced to appear in (mat1,mat2) order
      
@@ -428,7 +429,7 @@ class ODEDynamics(Component):
             cmds.drawClear()
 
         # Remove dead body manipulators...
-        self.body_manips = filter(lambda x: x() is not None, self.body_manips)
+        self.body_manips = [x for x in self.body_manips if x() is not None]
 
         # Sim loop...
         subdt = getScene().timer().timestep/self.substeps
@@ -916,7 +917,7 @@ class ODEBody:
         if self.initialization:
             return
         
-        print("Mass changed to",self.obj.mass)
+        print(("Mass changed to",self.obj.mass))
 
     # reset
     def reset(self):
@@ -942,7 +943,7 @@ class ODEBody:
         M = ode.Mass()
         m = obj.totalmass
         if m==0:
-            print('WARNING: Object "%s" has a mass of zero.'%obj.name)
+            print(('WARNING: Object "%s" has a mass of zero.'%obj.name))
         cog = obj.cog
         I = obj.inertiatensor
 #        print '---Rigid body "%s"--------'%obj.name
@@ -1126,15 +1127,15 @@ class ODEJointBase(WorldObject):
 
     protocols.advise(instancesProvide=[ISceneItem])
 
-    exec slotPropertyCode("lostop")
-    exec slotPropertyCode("histop")
-    exec slotPropertyCode("motorvel")
-    exec slotPropertyCode("motorfmax")
-    exec slotPropertyCode("fudgefactor")
-    exec slotPropertyCode("bounce")
-    exec slotPropertyCode("cfm")
-    exec slotPropertyCode("stoperp")
-    exec slotPropertyCode("stopcfm")
+    exec(slotPropertyCode("lostop"))
+    exec(slotPropertyCode("histop"))
+    exec(slotPropertyCode("motorvel"))
+    exec(slotPropertyCode("motorfmax"))
+    exec(slotPropertyCode("fudgefactor"))
+    exec(slotPropertyCode("bounce"))
+    exec(slotPropertyCode("cfm"))
+    exec(slotPropertyCode("stoperp"))
+    exec(slotPropertyCode("stopcfm"))
 
     def __init__(self,
                  name = "",
@@ -1177,7 +1178,7 @@ class ODEJointBase(WorldObject):
         if odedynamics==self.odedynamics:
             return
         if self.odedynamics!=None:
-            print('Warning: Joint "%s" is already in use'%self.name)
+            print(('Warning: Joint "%s" is already in use'%self.name))
         self.odedynamics = odedynamics
         self._createODEjoint()
         self._initODEjoint()
@@ -1218,15 +1219,15 @@ class ODEJointBase(WorldObject):
             name += str(nr)
         # Create the slot
         s = "self.%s_slot = DoubleSlot(%s)"%(name, default)
-        exec s
+        exec(s)
         # Add the slot to the component
         s = "self.addSlot('%s', self.%s_slot)"%(name, name)
-        exec s
+        exec(s)
         # Create the forwarder
         s = "self._%s_forwarder = NotificationForwarder(self.%s)"%(name, callback)
-        exec s
+        exec(s)
         s = "self.%s_slot.addDependent(self._%s_forwarder)"%(name, name)
-        exec s
+        exec(s)
        
 
     # _createODEjoint
@@ -1248,7 +1249,7 @@ class ODEJointBase(WorldObject):
         self.attach(self.body1, self.body2)
         
         try:
-            print("***",self.odejoint.getParam(ode.ParamStopCFM))
+            print(("***",self.odejoint.getParam(ode.ParamStopCFM)))
             
             self.odejoint.setParam(ode.ParamFMax, self.motorfmax)
             self.odejoint.setParam(ode.ParamVel, self.motorvel)
@@ -1355,7 +1356,7 @@ class ODEHingeJoint(ODEJointBase):
     the rotation axis is the local x axis
     """
 
-    exec slotPropertyCode("angle")
+    exec(slotPropertyCode("angle"))
 
     def __init__(self,
                  name = "ODEHingeJoint",
@@ -1444,7 +1445,7 @@ class ODESliderJoint(ODEJointBase):
     the slider axis is the local x axis
     """
 
-    exec slotPropertyCode("position")
+    exec(slotPropertyCode("position"))
 
     def __init__(self,
                  name = "ODEHingeJoint",
@@ -1493,12 +1494,12 @@ class ODEHinge2Joint(ODEJointBase):
     axis1 is the local z axis
     """
 
-    exec slotPropertyCode("motorfmax")
-    exec slotPropertyCode("motorvel")
-    exec slotPropertyCode("suspensionerp")
-    exec slotPropertyCode("suspensioncfm")
-    exec slotPropertyCode("motorfmax2")
-    exec slotPropertyCode("motorvel2")
+    exec(slotPropertyCode("motorfmax"))
+    exec(slotPropertyCode("motorvel"))
+    exec(slotPropertyCode("suspensionerp"))
+    exec(slotPropertyCode("suspensioncfm"))
+    exec(slotPropertyCode("motorfmax2"))
+    exec(slotPropertyCode("motorvel2"))
 
     def __init__(self,
                  name = "ODEHingeJoint",
@@ -1540,13 +1541,13 @@ class ODEHinge2Joint(ODEJointBase):
         self.odejoint.setParam(ode.ParamVel, self.motorvel)
 
     def onSuspensionERPChanged(self):
-        print("susp. erp has been changed to",self.suspensionerp_slot.getValue())
+        print(("susp. erp has been changed to",self.suspensionerp_slot.getValue()))
         if self.odejoint!=None:
             self.odejoint.setParam(ode.ParamSuspensionERP,
                                    self.suspensionerp_slot.getValue())
 
     def onSuspensionCFMChanged(self):
-        print("susp. cfm has been changed to",self.suspensioncfm_slot.getValue())
+        print(("susp. cfm has been changed to",self.suspensioncfm_slot.getValue()))
         if self.odejoint!=None:
             self.odejoint.setParam(ode.ParamSuspensionCFM,
                                    self.suspensioncfm_slot.getValue())
@@ -1558,7 +1559,7 @@ class ODEUniversalJoint(ODEJointBase):
 
     """
 
-    exec slotPropertyCode("angle")
+    exec(slotPropertyCode("angle"))
 
     def __init__(self,
                  name = "ODEUniversalJoint",

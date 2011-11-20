@@ -37,10 +37,10 @@
 ## \file lightsource.py
 ## Contains the LightSource base class.
 
-import protocols
-from Interfaces import *
-from worldobject import _initWorldObject, _preInitWorldObject
-import _core
+from . import protocols
+from .Interfaces import *
+from .worldobject import _initWorldObject, _preInitWorldObject
+from . import _core
 
 # LightSource
 class LightSource(_core.LightSource):
@@ -53,7 +53,7 @@ class LightSource(_core.LightSource):
                  auto_insert = True,
                  **params):
 
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.LightSource.__init__(self, name)
 
         _initWorldObject(self, name=name, auto_insert=auto_insert,

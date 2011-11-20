@@ -35,16 +35,16 @@
 # $Id: maimport.py,v 1.12 2005/06/15 19:20:29 mbaas Exp $
 
 import sys
-import mayaascii, cmds
-import pluginmanager
-import freecamera
-import quadrics, box, plane, polyhedron, joint, trimesh, trimeshgeom
-import glpointlight, glfreespotlight, glfreedistantlight
-import mayaspotlight
-from geomobject import *
-from cgtypes import *
-from worldobject import WorldObject
-from sl import *
+from . import mayaascii, cmds
+from . import pluginmanager
+from . import freecamera
+from . import quadrics, box, plane, polyhedron, joint, trimesh, trimeshgeom
+from . import glpointlight, glfreespotlight, glfreedistantlight
+from . import mayaspotlight
+from .geomobject import *
+from .cgtypes import *
+from .worldobject import WorldObject
+from .sl import *
 from math import *
             
                 
@@ -101,7 +101,7 @@ class MAImporter(mayaascii.DefaultMAReader):
                 handler(node)
             else:
                 if node.nodetype not in issued_warnings:
-                    print >>sys.stderr, "WARNING: %s nodes are ignored."%node.nodetype
+                    print("WARNING: %s nodes are ignored."%node.nodetype, file=sys.stderr)
                     issued_warnings[node.nodetype] = 1
 
     #################################################
@@ -249,7 +249,7 @@ class MAImporter(mayaascii.DefaultMAReader):
         RY = mat4(cy,0,-sy,0, 0,1,0,0, sy,0,cy,0, 0,0,0,1)
         RZ = mat4(cz,sz,0,0, -sz,cz,0,0, 0,0,1,0, 0,0,0,1)
         a,b,c = ["XYZ", "YZX", "ZXY", "XZY", "YXZ", "ZYX"][ro]
-        exec "R=R%s*R%s*R%s"%(a,b,c)
+        exec("R=R%s*R%s*R%s"%(a,b,c))
 
         sx = sin(radians(jo.x))
         cx = cos(radians(jo.x))
@@ -261,7 +261,7 @@ class MAImporter(mayaascii.DefaultMAReader):
         AY = mat4(cy,0,-sy,0, 0,1,0,0, sy,0,cy,0, 0,0,0,1)
         AZ = mat4(cz,sz,0,0, -sz,cz,0,0, 0,0,1,0, 0,0,0,1)
         a,b,c = jot.upper()
-        exec "JO=A%s*A%s*A%s"%(a,b,c)
+        exec("JO=A%s*A%s*A%s"%(a,b,c))
 
         WT = S*RA*R*IS*T
            
@@ -474,7 +474,7 @@ class MAImporter(mayaascii.DefaultMAReader):
         ax = vec3(creator.getAttrValue("axis", "ax", "double3", 1, vec3(0,1,0)))
 
         if ax!=vec3(0,0,1):
-            print "WARNING: Plane %s ignored because axis!=z"%creator.getName()
+            print("WARNING: Plane %s ignored because axis!=z"%creator.getName())
             return
 
 #        args["transform"] *= self.axisToTransform(ax)
@@ -521,7 +521,7 @@ class MAImporter(mayaascii.DefaultMAReader):
         This is needed to later find the object when it is used as parent.
         """
         if mayanodename in self.worldobjects:
-            print "WARNING: Duplicate node name '%s'"%mayanodename
+            print("WARNING: Duplicate node name '%s'"%mayanodename)
             
         self.worldobjects[mayanodename] = obj
 
@@ -595,7 +595,7 @@ class MAImporter(mayaascii.DefaultMAReader):
             if parentname!=None:
                 parent = self.worldobjects.get(parentname, None)
                 if parent==None:
-                    print "WARNING: Parent '%s' not found."%parentname
+                    print("WARNING: Parent '%s' not found."%parentname)
                     parent = self.root_parent
         else:
             parent = self.root_parent
@@ -653,7 +653,7 @@ class MAImporter(mayaascii.DefaultMAReader):
         RY = mat4(cy,0,-sy,0, 0,1,0,0, sy,0,cy,0, 0,0,0,1)
         RZ = mat4(cz,sz,0,0, -sz,cz,0,0, 0,0,1,0, 0,0,0,1)
         a,b,c = ["XYZ", "YZX", "ZXY", "XZY", "YXZ", "ZYX"][ro]
-        exec "R=R%s*R%s*R%s"%(a,b,c)
+        exec("R=R%s*R%s*R%s"%(a,b,c))
 
         WT = SP.inverse()*S*SH*SP*ST*RP.inverse()*RA*R*RP*RT*T
         WT = WT.transpose()

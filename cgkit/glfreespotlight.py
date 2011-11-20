@@ -37,13 +37,13 @@
 ## \file glfreespotlight.py
 ## Contains the GLFreeSpotLight class.
 
-import protocols
-from Interfaces import *
-from slots import *
-from cgtypes import vec3
-from worldobject import _initWorldObject, _preInitWorldObject
-import cmds
-import _core
+from . import protocols
+from .Interfaces import *
+from .slots import *
+from .cgtypes import vec3
+from .worldobject import _initWorldObject, _preInitWorldObject
+from . import cmds
+from . import _core
 
 # GLFreeSpotLight
 class GLFreeSpotLight(_core.GLSpotLight):
@@ -71,7 +71,7 @@ class GLFreeSpotLight(_core.GLSpotLight):
                  auto_insert=True,
                  **params
                  ):
-        exec _preInitWorldObject
+        exec(_preInitWorldObject)
         _core.GLSpotLight.__init__(self, name)
 
         _initWorldObject(self, name=name, parent=parent,

@@ -37,7 +37,7 @@
 ## \file torusgeom.py
 ## Contains the TorusGeom class.
 
-import _core
+from . import _core
 
 # TorusGeom
 class TorusGeom(_core.TorusGeom):

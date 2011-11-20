@@ -38,15 +38,17 @@
 ## Contains the Material3DS class.
 
 import os.path, sys, shutil
-import protocols
-from _OpenGL.GL import *
-from Interfaces import *
-from slots import *
-import lookat, sl, math
-from material import Material
-from glmaterial import GLMaterial, GLTexture
-import ribexport
-import _Image as Image
+import math
+from . import protocols
+from ._OpenGL.GL import *
+from .Interfaces import *
+from .slots import *
+from . import lookat
+from . import sl
+from .material import Material
+from .glmaterial import GLMaterial, GLTexture
+from . import ribexport
+from . import _Image as Image
 
 # TextureMap3DS
 class TextureMap3DS:

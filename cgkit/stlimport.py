@@ -35,9 +35,9 @@
 # $Id: stlimport.py,v 1.1 2005/01/09 20:13:06 mbaas Exp $
 
 import os.path, sys, struct
-from cgtypes import *
-from trimesh import TriMesh
-import pluginmanager
+from .cgtypes import *
+from .trimesh import TriMesh
+from . import pluginmanager
 
 # STLReader
 class STLReader:
@@ -194,7 +194,7 @@ class STLImport(STLReader):
     def end(self, name):
         faces = []
         for i in range(self.numfaces):
-            faces.append(range(i*3, i*3+3))
+            faces.append(list(range(i*3, i*3+3)))
         TriMesh(name=name, verts=self.verts, faces=faces)
 
     # triangle
