@@ -164,7 +164,7 @@ if auto_insert:
     if parent==None:
         parent = globalscene.getScene().worldRoot()
     else:
-        if type(parent) in [str, unicode]:
+        if type(parent) is str:
             parent = globalscene.getScene().worldObject(parent)
     name = parent.makeChildNameUnique(name)
 """
