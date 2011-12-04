@@ -420,11 +420,15 @@ class RMShader(object):
         """
         
         if arraylen is None:
-            exec("slot = %sSlot()"%type.capitalize())
+            locals = {}
+            exec("slot = %sSlot()"%type.capitalize(), globals(), locals)
+            slot = locals["slot"]
             if default is not None:
                 slot.setValue(default)
         else:
-            exec("slot = %sArraySlot()"%type.capitalize())
+            locals = {}
+            exec("slot = %sArraySlot()"%type.capitalize(), globals(), locals)
+            slot = locals["slot"]
             slot.resize(arraylen)
             if default is not None:
                 for i,v in enumerate(default):

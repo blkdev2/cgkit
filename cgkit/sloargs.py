@@ -214,8 +214,8 @@ class _SloArgs:
             if sloargs.Slo_SetShader(shader)!=0:
                 raise IOError('Failed to open shader "%s"'%shader)
         
-        shaderName = sloargs.Slo_GetName()
-        shaderType = sloargs.Slo_TypetoStr(sloargs.Slo_GetType())
+        shaderName = sloargs.Slo_GetName().decode("ascii")
+        shaderType = sloargs.Slo_TypetoStr(sloargs.Slo_GetType()).decode("ascii")
         metaData = self._getMetaData()
         params = []
         numParams = sloargs.Slo_GetNArgs()
@@ -223,16 +223,16 @@ class _SloArgs:
             res = sloargs.Slo_GetArgById(i)
             symdef = res.contents
             
-            if sloargs.Slo_StortoStr(symdef.storage).startswith("output"):
+            if sloargs.Slo_StortoStr(symdef.storage).decode("ascii").startswith("output"):
                 output = "output"
             else:
                 output = ""
-            storage = sloargs.Slo_DetailtoStr(symdef.detail)
-            paramType = sloargs.Slo_TypetoStr(symdef.type)
+            storage = sloargs.Slo_DetailtoStr(symdef.detail).decode("ascii")
+            paramType = sloargs.Slo_TypetoStr(symdef.type).decode("ascii")
             arrLen = symdef.arraylen
             if arrLen==0:
                 arrLen = None
-            name = symdef.name
+            name = symdef.name.decode("ascii")
             space = self._getSpace(symdef)
             if space=="":
                 space = None
@@ -262,7 +262,7 @@ class _SloArgs:
                 res = None
             return res
         else:
-            return symdef.spacename
+            return symdef.spacename.decode("ascii")
         
     def _getDefaultVal(self, symdef):
         if symdef.arraylen>0:
@@ -276,7 +276,7 @@ class _SloArgs:
                     res.append(None)
             return res
         
-        typ = self._sloargs.Slo_TypetoStr(symdef.type)
+        typ = self._sloargs.Slo_TypetoStr(symdef.type).decode("ascii")
         # Scalar?
         if typ=="float":
             return symdef.default.scalarval.contents.value
@@ -286,7 +286,7 @@ class _SloArgs:
             return (v.xval, v.yval, v.zval)
         # String?
         elif typ=="string":
-            return symdef.default.stringval
+            return symdef.default.stringval.decode("ascii")
         # Matrix?
         elif typ=="matrix":
             return tuple(symdef.default.matrixval.contents)
@@ -372,10 +372,10 @@ class _SloArgs_3Delight(_SloArgs):
         res = {}
         n = self._sloargs.Slo_GetNAnnotations()
         for i in range(1, n+1):
-            key = self._sloargs.Slo_GetAnnotationKeyById(i)
+            key = self._sloargs.Slo_GetAnnotationKeyById(i).decode("ascii")
             if key is None:
                 continue
-            ann = self._sloargs.Slo_GetAnnotationByKey(key)
+            ann = self._sloargs.Slo_GetAnnotationByKey(key).decode("ascii")
             if ann is None:
                 continue
             res[key] = ann

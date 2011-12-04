@@ -77,7 +77,7 @@ class MAImporter(mayaascii.DefaultMAReader):
 
         self.root_parent = parent
 
-        f = file(filename)
+        f = open(filename)
         self.read(f)
 
     # begin
@@ -653,7 +653,9 @@ class MAImporter(mayaascii.DefaultMAReader):
         RY = mat4(cy,0,-sy,0, 0,1,0,0, sy,0,cy,0, 0,0,0,1)
         RZ = mat4(cz,sz,0,0, -sz,cz,0,0, 0,0,1,0, 0,0,0,1)
         a,b,c = ["XYZ", "YZX", "ZXY", "XZY", "YXZ", "ZYX"][ro]
-        exec("R=R%s*R%s*R%s"%(a,b,c))
+        locals = {"RX":RX, "RY":RY, "RZ":RZ}
+        exec("R=R%s*R%s*R%s"%(a,b,c), globals(), locals)
+        R = locals["R"]
 
         WT = SP.inverse()*S*SH*SP*ST*RP.inverse()*RA*R*RP*RT*T
         WT = WT.transpose()
