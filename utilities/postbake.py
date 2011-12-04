@@ -86,11 +86,11 @@ if len(args)<2:
     optparser.print_help()
     sys.exit()
 
-print 'Reading "%s"...'%args[0]
+print('Reading "%s"...'%args[0])
 img = Image.open(args[0])
 
 if img.mode!="RGBA":
-    print 'Invalid image mode %s (must be RGBA)'%img.mode
+    print('Invalid image mode %s (must be RGBA)'%img.mode)
     sys.exit(1)
 
 r = 1
@@ -101,5 +101,5 @@ bg = composite(bg, shift(img, -r,r))
 bg = composite(bg, shift(img, r,r))
 
 outimg = composite(bg, img)
-print 'Writing "%s"...'%args[1]
+print('Writing "%s"...'%args[1])
 outimg.save(args[1])

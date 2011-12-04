@@ -50,7 +50,7 @@ from cgkit.sl import *
 def objInfo(obj):
     """Print infos about obj.
     """
-    print 70*"-"
+    print(70*"-")
     if obj.geom!=None:
         g = obj.geom.__class__.__name__
         numgeomslots = obj.geom.numSlots()
@@ -71,27 +71,27 @@ def objInfo(obj):
         else:
             materialnames.append('"'+mat.name+'"')
         
-    print 'Name       : "%s"'%obj.name
-    print "Type       : %s"%obj.__class__.__name__
-    print "Geom       : %s"%g
-    print 'Parent     : %s'%parentname
-    print "Pos        : (%1.3f, %1.3f, %1.3f)"%tuple(obj.pos)
-    print "Rot        : (%1.2f, %1.2f, %1.2f)"%tuple(map(lambda x: degrees(x), obj.rot.toEulerXYZ()))
-    print "Scale      : (%1.3f, %1.3f, %1.3f)"%tuple(obj.scale)
-    print "Visible    :",obj.visible
-    print "Mass       :",obj.mass
-    print "Total mass :",obj.totalmass
-    print "COG        :",obj.cog
-    print "#Materials : %d (%s)"%(obj.getNumMaterials(), ", ".join(materialnames))
-    print "#Childs    :",len(list(obj.iterChilds()))
-    print "#Slots     :",obj.numSlots()
-    print "#Geom slots:",numgeomslots
+    print('Name       : "%s"'%obj.name)
+    print("Type       : %s"%obj.__class__.__name__)
+    print("Geom       : %s"%g)
+    print('Parent     : %s'%parentname)
+    print("Pos        : (%1.3f, %1.3f, %1.3f)"%tuple(obj.pos))
+    print("Rot        : (%1.2f, %1.2f, %1.2f)"%tuple([degrees(x) for x in obj.rot.toEulerXYZ()]))
+    print("Scale      : (%1.3f, %1.3f, %1.3f)"%tuple(obj.scale))
+    print("Visible    :",obj.visible)
+    print("Mass       :",obj.mass)
+    print("Total mass :",obj.totalmass)
+    print("COG        :",obj.cog)
+    print("#Materials : %d (%s)"%(obj.getNumMaterials(), ", ".join(materialnames)))
+    print("#Childs    :",len(list(obj.iterChilds())))
+    print("#Slots     :",obj.numSlots())
+    print("#Geom slots:",numgeomslots)
 
-    print "\nSlots:"
+    print("\nSlots:")
     printSlots(obj)
 
     if obj.geom!=None:
-        print "\nPrimitive variables:"
+        print("\nPrimitive variables:")
         for v in obj.geom.iterVariables():
             name = v[0]
             storage = str(v[1]).lower()
@@ -99,9 +99,9 @@ def objInfo(obj):
             mult = v[3]
             slot = obj.geom.slot(name)
             size = slot.size()
-            print "  %-11s %-6s %-20s %5s %8d elements"%(storage, typ, name, "["+str(mult)+"]", size)
+            print("  %-11s %-6s %-20s %5s %8d elements"%(storage, typ, name, "["+str(mult)+"]", size))
 
-        print "\nGeom slots:"
+        print("\nGeom slots:")
         printSlots(obj.geom)
 
 def printSlots(obj):
@@ -111,7 +111,7 @@ def printSlots(obj):
         slot = obj.slot(s)
         if hasattr(slot, "size"):
             info = "%s, %d items"%(slot.__class__.__name__, slot.size())
-            print "  %s (%s)"%(s, info)
+            print("  %s (%s)"%(s, info))
         else:
             try:
                 v = getattr(obj, s)
@@ -120,7 +120,7 @@ def printSlots(obj):
             if isinstance(v, _core.mat3) or isinstance(v, _core.mat4):
                 v = list(v)
             info = "%s"%(slot.__class__.__name__)
-            print "  %s = %s (%s)"%(s, v, info)
+            print("  %s = %s (%s)"%(s, v, info))
     
                 
 def variableValues(obj):
@@ -131,9 +131,9 @@ def variableValues(obj):
 
     for var in obj.geom.iterVariables():
         slot = obj.geom.slot(var[0])
-        print '\nVariable: "%s"'%var[0]
+        print('\nVariable: "%s"'%var[0])
         for i,v in enumerate(slot):
-            print " %5d %s"%(i,v)
+            print(" %5d %s"%(i,v))
 
 def slotValues(obj):
     """Show the values of all slots.
@@ -147,9 +147,9 @@ def slotValues(obj):
         slot = obj.slot(slotname)
         # Array slot?
         if hasattr(slot, "size"):
-            print '\nSlot: "%s"'%slotname
+            print('\nSlot: "%s"'%slotname)
             for i,v in enumerate(slot):
-                print " %5d %s"%(i,v)
+                print(" %5d %s"%(i,v))
         else:
             pass
 #            print slot.getValue()

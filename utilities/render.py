@@ -122,18 +122,18 @@ class RenderManager:
 #                os.system(cmd)
                 if numtiles>1:
                     n = j*(len(xsplits)-1)+i+1
-                    print "Rendering tile %d/%d..."%(n,numtiles)
+                    print("Rendering tile %d/%d..."%(n,numtiles))
                     sys.stdout.flush()
                 RiReadArchive("main.rib")
                 RiEnd()
 
         # Stitch the tiles...
         if numtiles>1:
-            print "Stitching..."
+            print("Stitching...")
             try:
                 stitch.stitch(outname, removetiles=True, infostream=sys.stdout)
-            except IOError, e:
-                print "ERROR:",e
+            except IOError as e:
+                print("ERROR:",e)
 
         # Restore the current directory...
         os.chdir(prev_dir)
@@ -188,7 +188,7 @@ class Render(Tool):
         origoutput = scene.getGlobal("output", "out.tif")
 
         while 1:
-            print 'Exporting %s...'%ribname
+            print('Exporting %s...'%ribname)
             sys.stdout.flush()
             t1 = time.time()
             framenr = int(round(timer.frame))
@@ -205,11 +205,11 @@ class Render(Tool):
             if self.options.bake:
                 if bakemodel==None:
                     # Get a list of all trimeshes/polyhedrons
-                    meshes = filter(lambda obj: isinstance(obj.geom, TriMeshGeom) or isinstance(obj.geom, PolyhedronGeom), list(scene.walkWorld()))
+                    meshes = [obj for obj in list(scene.walkWorld()) if isinstance(obj.geom, TriMeshGeom) or isinstance(obj.geom, PolyhedronGeom)]
                     if len(meshes)==1:
                         bakemodel = meshes[0]
                     else:
-                        print "Please specify a bake model using the 'bakemodel' global"
+                        print("Please specify a bake model using the 'bakemodel' global")
                         sys.exit(1)
 
             # Render in tiles?
@@ -239,7 +239,7 @@ class Render(Tool):
 
             # Compile shaders
             if os.path.exists("shaders"):
-                print "Compiling shaders..."
+                print("Compiling shaders...")
                 sys.stdout.flush()
                 oldpath = os.getcwd()
                 os.chdir("shaders")
@@ -247,11 +247,11 @@ class Render(Tool):
                 os.chdir(oldpath)
 
             t2 = time.time()
-            print "Preprocessing time:",self.time2str(t2-t1)
+            print("Preprocessing time:",self.time2str(t2-t1))
 
             # Render
             outname = self.outputName(output)
-            print 'Rendering "%s" (frame %d)...'%(outname, framenr)
+            print('Rendering "%s" (frame %d)...'%(outname, framenr))
             sys.stdout.flush()
             rendermgr = RenderManager()
             rendermgr.render(renderer = self.options.renderer,
@@ -262,7 +262,7 @@ class Render(Tool):
 #            os.system("%s %s"%(renderer, ribname))
 
             t3 = time.time()
-            print "Rendering time:",self.time2str(t3-t2)
+            print("Rendering time:",self.time2str(t3-t2))
             sys.stdout.flush()
 
             # Increase time
@@ -283,7 +283,7 @@ class Render(Tool):
         if output==None:
             return None
         # Is output a string? (i.e. the output file name)
-        elif isinstance(output, types.StringTypes):
+        elif isinstance(output, str):
             return self._appendFrameNr(output, framenr)
         # User specified output specs? (output must already be a list
         # of specs)
@@ -313,7 +313,7 @@ class Render(Tool):
         if output==None:
             return ""
         # Is output a string? (i.e. the output file name)
-        elif isinstance(output, types.StringTypes):
+        elif isinstance(output, str):
             return output
         # User specified output specs? (output must already be a list
         # of specs)
@@ -359,5 +359,5 @@ if __name__=="__main__":
     render = Render()
     try:
         render.run()
-    except RenderException, e:
-        print e
+    except RenderException as e:
+        print(e)

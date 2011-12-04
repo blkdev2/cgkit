@@ -55,10 +55,10 @@ srcs = args[:-1]
 dst = args[-1]
 # Read the input files...
 for src in srcs:
-    print 'Loading "%s"...'%src
+    print('Loading "%s"...'%src)
     load(src)
 
 # Save the scene
-print 'Saving "%s"...'%dst
+print('Saving "%s"...'%dst)
 save(dst)
 

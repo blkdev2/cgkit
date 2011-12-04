@@ -196,12 +196,12 @@ class Viewer(Tool):
         # Initialize pygame
         passed, failed = pygame.init()
         if failed>0:
-            print "Warning: %d pygame modules couldn't be initialized"%failed
+            print("Warning: %d pygame modules couldn't be initialized"%failed)
 
         # Initialize joysticks...
         numjoy = pygame.joystick.get_count()
         if self.options.verbose:
-            print numjoy, "joysticks available"
+            print(numjoy, "joysticks available")
 
         self.pygame_joysticks = []
         self.cgkit_joysticks = []
@@ -224,8 +224,8 @@ class Viewer(Tool):
     #            cgj.setAxis(i, j.get_axis(i))
             self.cgkit_joysticks.append(cgj)
             if self.options.verbose:
-                print "Joystick #%d (%s):"%(id, name)
-                print "  %d axes, %d balls, %d buttons, %d hats"%(numaxes, numballs, numbuttons, numhats)
+                print("Joystick #%d (%s):"%(id, name))
+                print("  %d axes, %d balls, %d buttons, %d hats"%(numaxes, numballs, numbuttons, numhats))
 
         if self.options.disable_spacedevice:
             self.enable_spacedevice = True  # temporarily invert the meaning of -X
@@ -237,19 +237,19 @@ class Viewer(Tool):
         if self.enable_spacedevice and cgkit.spacedevice.available():
             try:
                 self.spacedevice = cgkit.spacedevice.SpaceDevice()
-            except RuntimeError, e:
-                print "3DxWare exception:",e
+            except RuntimeError as e:
+                print("3DxWare exception:",e)
         else:
             if self.options.verbose and self.enable_spacedevice:
-                print "SpaceMouse/SpaceBall module (spacedevice) not available"
+                print("SpaceMouse/SpaceBall module (spacedevice) not available")
 
         # Initialize Wintab context
         if self.enable_wintab and cgkit.wintab.available():
             if self.options.verbose:
                 info = cgkit.wintab.info(WTI_INTERFACE)
-                print 'Wintab identification: "%s"'%info["WINTABID"]
+                print('Wintab identification: "%s"'%info["WINTABID"])
                 info = cgkit.wintab.info(WTI_DEVICES)
-                print "Initializing %s..."%info["NAME"]
+                print("Initializing %s..."%info["NAME"])
 
             self.wintabcontext = cgkit.wintab.Context()
             ctx = self.wintabcontext
@@ -267,7 +267,7 @@ class Viewer(Tool):
             ctx.pktdata = pktdata
         else:
             if self.options.verbose and self.enable_wintab:
-                print "No Wintab driver available"
+                print("No Wintab driver available")
 
         # Create renderer
         self.renderer = GLRenderInstance()
@@ -324,15 +324,15 @@ class Viewer(Tool):
 
         # Output OpenGL infos...
         if self.options.verbose:
-            print "OpenGL information:"
-            print "  Vendor  :",glGetString(GL_VENDOR)
-            print "  Renderer:", glGetString(GL_RENDERER)
-            print "  Version :",glGetString(GL_VERSION)
+            print("OpenGL information:")
+            print("  Vendor  :",glGetString(GL_VENDOR))
+            print("  Renderer:", glGetString(GL_RENDERER))
+            print("  Version :",glGetString(GL_VERSION))
             
         # Check if stereo output is active...
         if self.stereo_mode==2:
             if pygame.display.gl_get_attribute(pygame.GL_STEREO)==0:
-                raise RuntimeError, "Stereo buffers not supported by this hardware."
+                raise RuntimeError("Stereo buffers not supported by this hardware.")
 
         # Try to get the native window handle
         # (this only works with pygame 1.6.2 and later)
@@ -346,20 +346,20 @@ class Viewer(Tool):
         if self.spacedevice!=None:
             if hwnd==None:
                 if sys.platform=="win32" and self.options.verbose:
-                    print "SpaceMouse/SpaceBall support is not available with the installed version"
-                    print "of pygame. Please upgrade to v1.6.2 or later."
+                    print("SpaceMouse/SpaceBall support is not available with the installed version")
+                    print("of pygame. Please upgrade to v1.6.2 or later.")
             else:
                 try:
                     self.spacedevice.open("viewer.py", hwnd)
                     self.spacedevice.setUIMode(True)
                     if self.options.verbose:
                         typ,btns,degs,beep,firmware = self.spacedevice.getDeviceInfo()
-                        print "3D input device:",firmware
-                        print "%s: %d buttons, %d degrees of freedom"%(typ,btns,degs)
+                        print("3D input device:",firmware)
+                        print("%s: %d buttons, %d degrees of freedom"%(typ,btns,degs))
                     pygame.event.set_allowed(SYSWMEVENT)
-                except RuntimeError, e:
-                    print "SpaceDevice:",e
-                    print "SpaceMouse/SpaceBall support is disabled."
+                except RuntimeError as e:
+                    print("SpaceDevice:",e)
+                    print("SpaceMouse/SpaceBall support is disabled.")
                     self.spacedevice = None
 
         # Open Wintab context
@@ -367,8 +367,8 @@ class Viewer(Tool):
             if hwnd==None:
                 self.wintabcontext = None
                 if sys.platform=="win32" and self.options.verbose:
-                    print "Tablet support is not available with the installed version of pygame."
-                    print "Please upgrade to v1.6.2 or later."
+                    print("Tablet support is not available with the installed version of pygame.")
+                    print("Please upgrade to v1.6.2 or later.")
             else:
                 self.wintabcontext.open(hwnd, True)
                 pygame.event.set_allowed(SYSWMEVENT)
@@ -421,7 +421,7 @@ class Viewer(Tool):
             elif e.type==KEYDOWN:
                 if e.key==27:
                     self.running=False
-                key = e.unicode
+                key = e.str
                 code = self.keydict.get(e.key, e.key)
                 mods = self.convertMods(e.mod)
                 eventmanager.event(KEY_PRESS, KeyEvent(key, code, mods))
@@ -430,9 +430,9 @@ class Viewer(Tool):
             elif e.type==KEYUP:
                 code = self.keydict.get(e.key, e.key)
                 try:
-                    key = unicode(chr(e.key))
+                    key = str(chr(e.key))
                 except:
-                    key = u""
+                    key = ""
                 mods = self.convertMods(e.mod)
                 eventmanager.event(KEY_RELEASE, KeyEvent(key, code, mods))
 #                keyboard.setKeyValue(e.key, False)
@@ -539,12 +539,12 @@ class Viewer(Tool):
             elif e.type==SYSWMEVENT:
                 if sys.platform=="win32" and not hasattr(e, "msg") and not pygame.event.get_blocked(SYSWMEVENT):
                     pygame.event.set_blocked(SYSWMEVENT)
-                    print "Warning: This version of pygame does not allow processing system events."
+                    print("Warning: This version of pygame does not allow processing system events.")
                     if self.spacedevice!=None:
                         self.spacedevice=None
-                        print " -> SpaceMouse/SpaceBall support is disabled."
+                        print(" -> SpaceMouse/SpaceBall support is disabled.")
                     if self.wintabcontext!=None:
-                        print " -> Tablet support is only partially available."
+                        print(" -> Tablet support is only partially available.")
 
                 if self.spacedevice!=None:
                     self.handleSpaceEvents(e)
@@ -684,7 +684,7 @@ class Viewer(Tool):
         name,ext = os.path.splitext(self.options.save)
         f = int(round(getScene().timer().frame))
         fname = "%s%04d%s"%(name, f, ext)
-        print 'Saving "%s"...'%fname
+        print('Saving "%s"...'%fname)
         data = pygame.image.tostring(srf, "RGB")
         img = Image.fromstring("RGB", (srf.get_width(), srf.get_height()), data)
         img.save(fname)
