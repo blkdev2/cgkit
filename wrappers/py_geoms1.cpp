@@ -268,7 +268,7 @@ void class_Geoms()
 
   class_<_VariableIterator>("_VariableIterator", init<GeomObject&>())
     .def("__iter__", &_VariableIterator::__iter__)
-    .def("next", &_VariableIterator::next)
+    .def("__next__", &_VariableIterator::next)
   ;
 
 }

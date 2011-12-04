@@ -112,7 +112,7 @@ void class_Component()
 
   class_<_ComponentSlotIterator>("_ComponentSlotIterator", init<Component&>())
     .def("__iter__", &_ComponentSlotIterator::__iter__)
-    .def("next", &_ComponentSlotIterator::next)
+    .def("__next__", &_ComponentSlotIterator::next)
   ;
 
 }
