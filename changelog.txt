@@ -13,9 +13,13 @@ New features:
   to select whether the ODE quickStep() or the step() method should be
   used for the simulation.
 - The viewer tool window is now resizable (patch 2977469).
+- New module mayaiff: This is almost identical to the previous mayabinary
+  module except that it can read any IFF file. 
 
 Bug fixes/enhancements:
 
+- Shaders: Some of the RenderMan shaders were using variable names that are
+  now reserved keywords. Those variables have been renamed.
 - mayaascii: Added support for the "relationship" MEL command that can appear
   in .ma files.
 - cgtypes: Bugfix: slerp() could produce NaNs when the magnitude of the input

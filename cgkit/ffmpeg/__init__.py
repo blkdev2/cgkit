@@ -33,10 +33,10 @@
 #
 # ***** END LICENSE BLOCK *****
 
-import avutil
-import swscale
-import avformat
-import avcodec
+from . import avutil
+from . import swscale
+from . import avformat
+from . import avcodec
 
 def init(libavutil=None, libswscale=None, libavformat=None, libavcodec=None):
     """Initialize the ffmpeg module.

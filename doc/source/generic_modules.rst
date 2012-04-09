@@ -25,10 +25,12 @@ Generic Modules
    objmtl
    mayaascii
    mayabinary
+   mayaiff
    lwob
    hammersley
    stitch
    sequence
    jobqueue
    ffmpeg
+   mediafile
    

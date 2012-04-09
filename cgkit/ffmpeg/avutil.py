@@ -34,62 +34,34 @@
 # ***** END LICENSE BLOCK *****
 
 import ctypes
-import findlib
+from . import findlib
+from . import decls
+from .decls import AVRational
 
-# Pixel formats (defined as an enum in libavutil/pixfmt.h)
-PIX_FMT_NONE = -1
-PIX_FMT_YUV420P = 0
-PIX_FMT_YUYV422 = 1
-PIX_FMT_RGB24 = 2
-PIX_FMT_BGR24 = 3
-PIX_FMT_YUV422P = 4
-PIX_FMT_YUV444P = 5
-PIX_FMT_RGB32 = 6
-PIX_FMT_YUV410P = 7
-
-######################################################################
-# Data Structures
-######################################################################
-
-# defined in libavutil/rational.h
-class AVRational(ctypes.Structure):
-    _fields_ = [("num", ctypes.c_int),
-                ("den", ctypes.c_int)]
-
-
-class AVFrac(ctypes.Structure):
-    """The exact value of the fractional number is: 'val + num / den'. 
-
-    num is assumed to be such that 0 <= num < den
-
-    Deprecated: Use AVRational instead
+class AVError(Exception):
+    """Base AV error class.
     """
-    _fields_ = [("val", ctypes.c_longlong),
-                ("num", ctypes.c_longlong),
-                ("den", ctypes.c_longlong)]
+    def __init__(self, msgOrErrnum):
+        """Constructor.
+        
+        msgOrErrnum is either a string containing an error message or an integer
+        containing the ffmpeg error number. If a number is passed, the number
+        is converted into an error message.
+        The error number is stored in the attribute errnum. If a string has
+        been passed, that attribute will be None.
+        """
+        self.errnum = None
+        # If the input argument is an int, then try to convert it into a message
+        if type(msgOrErrnum) is int:
+            self.errnum = msgOrErrnum
+            msg = av_strerror(self.errnum)
+            if msg is None:
+                msg = "Error %s"%(msgOrErrnum)
+        else:
+            msg = msgOrErrnum
+        
+        Exception.__init__(self, msg)
 
-
-# defined in libavcodec/opt.h
-class AVOption(ctypes.Structure):
-    _fields_ = [("name", ctypes.c_char_p),
-                ("help", ctypes.c_char_p),
-                ("offset", ctypes.c_int),
-                ("type", ctypes.c_int),   # enum AVOptionType
-                ("default_val", ctypes.c_double),
-                ("min", ctypes.c_double),
-                ("max", ctypes.c_double),
-                ("flags", ctypes.c_int),
-                ("unit", ctypes.c_char_p)]
-
-# defined in libavutil/log.h
-class AVClass(ctypes.Structure):
-    _fields_ = [("class_name", ctypes.c_char_p),
-                ("item_name", ctypes.c_void_p),   # Actually a function pointer
-                ("option", ctypes.POINTER(AVOption))]
-
-######################################################################
-# Functions
-######################################################################
 
 def avutil_version():
     """Return the libavutil library version.
@@ -106,14 +78,84 @@ def avutil_version():
 def av_free(obj):
     """Free memory which has been allocated with av_malloc(z)() or av_realloc().
     
-    obj may be a AVFrame object that was allocated using avcodec_alloc_frame().
+    *obj* may be a AVFrame object that was allocated using avcodec_alloc_frame()
+    (note: *obj* must be the object itself, not a pointer to it).
     """
     if obj is None:
         return
     _lib().av_free(ctypes.byref(obj))
 
+def av_d2q(d, max):
+    """Convert a floating point number into a rational.
+    
+    *d* is the floating point number and *max* the maximum allowed numerator
+    and denominator
+    Returns a :class:`AVRational` object representing *d*.
+    """
+    func = _lib().av_d2q
+    func.args = [ctypes.c_double, ctypes.c_int]
+    func.restype = AVRational
+    return func(ctypes.c_double(d), int(max))
 
-_libname = "avutil.49"
+def av_strerror(errnum):
+    """Return a description of an AVERROR code.
+    
+    Returns ``None`` if no description could be found. 
+    """
+    buf = ctypes.create_string_buffer(200)
+    func = _lib().av_strerror
+    res = func(int(errnum), buf, ctypes.sizeof(buf))
+    if res==0:
+        return buf.value
+    else:
+        return None
+
+def av_get_sample_fmt_name(sampleFmt):
+    """Return the name of the sample format or ``None`` if an unknown value is passed.
+    
+    *sampleFmt* is an ``AV_SAMPLE_FMT_*`` value.
+    """
+    func = _lib().av_get_sample_fmt_name
+    func.restype = ctypes.c_char_p
+    name = func(sampleFmt)
+    return name
+
+def av_get_sample_fmt(name):
+    """Return the sample format corresponding to the given name.
+    
+    Returns ``AV_SAMPLE_FMT_NONE`` if the name is not recognized.
+    """
+    return _lib().av_get_sample_fmt(name)
+
+def av_get_bytes_per_sample(sampleFmt):
+    """Return the number of bytes per sample.
+    
+    *sampleFmt* is an ``AV_SAMPLE_FMT_*`` value. Returns 0 if sampleFmt refers to
+    an unknown sample format.
+    """
+    return _lib().av_get_bytes_per_sample(sampleFmt)
+
+def av_get_pix_fmt_name(pixFmt):
+    """Return the name of the pixel format or ``None`` if an unknown value is passed.
+    
+    *pixFmt* is a ``PIX_FMT_*`` value.
+    """
+    func = _lib().av_get_pix_fmt_name
+    func.restype = ctypes.c_char_p
+    name = func(pixFmt)
+    return name
+    
+def av_get_pix_fmt(name):
+    """Return the pixel format corresponding to the given name.
+    
+    Returns ``PIX_FMT_NONE`` if the name is not recognized.
+    """
+    return _lib().av_get_pix_fmt(name)
+
+
+# By default, try to load the avutil library that has the same major version
+# than the one that was used for creating the cppdefs and decls module.
+_libname = "avutil.%s"%(decls.LIBAVUTIL_VERSION_MAJOR)
 _libavutil = None
 
 def _lib():
