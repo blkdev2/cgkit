@@ -18,6 +18,10 @@ New features:
 
 Bug fixes/enhancements:
 
+- ri: There are new implementation-specific options to control how floating
+  point values in parameter lists are written into the RIB stream (using
+  fewer digits as before which can reduce file sizes considerably). 
+- pointcloud: readDataPoints() didn't work in Python 2.x on 64bit systems.
 - Shaders: Some of the RenderMan shaders were using variable names that are
   now reserved keywords. Those variables have been renamed.
 - mayaascii: Added support for the "relationship" MEL command that can appear
@@ -39,16 +43,23 @@ Bug fixes/enhancements:
 - GLRenderer: OpenGL errors could leak through into Python and produce exceptions
   on unrelated PyOpenGL calls. The error flag is now cleared at the end of
   the C++ rendering code (bug #2974422).
+- sequence: Bugfix: Sequences with only one single file didn't get handled properly
+  resulting in useless error messages when the sequence utilities were used.
+- sequence: SeqString can now optionally handle negative numbers as well.
+  The constructor takes a new argument "signedNums" that controls this.
+  The functions buildSequences() and glob() have that option as well.
+- sequence: SeqString has a new method fnmatch() to do file name matching
+  that may have wildcards as well as number substitution patterns (# or @).
 - sequence: SeqString comparison doesn't convert its argument into fresh
   SeqStrings anymore. This means comparing a SeqString with a regular string
   uses regular string comparison semantics. It also means, a SeqString that
   has a number replaced by a string containing a number will treat this part
   as a string, not a number. This change considerably increases performance when
   sorting large string lists. 
-- sequence: Comparison of SeqStrings didn't work properly when the string parts
-  did already differ (in that case, numbers were completely ignored)
 - sequence: buildSequences() didn't work properly when assumeFiles was set to
   True and there was more than one number inside the path. Thanks to Scott Ballard.
+- The file sequence utilities now support negsative numbers in file names
+  (via the options -n or -N).
 - viewer: Joystick support was partially broken (copy&paste error). Thanks
   to Mariano Sospiro for providing a patch.
 - mat3/mat4: The decompose() method doesn't raise a ZeroDivisionError anymore

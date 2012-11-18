@@ -3,6 +3,7 @@
 import unittest
 import os, os.path
 import glob as globmod
+import cgkit.sequence as sequence
 from cgkit.sequence import *
 
 def cmp(a, b):
@@ -46,10 +47,18 @@ class TestSeqString(unittest.TestCase):
 
         s1 = SeqString("P1_z")
         s2 = SeqString("P2_a")
-        self.assertEqual(True, s1<s2)
+        self.assertEqual(False, s1<s2)
 
         s1 = SeqString("P1_z76a")
         s2 = SeqString("P2_a")
+        self.assertEqual(False, s1<s2)
+
+        s1 = SeqString("IMG_0001.CR2")
+        s2 = SeqString("IMG_0001.JPG")
+        self.assertEqual(True, s1<s2)
+
+        s1 = SeqString("IMG_0002.CR2")
+        s2 = SeqString("IMG_0001.JPG")
         self.assertEqual(True, s1<s2)
     
     def testMatch(self):
@@ -76,6 +85,35 @@ class TestSeqString(unittest.TestCase):
         self.assertEqual(False, s.match(SeqString("spam2_bla04"),-3))
 
         self.assertRaises(TypeError, lambda: s.match("spam2_bla04"))
+    
+    def testFnmatch(self):
+        """Test the fnmatch method.
+        """
+        s = SeqString("")
+        self.assertEqual(False, s.fnmatch("foo"))
+
+        s = SeqString("foo")
+        self.assertEqual(True, s.fnmatch("foo"))
+        self.assertEqual(True, s.fnmatch("f*"))
+        self.assertEqual(True, s.fnmatch("*o"))
+
+        s = SeqString("spam70.tif")
+        self.assertEqual(False, s.fnmatch("foo"))
+        self.assertEqual(True, s.fnmatch("*.tif"))
+        self.assertEqual(True, s.fnmatch("spam@.tif"))
+        self.assertEqual(True, s.fnmatch("spam@@.tif"))
+        self.assertEqual(False, s.fnmatch("spam@@@.tif"))
+        self.assertEqual(False, s.fnmatch("spam#.tif"))
+
+        s = SeqString("spam_3_42.tif")
+        self.assertEqual(True, s.fnmatch("s*_@_@@.tif"))
+        self.assertEqual(False, s.fnmatch("s*_@_@_@@.tif"))
+        self.assertEqual(False, s.fnmatch("s*_@_#.tif"))
+        self.assertEqual(True, s.fnmatch("s*_@@.tif"))
+        self.assertEqual(True, s.fnmatch("s*_@_*.tif"))
+        self.assertEqual(True, s.fnmatch("spam_3_42.tif"))
+        self.assertEqual(False, s.fnmatch("spam_03_42.tif"))
+        self.assertEqual(False, s.fnmatch("spam_4_42.tif"))
         
     def testGroupRepr(self):
         """Test the groupRepr() method.
@@ -271,6 +309,45 @@ class TestSeqString(unittest.TestCase):
         self.assertEqual("spam", str(s))
         self.assertRaises(IndexError, lambda: s.replaceStr(1, "foo"))
 
+    def testSignedNums(self):
+        """Test processing of signed numbers.
+        """
+        # Treat all numbers as unsigned numbers
+        s = SeqString("foo-1.-007.tif")
+        self.assertEqual([1,7], s.getNums())
+        self.assertEqual([1,3], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+
+        # Treat all numbers as unsigned numbers (by passing signedNums explicitly)
+        s = SeqString("foo-1.-007.tif", signedNums=False)
+        self.assertEqual([1,7], s.getNums())
+        self.assertEqual([1,3], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+
+        # Treat all numbers as signed numbers
+        s = SeqString("foo-1.-007.tif", signedNums=True)
+        self.assertEqual([-1,-7], s.getNums())
+        self.assertEqual([2,4], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+
+        # Treat the last number as signed numbers
+        s = SeqString("foo-1.-007.tif", signedNums=[-1])
+        self.assertEqual([1,-7], s.getNums())
+        self.assertEqual([1,4], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+
+        # Treat the first number as signed numbers
+        s = SeqString("foo-1.-007.tif", signedNums=[0])
+        self.assertEqual([-1,7], s.getNums())
+        self.assertEqual([2,3], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+
+        # Treat both numbers as signed numbers
+        s = SeqString("foo-1.-007.tif", signedNums=[0,1])
+        self.assertEqual([-1,-7], s.getNums())
+        self.assertEqual([2,4], s.getNumWidths())
+        self.assertEqual("foo-1.-007.tif", str(s))
+        
 
 class TestRange(unittest.TestCase):
     """Test the Range object.
@@ -326,6 +403,24 @@ class TestRange(unittest.TestCase):
         self.assertEqual(3, len(r))
         self.assertEqual([1,2,3], list(r))
         
+        r = Range("-2")
+        self.assertEqual(1, len(r))
+        self.assertEqual([-2], list(r))
+        self.assertEqual("-2", str(r))
+        self.assertEqual(False, r.isInfinite())
+
+        r = Range("-2-2x2")
+        self.assertEqual(3, len(r))
+        self.assertEqual([-2,0,2], list(r))
+        self.assertEqual("-2-2x2", str(r))
+        self.assertEqual(False, r.isInfinite())
+
+        r = Range("-3--1")
+        self.assertEqual(3, len(r))
+        self.assertEqual([-3,-2,-1], list(r))
+        self.assertEqual("-3--1", str(r))
+        self.assertEqual(False, r.isInfinite())
+
         self.assertRaises(ValueError, lambda: r.setRange("spam"))
         
     def testNormalization(self):
@@ -462,6 +557,10 @@ class TestBuildSequences(unittest.TestCase):
         self.assertEqual(1, len(seqs))
         self.assertEqual(["spam1", "spam2", "spam3"], list(seqs[0]))
 
+        seqs = buildSequences(["spam1", "spam3", "spam-1", "spam2"], signedNums=True)
+        self.assertEqual(1, len(seqs))
+        self.assertEqual(["spam-1", "spam1", "spam2", "spam3"], list(seqs[0]))
+
         seqs = buildSequences(["clip1_1", "clip2_1", "clip1_2", "clip2_2"])
         self.assertEqual(1, len(seqs))
         self.assertEqual(["clip1_1", "clip1_2", "clip2_1", "clip2_2"], list(seqs[0]))
@@ -487,6 +586,63 @@ class TestBuildSequences(unittest.TestCase):
         seqs = buildSequences(["/dir1/dir2/spam1", "/dir1/dir2/spam2"], assumeFiles=True)
         self.assertEqual(1, len(seqs))
         self.assertEqual(("/dir1/dir2/spam@", ["1-2"]), seqs[0].sequenceName())
+
+
+class TestGlob(unittest.TestCase):
+    """Test the sequence.glob() function.
+    """
+    
+    def testGlob(self):
+        """Test the sequence.glob() function.
+        """
+        for i in [1,2,10]:
+            f = open("tmp/globtstu_%d.txt"%i, "wt")
+            f.close()
+            
+        for i in [-1,-2, 1,2]:
+            f = open("tmp/globtsts_%04d.txt"%i, "wt")
+            f.close()
+
+        if not os.path.isdir("tmp/seq"):
+            os.mkdir("tmp/seq")
+        for i in [1,2]:
+            f = open("tmp/seq/globtsts_%04d.txt"%i, "wt")
+            f.close()
+
+        # Read an unsigned sequence        
+        files = sequence.glob("tmp/glob*u_")
+        self.assertEquals(1, len(files))
+        self.assertEqual(['tmp/globtstu_1.txt', 'tmp/globtstu_2.txt', 'tmp/globtstu_10.txt'], list(files[0]))
+
+        # Read an unsigned sequence using a pattern containing "@". The result must also include frame 10.
+        files = sequence.glob("tmp/globtstu_@.txt")
+        self.assertEquals(1, len(files))
+        self.assertEqual(['tmp/globtstu_1.txt', 'tmp/globtstu_2.txt', 'tmp/globtstu_10.txt'], list(files[0]))
+
+        # Read an unsigned sequence using a pattern containing "@@". The result must only include frame 10.
+        files = sequence.glob("tmp/globtstu_@@.txt")
+        self.assertEquals(1, len(files))
+        self.assertEqual(['tmp/globtstu_10.txt'], list(files[0]))
+
+        # Read a signed sequence as unsigned (the negative numbers should now not appear because they don't match the pattern)
+        files = sequence.glob("tmp/globtsts_#.txt")
+        self.assertEquals(1, len(files))
+        self.assertEquals(['tmp/globtsts_0001.txt', 'tmp/globtsts_0002.txt'], list(files[0]))
+
+        # Read a signed sequence
+        files = sequence.glob("tmp/globtsts_#.txt", signedNums=True)
+        self.assertEquals(1, len(files))
+        self.assertEquals(['tmp/globtsts_-002.txt', 'tmp/globtsts_-001.txt', 'tmp/globtsts_0001.txt', 'tmp/globtsts_0002.txt'], list(files[0]))
+
+        # Read a sequence that only consists of two digits (should return an empty list)
+        files = sequence.glob("tmp/globtsts_@@.txt")
+        self.assertEquals(0, len(files))
+
+        # Read sequences from a directory by specifying only the path
+        files = sequence.glob("tmp/seq/")
+        self.assertEquals(1, len(files))
+        self.assertEquals(['tmp/seq/globtsts_0001.txt', 'tmp/seq/globtsts_0002.txt'], list(files[0]))
+
 
 class TestSeqTemplate(unittest.TestCase):
     """Test the SeqTemplate class.
@@ -561,6 +717,48 @@ class TestOutputNameGenerator(unittest.TestCase):
                           ("spam1_2.tif", "foo0003.tif"),
                           ("spam2_5.tif", "foo0004.tif"),
                           ("spam2_6.tif", "foo0005.tif")], list(ong))
+
+        # Check a sequence that has negative numbers
+        seqs = buildSequences(["spam-1.tif", "spam1.tif"], signedNums=True)
+        ong = OutputNameGenerator(seqs, "foo")
+        self.assertEqual([("spam-1.tif", "foo-001.tif"),
+                          ("spam1.tif", "foo0001.tif")], list(ong))
+
+        seqs = buildSequences(["spam-4_-1.tif", "spam-4_1.tif"], signedNums=True)
+        ong = OutputNameGenerator(seqs, "foo@@@_#")
+        self.assertEqual([("spam-4_-1.tif", "foo-04_-001.tif"),
+                          ("spam-4_1.tif", "foo-04_0001.tif")], list(ong))
+
+        # Check an input "sequence" that just consists of a single file (that has a number)
+        seqs = buildSequences(["spam2.tif"])
+        ong = OutputNameGenerator(seqs, "foo")
+        self.assertEqual([("spam2.tif", "foo0002.tif")], list(ong))
+
+        seqs = buildSequences(["spam2.tif"])
+        ong = OutputNameGenerator(seqs, "foo#")
+        self.assertEqual([("spam2.tif", "foo0002.tif")], list(ong))
+
+        seqs = buildSequences(["spam4_2.tif"])
+        ong = OutputNameGenerator(seqs, "foo")
+        self.assertEqual([("spam4_2.tif", "foo0002.tif")], list(ong))
+
+        seqs = buildSequences(["spam4_2.tif"])
+        ong = OutputNameGenerator(seqs, "foo#")
+        self.assertEqual([("spam4_2.tif", "foo0002.tif")], list(ong))
+
+        seqs = buildSequences(["spam4_2.tif"])
+        ong = OutputNameGenerator(seqs, "foo@_#")
+        self.assertEqual([("spam4_2.tif", "foo4_0002.tif")], list(ong))
+
+        # Check an input "sequence" that just consists of a single file (that has two numbers)
+        seqs = buildSequences(["spam3_7.tif"])
+        ong = OutputNameGenerator(seqs, "foo")
+        self.assertEqual([("spam3_7.tif", "foo0007.tif")], list(ong))
+
+        # Check an input "sequence" that just consists of a single file (that has no number)
+        seqs = buildSequences(["spam.tif"])
+        ong = OutputNameGenerator(seqs, "foo")
+        self.assertEqual([("spam.tif", "foo.tif")], list(ong))
 
     def testSrcRanges(self):
         """Test the srcRanges argument.
@@ -656,6 +854,18 @@ class TestSeqUtils(unittest.TestCase):
         self.assertFiles("tmp/foo#.txt", "spam#.txt", Range("2-4"), Range("1,2,5"))
         self.assertFiles("tmp/spam#.txt", "spam#.txt", Range("1,2,5"))
 
+    def testSeqCp5(self):
+        """Test seqcp with a sequence containing negative frames and the -n option."""
+        self.createSequence("tmp/spam#.txt", Range("-2-3"))
+        os.system("python ../utilities/seqcp.py -n tmp/spam tmp/foo")
+        self.assertFiles("tmp/foo#.txt", "spam#.txt", Range("-2-3"))
+
+    def testSeqCp6(self):
+        """Test seqcp with a sequence containing negative frames and the -N option."""
+        self.createSequence("tmp/spam#.txt", Range("-2-3"))
+        os.system("python ../utilities/seqcp.py -N tmp/spam tmp/foo")
+        self.assertFiles("tmp/foo#.txt", "spam#.txt", Range("-2-3"))
+
 
     def testSeqMv1(self):
         """Test basic seqmv"""
@@ -708,6 +918,18 @@ class TestSeqUtils(unittest.TestCase):
         self.createSequence("tmp/spam#.ext", Range("1-3"))
         os.system('python ../utilities/seqmv.py "tmp/spam*.ext" tmp/foo@@.txt -e')
         self.assertFiles("tmp/foo@@.txt", "spam#.ext", Range("1-3"))
+
+    def testSeqMv9(self):
+        """Test the -n option to process negative frames."""
+        self.createSequence("tmp/spam#.txt", Range("-2-3"))
+        os.system('python ../utilities/seqmv.py -n tmp/spam tmp/foo')
+        self.assertFiles("tmp/foo#.txt", "spam#.txt", Range("-2-3"))
+
+    def testSeqMv10(self):
+        """Test the -N option to process negative frames."""
+        self.createSequence("tmp/spam#.txt", Range("-2-3"))
+        os.system('python ../utilities/seqmv.py -N tmp/spam tmp/foo')
+        self.assertFiles("tmp/foo#.txt", "spam#.txt", Range("-2-3"))
         
         
     def assertFiles(self, namePattern, origPattern, rng, origRng=None):
