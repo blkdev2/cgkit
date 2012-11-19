@@ -1646,7 +1646,7 @@ class OutputNameGenerator:
         for srcSeq in srcSequences:
             for rng in srcSeq.ranges():
                 if len(rng)>0:
-                    start = iter(rng).next()
+                    start = next(iter(rng))
                     if start<minNumber:
                         minNumber = start
         
