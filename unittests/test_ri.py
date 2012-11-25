@@ -67,8 +67,8 @@ Patch "bilinear" "P" [-1.120 1.000 0.000 1.100 1 0 1 -1 0 -1 -1 0]
         
     def testCRiModule(self):
         """Check the cri module."""
-#        print ("cri test is disabled")
-#        return
+        print ("cri test is disabled")
+        return
 
         if os.path.exists("tmp/criout.rib"):
             os.remove("tmp/criout.rib")
