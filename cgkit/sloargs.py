@@ -207,11 +207,15 @@ class _SloArgs:
         # Remove the extension
         shader = os.path.splitext(shaderFileName)[0]
 
-        sloargs.Slo_SetPath(shaderPath)
+        shaderPathEncoded = shaderPath.encode("ascii")
+        shaderFileNameEncoded = shaderFileName.encode("ascii")
+        shaderEncoded = shader.encode("ascii")
+        
+        sloargs.Slo_SetPath(shaderPathEncoded)
         # Try the shader name with extension first...
-        if sloargs.Slo_SetShader(shaderFileName)!=0:
+        if sloargs.Slo_SetShader(shaderFileNameEncoded)!=0:
             # If the above failed, try the shader name without extension (prman)...
-            if sloargs.Slo_SetShader(shader)!=0:
+            if sloargs.Slo_SetShader(shaderEncoded)!=0:
                 raise IOError('Failed to open shader "%s"'%shader)
         
         shaderName = sloargs.Slo_GetName().decode("ascii")
@@ -372,13 +376,13 @@ class _SloArgs_3Delight(_SloArgs):
         res = {}
         n = self._sloargs.Slo_GetNAnnotations()
         for i in range(1, n+1):
-            key = self._sloargs.Slo_GetAnnotationKeyById(i).decode("ascii")
+            key = self._sloargs.Slo_GetAnnotationKeyById(i)
             if key is None:
                 continue
             ann = self._sloargs.Slo_GetAnnotationByKey(key).decode("ascii")
             if ann is None:
                 continue
-            res[key] = ann
+            res[key.decode("ascii")] = ann
         return res
 
 ############################# Aqsis ##################################
