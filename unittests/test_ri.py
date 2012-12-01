@@ -27,11 +27,15 @@ class TestRi(unittest.TestCase):
         ritest.main(cgkit.ri, "tmp/riout.rib", archiveName="tmp/include.rib")
         
         f = open("tmp/riout_norm.rib", "wt")
-        ritest.normalizeRIB(open("tmp/riout.rib", "rt"), f)
+        fin = open("tmp/riout.rib", "rt")
+        ritest.normalizeRIB(fin, f)
+        fin.close()
         f.close()
 
         f = open("tmp/include_norm.rib", "wt")
-        ritest.normalizeRIB(open("tmp/include.rib", "rt"), f)
+        fin = open("tmp/include.rib", "rt")
+        ritest.normalizeRIB(fin, f)
+        fin.close()
         f.close()
         
         self.assertFiles("tmp/riout_norm.rib", "data/riout_ref.rib")
@@ -98,8 +102,14 @@ Patch "bilinear" "P" [-1.120 1.000 0.000 1.100 1 0 1 -1 0 -1 -1 0]
         
         
     def assertFiles(self, fileName, refFileName):
-        lines = open(fileName, "rt").readlines()
-        reflines = open(refFileName, "rt").readlines()
+        f = open(fileName, "rt")
+        lines = f.readlines()
+        f.close()
+        
+        f = open(refFileName, "rt")
+        reflines = f.readlines()
+        f.close()
+        
         linenr = 0
         for line,refline in zip(lines, reflines):
             line = line.rstrip()

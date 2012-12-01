@@ -78,7 +78,10 @@ class MAImporter(mayaascii.DefaultMAReader):
         self.root_parent = parent
 
         f = open(filename)
-        self.read(f)
+        try:
+            self.read(f)
+        finally:
+            f.close()
 
     # begin
     def begin(self):
