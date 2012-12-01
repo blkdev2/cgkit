@@ -81,7 +81,7 @@ class IDManager:
         \param id (\c int) A previously allocated ID
         """
         if id<self._startid:
-            raise IDNotAllocated, "ID %d hasn't been allocated."%id
+            raise IDNotAllocated("ID %d hasn't been allocated."%id)
         
         idx = 0
         for istart,iend in self._intervals:
@@ -92,7 +92,7 @@ class IDManager:
             if iend==None:
                 iend = id+1
             if id>=istart and id<iend:
-                raise IDNotAllocated, "ID %d hasn't been allocated."%id
+                raise IDNotAllocated("ID %d hasn't been allocated."%id)
             idx+=1
 
         # Is the freed id id directly before the interval
@@ -114,21 +114,3 @@ class IDManager:
             # Create a new interval with one element
             self._intervals.insert(idx,[id,id+1])
 
-
-
-######################################################################
-if __name__=="__main__":
-    im = IDManager(5)
-    print im.allocID()
-    print im.allocID()
-    print im.allocID()
-    print im._intervals
-    im.freeID(4)
-    im.freeID(5)
-    im.freeID(6)
-    print im._intervals
-    print im.allocID()
-    print im._intervals
-    print im.allocID()
-    print im.allocID()
-    

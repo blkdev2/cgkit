@@ -131,8 +131,8 @@ class Keys(object):
         handles the events itself (a wx feature). But it seems this only
         works with English modifier names.
         """
-        print "KeyDown",
-        print "KeyCode:",event.GetKeyCode(),"RawKeyCode:",event.GetRawKeyCode()
+        print ("KeyDown",)
+        print ("KeyCode:",event.GetKeyCode(),"RawKeyCode:",event.GetRawKeyCode())
 
         # Create the key tuple
         key = self._event2cmdkey(event)
@@ -185,7 +185,7 @@ class Keys(object):
             # Update menu items
             self._updateMenu(func)
         else:
-            raise KeyNotBound, "Key '%s' is not bound to a function."%name
+            raise KeyNotBound("Key '%s' is not bound to a function."%name)
 
 
     def _updateMenu(self, func):
@@ -213,7 +213,7 @@ class Keys(object):
         # Check if the modifiers are correct
         for m in f[:-1]:
             if m not in ["SHIFT", "CTRL", "ALT", "META"]:
-                raise InvalidKeyDescription, "Key '%s' contains invalid modifiers."%s
+                raise InvalidKeyDescription("Key '%s' contains invalid modifiers."%s)
 
         # Convert the last argument into a key code
         skey = f[-1]
@@ -222,7 +222,7 @@ class Keys(object):
         else:
             key = getattr(wx, "WXK_%s"%skey, None)
             if key==None:
-                raise InvalidKeyDescription, "Key '%s' does not exist."%s
+                raise InvalidKeyDescription("Key '%s' does not exist."%s)
         
         return ("SHIFT" in f, "CTRL" in f, "ALT" in f, "META" in f, key)
 

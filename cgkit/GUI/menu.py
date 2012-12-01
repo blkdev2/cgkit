@@ -1239,16 +1239,16 @@ class Menu(MenuNode):
         """
         
         id = node._wx.GetId()
-        print "Disconnecting",node.name,"ID:",id
+        print ("Disconnecting",node.name,"ID:",id)
         wx.EVT_MENU(self._window, id, None)
         del self._menu_id_lut[id]
 
 
     def _onMenuSelection(self, event):
-        print "Item",event.GetId(),"selected"
+        print ("Item",event.GetId(),"selected")
         item = self._menu_id_lut.get(event.GetId(), None)
         if item==None:
-            print "Menu item ID not found!"
+            print ("Menu item ID not found!")
             return
 
         cmd = item.command
@@ -1257,10 +1257,10 @@ class Menu(MenuNode):
         
 
     def _dump(self, depth=0):
-        print "%s%s"%(2*depth*" ",self)
+        print ("%s%s"%(2*depth*" ",self))
         for n in self._children:
             if hasattr(n, "_dump"):
                 n._dump(depth+1)
             else:
-                print "%s%s"%(2*(depth+1)*" ",n)
+                print ("%s%s"%(2*(depth+1)*" ",n))
 

@@ -2040,4 +2040,4 @@ cgkit.cmds.createPanelWidget = createPanelWidget
 if __name__=="__main__":
 
     c = SizeConstraint(5,5, wfixed=True)
-    print c(172,22)
+    print (c(172,22))

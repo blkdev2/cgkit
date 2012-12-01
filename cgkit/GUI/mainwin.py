@@ -93,7 +93,7 @@ class MainWindow(window.Window):
 
         if "mainwin.geometry" in getApp().prefs:
             x,y,w,h = getApp().prefs["mainwin.geometry"]
-            print "set",x,y,w,h
+            print ("set",x,y,w,h)
             self.SetDimensions(x,y,w,h)
             if getApp().prefs["mainwin.maximized"]:
                 self.Maximize(True)

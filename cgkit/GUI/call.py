@@ -135,9 +135,9 @@ class Call:
 
     def __call__(self):
         if hasattr(self, "_globals"):
-            exec self._code in self._globals
+            exec (self._code, self._globals)
         else:
-            exec self._code
+            exec (self._code)
 
     def __eq__(self, other):
         if not isinstance(other, Call):

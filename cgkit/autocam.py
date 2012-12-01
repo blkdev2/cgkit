@@ -97,10 +97,10 @@ class AutoCam(Component):
     ## protected:
         
     # "input" property...
-    exec slotPropertyCode("input")
+    exec(slotPropertyCode("input"))
 
     # "output" property...
-    exec slotPropertyCode("output")
+    exec(slotPropertyCode("output"))
 
         
 
