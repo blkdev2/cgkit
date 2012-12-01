@@ -115,10 +115,12 @@ class PtcReader(object):
         # Set 64 as default (which is the maximum in PRMan (when using this API call))
         nvars = ctypes.c_int(64)
 
+        fileNameEncoded = fileName.encode("ascii")
+
         # Just open the file to find out the number of variables in the file...
         # (3Delight only)
         if "3delight" in os.path.basename(libName):
-            handle = ptclib.PtcOpenPointCloudFile(fileName, ctypes.byref(nvars), None, None)
+            handle = ptclib.PtcOpenPointCloudFile(fileNameEncoded, ctypes.byref(nvars), None, None)
             if handle is None:
                 raise IOError("Cannot open point cloud file %s"%fileName)
             ptclib.PtcClosePointCloudFile(handle)
@@ -127,7 +129,7 @@ class PtcReader(object):
         numVars = nvars.value
         types = (numVars*ctypes.c_char_p)()
         names = (numVars*ctypes.c_char_p)()
-        handle = ptclib.PtcOpenPointCloudFile(fileName, ctypes.byref(nvars), types, names)
+        handle = ptclib.PtcOpenPointCloudFile(fileNameEncoded, ctypes.byref(nvars), types, names)
         if handle is None:
             raise IOError("Cannot open point cloud file %s"%fileName)
         
@@ -164,26 +166,26 @@ class PtcReader(object):
         # Get the npoints attribute...
         n = ctypes.c_int()
         ptclib.PtcGetPointCloudInfo.argtypes = [ptclib.PtcPointCloud, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
-        if ptclib.PtcGetPointCloudInfo(handle, "npoints", ctypes.byref(n))==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"npoints", ctypes.byref(n))==1:
             self._ptcAttrs["npoints"] = n.value
         # Get the datasize attribute
-        if ptclib.PtcGetPointCloudInfo(handle, "datasize", ctypes.byref(n))==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"datasize", ctypes.byref(n))==1:
             self._ptcAttrs["datasize"] = n.value
         # Get the bbox attribute
         ptclib.PtcGetPointCloudInfo.argtypes = [ptclib.PtcPointCloud, ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
         b = (6*ctypes.c_float)()
-        if ptclib.PtcGetPointCloudInfo(handle, "bbox", b)==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"bbox", b)==1:
             self._ptcAttrs["bbox"] = list(b)
         # Get the format attribute
         f = (3*ctypes.c_float)()
-        if ptclib.PtcGetPointCloudInfo(handle, "format", f)==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"format", f)==1:
             self._ptcAttrs["format"] = tuple(f)
         # Get the world2eye attribute
         m = (16*ctypes.c_float)()
-        if ptclib.PtcGetPointCloudInfo(handle, "world2eye", m)==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"world2eye", m)==1:
             self._ptcAttrs["world2eye"] = list(m)
         # Get the world2ndc attribute
-        if ptclib.PtcGetPointCloudInfo(handle, "world2ndc", m)==1:
+        if ptclib.PtcGetPointCloudInfo(handle, b"world2ndc", m)==1:
             self._ptcAttrs["world2ndc"] = list(m)
 
         if self.npoints is None:
@@ -460,8 +462,8 @@ class PtcWriter:
         code = ""
         for i in range(n):
             type,name = vars[i]
-            cvartypes[i] = type
-            cvarnames[i] = name
+            cvartypes[i] = type.encode("ascii")
+            cvarnames[i] = name.encode("ascii")
             if type=="float":
                 code += "cdata[%s] = data.get('%s', 0.0)\n"%(idx, name)
                 idx += 1
@@ -479,7 +481,8 @@ class PtcWriter:
         
         cformat = (3*ctypes.c_float)(float(xres), float(yres), float(aspect))
         
-        handle = ptclib.PtcCreatePointCloudFile(fileName, n, cvartypes, cvarnames, w2e, w2n, cformat)
+        fileNameEncoded = fileName.encode("ascii")
+        handle = ptclib.PtcCreatePointCloudFile(fileNameEncoded, n, cvartypes, cvarnames, w2e, w2n, cformat)
         if handle is None:
             raise IOError("Cannot open point cloud file %s for writing"%fileName)
 
