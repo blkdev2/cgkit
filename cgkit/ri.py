@@ -2358,7 +2358,8 @@ def _merge_paramlist(paramlist, keyparams):
             raise ValueError("The parameter list must contain an even number of values")
 
     # Append the params from the keyparams dict to the parameter list
-    list(map(lambda param: res.extend(param), keyparams.items()))
+    for param,value in sorted(keyparams.items()):
+        res.extend([param,value])
     return res
     
 
