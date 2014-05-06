@@ -1482,6 +1482,10 @@ class _RenderManAPI:
             Cls = (n*ctype)
             seq = Cls.from_address(seq.ctypes.data)
             return seq
+
+        if ctype == self._ri.RtString:
+            seq = [s.encode('ascii') for s in self._flatten(seq)]
+            return (len(seq) * ctypes.c_char_p)(*seq)
             
         # Convert the sequence into a ctypes array...
         seq = self._flatten(seq)

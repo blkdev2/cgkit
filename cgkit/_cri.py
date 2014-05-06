@@ -61,10 +61,12 @@ from . import rmanlibutil
 class ASCIIString(object):
     @classmethod
     def from_param(cls, value):
+        if value is None:
+            return c_char_p(None)
         if isinstance(value, str):
-            return value.encode("ascii")
+            return c_char_p(value.encode("ascii"))
         else:
-            return value
+            return c_char_p(value)
 
 def loadRI(libName):
     """Load a RenderMan library and return a module-like handle to it.
@@ -351,7 +353,7 @@ def _createRiFunctions(ri):
     ri.RiAttributeEnd.argtypes = []
     ri.RiBasis.argtypes = [RtBasis, RtInt, RtBasis, RtInt]
     ri.RiBegin.argtypes = [RtToken]
-    ri.RiBlobby.argtypes = [RtInt, RtInt, POINTER(RtInt), RtInt, POINTER(RtFloat), RtInt, POINTER(c_char_p)]
+    ri.RiBlobby.argtypes = [RtInt, RtInt, POINTER(RtInt), RtInt, POINTER(RtFloat), RtInt, POINTER(c_char_p)] 
     ri.RiBound.argtypes = [RtBound]
     ri.RiClipping.argtypes = [RtFloat, RtFloat]
     ri.RiClippingPlane.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat, RtFloat, RtFloat]
@@ -366,7 +368,7 @@ def _createRiFunctions(ri):
     ri.RiCurves.argtypes = [RtToken, RtInt]
     ri.RiCylinder.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat]
     ri.RiDeclare.argtypes = [RtString, RtString]
-    ri.RiDeclare.restype = RtToken
+    ri.RiDeclare.restype = c_char_p
     ri.RiDepthOfField.argtypes = [RtFloat, RtFloat, RtFloat]
     ri.RiDetail.argtypes = [RtBound]
     ri.RiDetailRange.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat]
