@@ -332,7 +332,7 @@ class _RenderManAPI:
         """
         code = self._toCArray(self._ri.RtInt, code)
         floats = self._toCArray(self._ri.RtFloat, floats)
-        strings = self._toCArray(self._ri.RtString, strings)
+        strings = self._toCArray(ctypes.c_char_p, [s.encode("ascii") for s in strings])
         self._ri.RiBlobby(nleaf, len(code), code, len(floats), floats, len(strings), strings, *self._createCParamList(paramlist, keyparams))
 
     def RiBound(self, bound):
@@ -1336,7 +1336,7 @@ class _RenderManAPI:
         """
         nverts = self._toCArray(self._ri.RtInt, nverts)
         vertids = self._toCArray(self._ri.RtInt, vertids)
-        tags = self._toCArray(self._ri.RtToken, tags)
+        tags = self._toCArray(ctypes.c_char_p, [s.encode("ascii") for s in tags])
         nargs = self._toCArray(self._ri.RtInt, nargs)
         intargs = self._toCArray(self._ri.RtInt, intargs)
         floatargs = self._toCArray(self._ri.RtFloat, floatargs)

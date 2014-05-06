@@ -58,6 +58,14 @@ import os.path
 from ctypes import *
 from . import rmanlibutil
 
+class ASCIIString(object):
+    @classmethod
+    def from_param(cls, value):
+        if isinstance(value, str):
+            return value.encode("ascii")
+        else:
+            return value
+
 def loadRI(libName):
     """Load a RenderMan library and return a module-like handle to it.
     
@@ -119,8 +127,8 @@ def _createRiTypes(ri):
     baseTypes = dict(RtBoolean = c_short,
                      RtInt = c_int,
                      RtFloat = c_float,
-                     RtString = c_char_p,
-                     RtToken = c_char_p,
+                     RtString = ASCIIString,
+                     RtToken = ASCIIString,
                      RtVoid = None,
                      RtPointer = c_void_p)
     
@@ -141,10 +149,10 @@ def _createRiTypes(ri):
     ri.RtContextHandle = ri.RtPointer
     
     ri.RtFilterFunc = CFUNCTYPE(ri.RtFloat,  ri.RtFloat, ri.RtFloat, ri.RtFloat, ri.RtFloat)
-    ri.RtErrorHandler = CFUNCTYPE(ri.RtVoid,  ri.RtInt, ri.RtInt, c_char_p)
+    ri.RtErrorHandler = CFUNCTYPE(ri.RtVoid,  ri.RtInt, ri.RtInt, ri.RtString)
     ri.RtProcSubdivFunc = CFUNCTYPE(ri.RtVoid,  ri.RtPointer, ri.RtFloat)
     ri.RtProcFreeFunc = CFUNCTYPE(ri.RtVoid,  ri.RtPointer)
-    ri.RtArchiveCallback = CFUNCTYPE(ri.RtVoid,  ri.RtToken, c_char_p)   # var args are missing
+    ri.RtArchiveCallback = CFUNCTYPE(ri.RtVoid,  ri.RtToken, ri.RtString)   # var args are missing
     
     
 def _createRiConstants(ri):
@@ -334,7 +342,7 @@ def _createRiFunctions(ri):
     RtObjectHandle = ri.RtObjectHandle
     RtPointer = ri.RtPointer
     
-    ri.RiArchiveRecord.argtypes = [RtToken, c_char_p]
+    ri.RiArchiveRecord.argtypes = [RtToken, RtString]
     ri.RiAreaLightSource.argtypes = [RtToken]
     ri.RiAreaLightSource.restype = RtLightHandle 
     ri.RiAtmosphere.argtypes = [RtToken]
@@ -343,7 +351,7 @@ def _createRiFunctions(ri):
     ri.RiAttributeEnd.argtypes = []
     ri.RiBasis.argtypes = [RtBasis, RtInt, RtBasis, RtInt]
     ri.RiBegin.argtypes = [RtToken]
-    ri.RiBlobby.argtypes = [RtInt, RtInt, POINTER(RtInt), RtInt, POINTER(RtFloat), RtInt, POINTER(RtString)]
+    ri.RiBlobby.argtypes = [RtInt, RtInt, POINTER(RtInt), RtInt, POINTER(RtFloat), RtInt, POINTER(c_char_p)]
     ri.RiBound.argtypes = [RtBound]
     ri.RiClipping.argtypes = [RtFloat, RtFloat]
     ri.RiClippingPlane.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat, RtFloat, RtFloat]
@@ -357,7 +365,7 @@ def _createRiFunctions(ri):
     ri.RiCropWindow.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat]
     ri.RiCurves.argtypes = [RtToken, RtInt]
     ri.RiCylinder.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat]
-    ri.RiDeclare.argtypes = [c_char_p, c_char_p]
+    ri.RiDeclare.argtypes = [RtString, RtString]
     ri.RiDeclare.restype = RtToken
     ri.RiDepthOfField.argtypes = [RtFloat, RtFloat, RtFloat]
     ri.RiDetail.argtypes = [RtBound]
@@ -389,13 +397,13 @@ def _createRiFunctions(ri):
     ri.RiLightSource.restype = RtLightHandle
     # In the following texture calls the declaration of the filter function is removed
     # (see RiPixelFilter for more infos)
-#    ri.RiMakeCubeFaceEnvironment.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, RtFloat, RtFilterFunc, RtFloat, RtFloat]
-    ri.RiMakeCubeFaceEnvironment.argtypes = [c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, c_char_p, RtFloat]
-#    ri.RiMakeLatLongEnvironment.argtypes = [c_char_p, c_char_p, RtFilterFunc, RtFloat, RtFloat]
-    ri.RiMakeLatLongEnvironment.argtypes = [c_char_p, c_char_p]
-    ri.RiMakeShadow.argtypes = [c_char_p, c_char_p]
-#    ri.RiMakeTexture.argtypes = [c_char_p, c_char_p, RtToken, RtToken, RtFilterFunc, RtFloat, RtFloat]
-    ri.RiMakeTexture.argtypes = [c_char_p, c_char_p, RtToken, RtToken]
+#    ri.RiMakeCubeFaceEnvironment.argtypes = [RtString, RtString, RtString, RtString, RtString, RtString, RtString, RtFloat, RtFilterFunc, RtFloat, RtFloat]
+    ri.RiMakeCubeFaceEnvironment.argtypes = [RtString, RtString, RtString, RtString, RtString, RtString, RtString, RtFloat]
+#    ri.RiMakeLatLongEnvironment.argtypes = [RtString, RtString, RtFilterFunc, RtFloat, RtFloat]
+    ri.RiMakeLatLongEnvironment.argtypes = [RtString, RtString]
+    ri.RiMakeShadow.argtypes = [RtString, RtString]
+#    ri.RiMakeTexture.argtypes = [RtString, RtString, RtToken, RtToken, RtFilterFunc, RtFloat, RtFloat]
+    ri.RiMakeTexture.argtypes = [RtString, RtString, RtToken, RtToken]
     ri.RiMatte.argtypes = [RtBoolean]
     ri.RiMotionBegin.argtypes = [RtInt]
     ri.RiMotionEnd.argtypes = []
@@ -443,7 +451,7 @@ def _createRiFunctions(ri):
     ri.RiSolidBegin.argtypes = [RtToken]
     ri.RiSolidEnd.argtypes = []
     ri.RiSphere.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat]
-    ri.RiSubdivisionMesh.argtypes = [RtToken, RtInt, POINTER(RtInt), POINTER(RtInt), RtInt, POINTER(RtToken), POINTER(RtInt), POINTER(RtInt), POINTER(RtFloat)]
+    ri.RiSubdivisionMesh.argtypes = [RtToken, RtInt, POINTER(RtInt), POINTER(RtInt), RtInt, POINTER(c_char_p), POINTER(RtInt), POINTER(RtInt), POINTER(RtFloat)]
     ri.RiSurface.argtypes = [RtToken]
     ri.RiTextureCoordinates.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat, RtFloat, RtFloat, RtFloat, RtFloat]
     ri.RiTorus.argtypes = [RtFloat, RtFloat, RtFloat, RtFloat, RtFloat]
